@@ -33,7 +33,7 @@ toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 
 results = config;
 [results.command] = deal('');
-[results.status] = deal([]);
+[results.status] = deal(0);
 [results.message] = deal('skipped');
 
 %% Make sure we have a place to put toolboxes.
@@ -57,13 +57,17 @@ for tt = 1:nToolboxes
     if isempty(strategy)
         results(tt).status = -1;
         results(tt).command = 'tbChooseStrategy';
-        results(tt).message = sprintf('Unknown toolbos type %s', record.type);
+        results(tt).message = sprintf('Unknown toolbox type %s', record.type);
         continue;
     end
     
     % is the toolbox pre-installed in the common location?
     toolboxCommonFolder = fullfile(toolboxCommonRoot, record.name, record.flavor);
     if strategy.checkIfPresent(record, toolboxCommonRoot, toolboxCommonFolder);
+        if strcmp(record.update, 'never')
+            continue;
+        end
+        
         fprintf('Updating shared toolbox "%s" at "%s"\n', record.name, toolboxCommonFolder);
         [results(tt).command, results(tt).status, results(tt).message] = ...
             strategy.update(record, toolboxCommonRoot, toolboxCommonFolder);
@@ -73,6 +77,10 @@ for tt = 1:nToolboxes
     % is the toolbox alredy in the refular location?
     toolboxFolder = fullfile(toolboxRoot, record.name, record.flavor);
     if strategy.checkIfPresent(record, toolboxRoot, toolboxFolder);
+        if strcmp(record.update, 'never')
+            continue;
+        end
+        
         fprintf('Updating toolbox "%s" at "%s"\n', record.name, toolboxFolder);
         [results(tt).command, results(tt).status, results(tt).message] = ...
             strategy.update(record, toolboxRoot, toolboxFolder);

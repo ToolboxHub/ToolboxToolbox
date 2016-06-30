@@ -22,6 +22,8 @@ function record = tbToolboxRecord(varargin)
 %   branch/tag/commit to checkout after cloning
 %   - 'subfolder' optional toolbox subfolder to add to path, instead of the
 %   whole toolbox
+%   - 'update' optional update control, if "never", won't attempt to update
+%   the toolbox
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -32,6 +34,7 @@ parser.addParameter('url', '', @ischar);
 parser.addParameter('type', 'git', @ischar);
 parser.addParameter('flavor', '', @ischar);
 parser.addParameter('subfolder', '', @ischar);
+parser.addParameter('update', '', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work
