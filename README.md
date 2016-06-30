@@ -25,7 +25,7 @@ The basic workflow will be like this: you declare your dependencies using some M
 
 This will solve some frequent Matlab headaches that result from the fact that Matlab has only one, global path at a time.  What happens when you want to switch between projects or versions of projects?  Do you try to add all the projects you ever used to the Path?  What happens when projects define different functions with the same name?  What happens when you need to switch between incompatible versions of the same project?  Have you ever had a program that "works", only because it was secretly calling some obscure and unrelated function that you added to the path a year ago?  Enough!
 
-The Toolbox Toolbox offers a different approach.  Don't manage your Matlab path by hand.  Don't treat it as precious.  Be liberated and nimble and clear the Matlab path often.  Let the Toolbox Toolbox add path entries as declared in JSON files, when they are needed for a particular project.  When switching projects, switch JSON files and get the right path for each project.
+The Toolbox Toolbox offers a different approach.  Don't manage your Matlab path by hand or treat it as precious.  Be liberated and nimble and clear the Matlab path often.  Let the Toolbox Toolbox add path entries as declared in JSON files, when they are needed for a particular project.  When switching projects, switch JSON files.
 
 # Work in Progress
 The Toolbox Toolbox is a new project as of June 2016.  More to come...
