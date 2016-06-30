@@ -28,8 +28,10 @@ oldPath = path();
 
 %% Start with or without this Toolbox Toolbox?
 if withSelf
+    % assume this function is located in toolbox-toolbox/api
     pathHere = fileparts(mfilename('fullpath'));
-    selfPath = genpath(pathHere);
+    pathToToolbox = fileparts(pathHere);
+    selfPath = genpath(pathToToolbox);
 else
     selfPath = '';
 end
@@ -45,3 +47,7 @@ end
 %% Apply the new path.
 newPath = [selfPath ':' builtInPath];
 path(newPath);
+
+% now that we are on the path, we can clean it up
+cleanPath = tbCleanPath(newPath);
+path(cleanPath);

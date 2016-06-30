@@ -40,16 +40,6 @@ fprintf('Adding toolbox path "%s"\n', toolboxPath);
 %% Compute a new path.
 toolboxPath = genpath(toolboxPath);
 
-%% Clean up the path.
-scanResults = textscan(toolboxPath, '%s', 'delimiter', pathsep());
-pathElements = scanResults{1};
-
-% svn, git, mercurial
-isCleanFun = @(s) isempty(regexp(s, '\.svn|\.git|\.hg', 'once'));
-isClean = cellfun(isCleanFun, pathElements);
-
-cleanElements = pathElements(isClean);
-cleanPath = sprintf(['%s' pathsep()], cleanElements{:});
-
 %% Put the new path in place.
+cleanPath = tbCleanPath(toolboxPath);
 addpath(cleanPath);
