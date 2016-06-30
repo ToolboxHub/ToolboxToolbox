@@ -1,4 +1,4 @@
-# toolbox-toolbox
+# Toolbox Toolbox
 Declarative dependency management for Matlab.
 
 # Motivation
