@@ -10,8 +10,8 @@ In many development ecosystems, we enjoy dependency management tools.  These hel
  - [apt](https://wiki.debian.org/Apt)
  - [Homebrew](http://brew.sh/)
  - many more!
-  
- These differ in their details.  But they have some key features in common:
+
+These tools differ in their details.  But they have some key features in common:
  - You  *declare* your dependencies in a config file or short script.  Then the tool does the work of obtaining them for you.
  - The dependencies are declared *per program*, where they are relevant and isolated, and not per machine, per user, etc.
  - The tools can run *non-interactively*.  You don't have to waste time remembering what you clicked on last week.
