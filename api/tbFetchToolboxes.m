@@ -83,8 +83,8 @@ if 0 ~= cloneStatus
     return;
 end
 
-if ~isempty(record.ref)
-    fetchCommand = sprintf('git -C "%s" fetch origin +%s:%s', toolboxFolder, record.ref, record.ref);
+if ~isempty(record.flavor)
+    fetchCommand = sprintf('git -C "%s" fetch origin +%s:%s', toolboxFolder, record.flavor, record.flavor);
     [fetchStatus, fetchResult] = system(fetchCommand);
     result.command = fetchCommand;
     result.status = fetchStatus;
@@ -93,7 +93,7 @@ if ~isempty(record.ref)
         return;
     end
     
-    checkoutCommand = sprintf('git -C "%s" checkout %s', toolboxFolder, record.ref);
+    checkoutCommand = sprintf('git -C "%s" checkout %s', toolboxFolder, record.flavor);
     [checkoutStatus, checkoutResult] = system(checkoutCommand);
     result.command = checkoutCommand;
     result.status = checkoutStatus;
@@ -106,10 +106,10 @@ end
 %% Update a toolbox that was already deployed.
 function result = updateToolbox(record, toolboxFolder)
 % update the toolbox with git
-if isempty(record.ref)
+if isempty(record.flavor)
     command = sprintf('git -C "%s" pull', toolboxFolder);
 else
-    command = sprintf('git -C "%s" pull origin %s', toolboxFolder, record.ref);
+    command = sprintf('git -C "%s" pull origin %s', toolboxFolder, record.flavor);
 end
 [status, commandResult] = system(command);
 

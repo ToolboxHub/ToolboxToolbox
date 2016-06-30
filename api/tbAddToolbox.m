@@ -7,15 +7,7 @@ function results = tbAddToolbox(varargin)
 %
 % results = tbAddToolbox( ... name, value) creates a new toolbox record
 % based on the given name-value pairs and adds it to the toolbox
-% configuration.  The recognized names are:
-%   - 'name' unique name to identify the toolbox and the folder that
-%   contains it.
-%   - 'url' the url where the toolbox can be obtained, like a GitHub clone
-%   url.
-%   - 'type' the type of repository that contains the toolbox, currently
-%   only 'git' is allowed
-%   - 'ref' optional branch/tag to git fetch and checkout after clonging
-%   the toolbox
+% configuration.  See tbToolboxRecord for recognized names.
 %
 % If a toolbox with the same 'name" already exists in the configuration, it
 % will be replaced with the new one.

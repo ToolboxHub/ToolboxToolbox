@@ -18,8 +18,8 @@ function record = tbToolboxRecord(varargin)
 %   url.
 %   - 'type' the type of repository that contains the toolbox, currently
 %   only 'git' is allowed
-%   - 'ref' optional branch/tag to git fetch and checkout after clonging
-%   the toolbox
+%   - 'flavor' optional flavor of toolbox, for example a Git
+%   branch/tag/commit to checkout after cloning.
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -28,7 +28,7 @@ parser.KeepUnmatched = true;
 parser.addParameter('name', '', @ischar);
 parser.addParameter('url', '', @ischar);
 parser.addParameter('type', 'git', @ischar);
-parser.addParameter('ref', '', @ischar);
+parser.addParameter('flavor', '', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work
