@@ -31,11 +31,8 @@ restorePath = parser.Results.restorePath;
 
 %% Start fresh?
 if restorePath
-    fprintf('Restoring Matlab default path.\n');
     tbResetMatlabPath();
 end
-
-fprintf('Adding toolbox path "%s"\n', toolboxPath);
 
 %% Compute a new path.
 toolboxPath = genpath(toolboxPath);

@@ -32,9 +32,10 @@ toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 
 results = config;
+[results.operation] = deal('skipped');
 [results.command] = deal('');
 [results.status] = deal(0);
-[results.message] = deal('skipped');
+[results.message] = deal('');
 
 %% Make sure we have a place to put toolboxes.
 if 7 ~= exist(toolboxRoot, 'dir')
@@ -68,7 +69,8 @@ for tt = 1:nToolboxes
             continue;
         end
         
-        fprintf('Updating shared toolbox "%s" at "%s"\n', record.name, toolboxCommonFolder);
+        fprintf('Updating "%s".\n', record.name);
+        results(tt).operation = 'update';
         [results(tt).command, results(tt).status, results(tt).message] = ...
             strategy.update(record, toolboxCommonRoot, toolboxCommonFolder);
         continue;
@@ -81,14 +83,16 @@ for tt = 1:nToolboxes
             continue;
         end
         
-        fprintf('Updating toolbox "%s" at "%s"\n', record.name, toolboxFolder);
+        fprintf('Updating "%s".\n', record.name);
+        results(tt).operation = 'update';
         [results(tt).command, results(tt).status, results(tt).message] = ...
             strategy.update(record, toolboxRoot, toolboxFolder);
         continue;
     end
     
     % obtain the toolbox
-    fprintf('Fetching toolbox "%s" into "%s"\n', record.name, toolboxFolder);
+    fprintf('Obtaining "%s".\n', record.name);
+    results(tt).operation = 'obtain';
     [results(tt).command, results(tt).status, results(tt).message] = ...
         strategy.obtain(record, toolboxRoot, toolboxFolder);
 end

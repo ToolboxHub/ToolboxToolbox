@@ -87,6 +87,7 @@ nToolboxes = numel(results);
 for tt = 1:nToolboxes
     record = results(tt);
     if record.status ~= 0
+        results(tt).path = '';
         continue;
     end
     
@@ -94,8 +95,11 @@ for tt = 1:nToolboxes
     toolboxPath = fullfile(toolboxRoot, record.name, record.flavor, record.subfolder);
     if 7 == exist(toolboxSharedPath, 'dir')
         tbSetToolboxPath('toolboxPath', toolboxSharedPath, 'restorePath', false);
+        results(tt).path = toolboxSharedPath;
+        fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxSharedPath);
     elseif 7 == exist(toolboxPath, 'dir')
         tbSetToolboxPath('toolboxPath', toolboxPath, 'restorePath', false);
+        results(tt).path = toolboxPath;
+        fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
     end
 end
-
