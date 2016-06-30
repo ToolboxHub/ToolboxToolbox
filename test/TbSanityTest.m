@@ -136,7 +136,7 @@ classdef TbSanityTest < matlab.unittest.TestCase
                 expected = obj.expectedFiles.(result.name);
                 for ff = 1:numel(expected)
                     expectedFile = expected{ff};
-                    expectedPath = fullfile(obj.toolboxRoot, result.name, expectedFile);
+                    expectedPath = fullfile(obj.toolboxRoot, result.name, result.flavor, expectedFile);
                     obj.assertEqual(exist(expectedPath, 'file'), 2, ...
                         sprintf('For toolbox "%s", expected file "%s" not found.', ...
                         result.name, expectedPath));
@@ -156,7 +156,7 @@ classdef TbSanityTest < matlab.unittest.TestCase
                 unexpected = obj.expectedFiles.(result.name);
                 for ff = 1:numel(unexpected)
                     unxpectedFile = unexpected{ff};
-                    unexpectedPath = fullfile(obj.toolboxRoot, result.name, unxpectedFile);
+                    unexpectedPath = fullfile(obj.toolboxRoot, result.name, result.flavor, unxpectedFile);
                     obj.assertEqual(exist(unexpectedPath, 'file'), 2, ...
                         sprintf('For toolbox "%s", unexpected file "%s" was found.', ...
                         result.name, unexpectedPath));

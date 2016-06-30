@@ -50,7 +50,7 @@ results = tbDeployToolboxes( ...
 
 if 0 ~= results.status
     error('AddToolbox:deployError', 'Could not deploy toolbox with name "%s": %s', ...
-        results.name, results.result);
+        results.name, results.message);
 end
 
 %% Add new toolbox to the existing config.

@@ -9,13 +9,12 @@ function results = tbFetchToolboxes(config, varargin)
 % toolbox will be located in a subfolder of the default toolbox root
 % folder.
 %
-% tbFetchToolboxes( ... 'toolboxRoot', toolboxRoot) specify where to fetch
+% tbFetchToolboxes( ... 'toolboxRoot', toolboxRoot) specify where to put
 % toolboxes.  The default location is '~/toolboxes'.
 %
-% As an optimization for shares systems, toolboxes may be pre-deployed
-% (probably by an admin) to a common toolbox root folder.  Toolboxes found
-% here will be updated, instead of being installed to the given
-% toolboxRoot.
+% As an optimization for shared systems, toolboxes may be pre-deployed
+% (by an admin) to a common toolbox root folder.  Toolboxes found here will
+% be updated, instead of being installed to the given toolboxRoot.
 %
 % tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
 % where to look for shared toolboxes.  The default location is
@@ -63,7 +62,7 @@ for tt = 1:nToolboxes
     end
     
     % is the toolbox pre-installed in the common location?
-    toolboxCommonFolder = fullfile(toolboxCommonRoot, record.name);
+    toolboxCommonFolder = fullfile(toolboxCommonRoot, record.name, record.flavor);
     if strategy.checkIfPresent(record, toolboxCommonRoot, toolboxCommonFolder);
         fprintf('Updating shared toolbox "%s" at "%s"\n', record.name, toolboxCommonFolder);
         [results(tt).command, results(tt).status, results(tt).message] = ...
@@ -72,7 +71,7 @@ for tt = 1:nToolboxes
     end
     
     % is the toolbox alredy in the refular location?
-    toolboxFolder = fullfile(toolboxRoot, record.name);
+    toolboxFolder = fullfile(toolboxRoot, record.name, record.flavor);
     if strategy.checkIfPresent(record, toolboxRoot, toolboxFolder);
         fprintf('Updating toolbox "%s" at "%s"\n', record.name, toolboxFolder);
         [results(tt).command, results(tt).status, results(tt).message] = ...

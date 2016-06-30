@@ -15,7 +15,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             
             % clone
             command = sprintf('git -C "%s" clone "%s" "%s"', ...
-                toolboxRoot, record.url, record.name);
+                toolboxRoot, record.url, toolboxPath);
             [status, message] = system(command);
             if 0 ~= status
                 return;
