@@ -2,7 +2,7 @@
 Declarative dependency management for Matlab.
 
 # Motivation
-In many development ecosystems, we enjoy dependency management tools.  These help us share, discover, and obtain our dependencies and make them available when we build and run our projects.
+In many development ecosystems, we enjoy dependency management tools.  These help us share, discover, and obtain our dependencies and make them available when we build and run our projects.  These tools include:
  - [Maven](https://maven.apache.org/)
  - [Gradle](http://gradle.org/)
  - [Leiningen](http://leiningen.org/)
