@@ -35,7 +35,7 @@ toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 results = config;
 [results.command] = deal('');
 [results.status] = deal([]);
-[results.result] = deal('skipped');
+[results.message] = deal('skipped');
 
 %% Make sure we have a place to put toolboxes.
 if 7 ~= exist(toolboxRoot, 'dir')
@@ -49,71 +49,39 @@ for tt = 1:nToolboxes
     if isempty(record.name)
         results(tt).status = -1;
         results(tt).command = '';
-        results(tt).result = 'no toolbox name given';
+        results(tt).message = 'no toolbox name given';
         continue;
     end
     
-    toolboxCommonFolder = fullfile(toolboxCommonRoot, record.name);
-    toolboxFolder = fullfile(toolboxRoot, record.name);
-    if 7 == exist(toolboxCommonFolder, 'dir')
-        fprintf('Updating shared toolbox "%s" at "%s"\n', record.name, toolboxCommonFolder);
-        results(tt) = updateToolbox(record, toolboxCommonFolder);
-        
-    elseif 7 == exist(toolboxFolder, 'dir')
-        fprintf('Updating toolbox "%s" at "%s"\n', record.name, toolboxFolder);
-        results(tt) = updateToolbox(record, toolboxFolder);
-        
-    else
-        fprintf('Fetching toolbox "%s" into "%s"\n', record.name, toolboxFolder);
-        results(tt) = obtainToolbox(record, toolboxRoot, toolboxFolder);
-    end
-end
-
-%% Obtain a toolbox that that was not yet deployed.
-function result = obtainToolbox(record, toolboxRoot, toolboxFolder)
-result = record;
-
-% clone
-cloneCommand = sprintf('git -C "%s" clone "%s" "%s"', toolboxRoot, record.url, record.name);
-[cloneStatus, cloneResult] = system(cloneCommand);
-result.command = cloneCommand;
-result.status = cloneStatus;
-result.result = cloneResult;
-if 0 ~= cloneStatus
-    return;
-end
-
-if ~isempty(record.flavor)
-    fetchCommand = sprintf('git -C "%s" fetch origin +%s:%s', toolboxFolder, record.flavor, record.flavor);
-    [fetchStatus, fetchResult] = system(fetchCommand);
-    result.command = fetchCommand;
-    result.status = fetchStatus;
-    result.result = fetchResult;
-    if 0 ~= fetchStatus
-        return;
+    % what kind of toolbox is this
+    strategy = tbChooseStrategy(record);
+    if isempty(strategy)
+        results(tt).status = -1;
+        results(tt).command = 'tbChooseStrategy';
+        results(tt).message = sprintf('Unknown toolbos type %s', record.type);
+        continue;
     end
     
-    checkoutCommand = sprintf('git -C "%s" checkout %s', toolboxFolder, record.flavor);
-    [checkoutStatus, checkoutResult] = system(checkoutCommand);
-    result.command = checkoutCommand;
-    result.status = checkoutStatus;
-    result.result = checkoutResult;
-    if 0 ~= checkoutStatus
-        return;
+    % is the toolbox pre-installed in the common location?
+    toolboxCommonFolder = fullfile(toolboxCommonRoot, record.name);
+    if strategy.checkIfPresent(record, toolboxCommonRoot, toolboxCommonFolder);
+        fprintf('Updating shared toolbox "%s" at "%s"\n', record.name, toolboxCommonFolder);
+        [results(tt).command, results(tt).status, results(tt).message] = ...
+            strategy.update(record, toolboxCommonRoot, toolboxCommonFolder);
+        continue;
     end
+    
+    % is the toolbox alredy in the refular location?
+    toolboxFolder = fullfile(toolboxRoot, record.name);
+    if strategy.checkIfPresent(record, toolboxRoot, toolboxFolder);
+        fprintf('Updating toolbox "%s" at "%s"\n', record.name, toolboxFolder);
+        [results(tt).command, results(tt).status, results(tt).message] = ...
+            strategy.update(record, toolboxRoot, toolboxFolder);
+        continue;
+    end
+    
+    % obtain the toolbox
+    fprintf('Fetching toolbox "%s" into "%s"\n', record.name, toolboxFolder);
+    [results(tt).command, results(tt).status, results(tt).message] = ...
+        strategy.obtain(record, toolboxRoot, toolboxFolder);
 end
-
-%% Update a toolbox that was already deployed.
-function result = updateToolbox(record, toolboxFolder)
-% update the toolbox with git
-if isempty(record.flavor)
-    command = sprintf('git -C "%s" pull', toolboxFolder);
-else
-    command = sprintf('git -C "%s" pull origin %s', toolboxFolder, record.flavor);
-end
-[status, commandResult] = system(command);
-
-result = record;
-result.command = command;
-result.status = status;
-result.result = commandResult;

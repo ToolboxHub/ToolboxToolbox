@@ -130,7 +130,7 @@ classdef TbSanityTest < matlab.unittest.TestCase
                 
                 % status OK?
                 obj.assertEqual(result.status, 0, ...
-                    sprintf('command "%s" -> result "%s"', result.command, result.result));
+                    sprintf('command "%s" -> message "%s"', result.command, result.message));
                 
                 % expected files present?
                 expected = obj.expectedFiles.(result.name);
