@@ -90,8 +90,8 @@ for tt = 1:nToolboxes
         continue;
     end
     
-    toolboxSharedPath = fullfile(toolboxCommonRoot, record.name);
-    toolboxPath = fullfile(toolboxRoot, record.name);
+    toolboxSharedPath = fullfile(toolboxCommonRoot, record.name, record.flavor, record.subfolder);
+    toolboxPath = fullfile(toolboxRoot, record.name, record.flavor, record.subfolder);
     if 7 == exist(toolboxSharedPath, 'dir')
         tbSetToolboxPath('toolboxPath', toolboxSharedPath, 'restorePath', false);
     elseif 7 == exist(toolboxPath, 'dir')

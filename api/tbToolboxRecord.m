@@ -19,7 +19,9 @@ function record = tbToolboxRecord(varargin)
 %   - 'type' the type of repository that contains the toolbox, currently
 %   only 'git' is allowed
 %   - 'flavor' optional flavor of toolbox, for example a Git
-%   branch/tag/commit to checkout after cloning.
+%   branch/tag/commit to checkout after cloning
+%   - 'subfolder' optional toolbox subfolder to add to path, instead of the
+%   whole toolbox
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -29,6 +31,7 @@ parser.addParameter('name', '', @ischar);
 parser.addParameter('url', '', @ischar);
 parser.addParameter('type', 'git', @ischar);
 parser.addParameter('flavor', '', @ischar);
+parser.addParameter('subfolder', '', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work
