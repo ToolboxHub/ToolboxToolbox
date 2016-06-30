@@ -86,8 +86,8 @@ end
 nToolboxes = numel(results);
 for tt = 1:nToolboxes
     record = results(tt);
+    results(tt).path = '';
     if record.status ~= 0
-        results(tt).path = '';
         continue;
     end
     
@@ -101,5 +101,23 @@ for tt = 1:nToolboxes
         tbSetToolboxPath('toolboxPath', toolboxPath, 'restorePath', false);
         results(tt).path = toolboxPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
+    end
+end
+
+%% Invoke Post-Deploy hooks.
+nToolboxes = numel(results);
+for tt = 1:nToolboxes
+    record = results(tt);
+    results(tt).hookResult = '';
+    if record.status ~= 0
+        continue;
+    end
+    
+    if ~isempty(record.hook)
+        try
+            results(tt).hookResult = evalc(record.hook);
+        catch err
+            results(tt).hookResult = err.message;
+        end
     end
 end

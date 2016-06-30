@@ -24,6 +24,8 @@ function record = tbToolboxRecord(varargin)
 %   whole toolbox
 %   - 'update' optional update control, if "never", won't attempt to update
 %   the toolbox
+%   - 'hook' Matlab command to run after the toolbox is deployed and added
+%   to the path
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -35,6 +37,7 @@ parser.addParameter('type', 'git', @ischar);
 parser.addParameter('flavor', '', @ischar);
 parser.addParameter('subfolder', '', @ischar);
 parser.addParameter('update', '', @ischar);
+parser.addParameter('hook', '', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work

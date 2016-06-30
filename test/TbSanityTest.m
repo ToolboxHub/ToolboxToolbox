@@ -100,6 +100,21 @@ classdef TbSanityTest < matlab.unittest.TestCase
             inSubfolder2 = which('in-subfolder-2.txt');
             obj.assertEmpty(inSubfolder2);
         end
+        
+        function testHook(obj)
+            testRepoUrl = 'https://github.com/benjamin-heasly/sample-repo.git';
+            hookFolder = fullfile(obj.toolboxRoot, 'testHook');
+            result = tbAddToolbox( ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'configPath', obj.configPath, ...
+                'name', 'withHook', ...
+                'url', testRepoUrl, ...
+                'hook', ['mkdir ' hookFolder]);
+            obj.assertEqual(result.status, 0);
+            
+            % should have created the "testHook" folder
+            obj.assertEqual(exist(hookFolder, 'dir'), 7);
+        end
     end
     
     methods
