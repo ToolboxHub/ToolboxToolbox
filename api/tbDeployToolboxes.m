@@ -116,27 +116,42 @@ end
 nToolboxes = numel(results);
 for tt = 1:nToolboxes
     record = results(tt);
-    results(tt).hookResult = '';
     if record.status ~= 0
         continue;
     end
     
     if ~isempty(record.hook)
         fprintf('Running hook for "%s": "%s".\n', record.name, record.hook);
-        results(tt).hookResult = evalIsolated(record.hook);
+        [results(tt).status, results(tt).message] = evalIsolated(record.hook);
+    end
+end
+
+%% How did it go?
+isSuccess = 0 == [results.status];
+if all(isSuccess)
+    fprintf('Looks good: all toolboxes deployed with status 0.\n');
+else
+    errorIndexes = find(~isSuccess);
+    fprintf('The following toolboxes had nonzero status:\n');
+    for tt = 1:numel(errorIndexes)
+        record = results(tt);
+        fprintf('  "%s": status %d, message "%s"\n', ...
+            record.name, record.status, record.message);
     end
 end
 
 %% Evaluate an expression, don't cd or clear.
-function message = evalIsolated(expression)
+function [status, message] = evalIsolated(expression)
 originalDir = pwd();
-message = evalPrivateWorkspace(expression);
+[status, message] = evalPrivateWorkspace(expression);
 cd(originalDir);
 
 %% Evaluate an expression, don't clear.
-function message = evalPrivateWorkspace(expression)
+function [status, message] = evalPrivateWorkspace(expression)
+status = -1;
 try
     message = evalc(expression);
+    status = 0;
 catch err
     message = err.message;
 end
