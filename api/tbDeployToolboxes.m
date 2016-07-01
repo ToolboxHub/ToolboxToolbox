@@ -87,20 +87,28 @@ nToolboxes = numel(results);
 for tt = 1:nToolboxes
     record = results(tt);
     results(tt).path = '';
+    
+    % don't add errored toolbox to path
     if record.status ~= 0
         continue;
     end
     
-    toolboxSharedPath = fullfile(toolboxCommonRoot, record.name, record.flavor, record.subfolder);
-    toolboxPath = fullfile(toolboxRoot, record.name, record.flavor, record.subfolder);
+    % add shared toolbox to path?
+    toolboxSharedPath = tbToolboxPath(toolboxCommonRoot, record, 'withSubfolder', true);
     if 7 == exist(toolboxSharedPath, 'dir')
-        tbSetToolboxPath('toolboxPath', toolboxSharedPath, 'restorePath', false);
         results(tt).path = toolboxSharedPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxSharedPath);
-    elseif 7 == exist(toolboxPath, 'dir')
-        tbSetToolboxPath('toolboxPath', toolboxPath, 'restorePath', false);
+        tbSetToolboxPath('toolboxPath', toolboxSharedPath, 'restorePath', false);
+        continue;
+    end
+    
+    % add regular toolbox to path?
+    toolboxPath = tbToolboxPath(toolboxRoot, record, 'withSubfolder', true);
+    if 7 == exist(toolboxPath, 'dir')
         results(tt).path = toolboxPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
+        tbSetToolboxPath('toolboxPath', toolboxPath, 'restorePath', false);
+        continue;
     end
 end
 
@@ -114,10 +122,21 @@ for tt = 1:nToolboxes
     end
     
     if ~isempty(record.hook)
-        try
-            results(tt).hookResult = evalc(record.hook);
-        catch err
-            results(tt).hookResult = err.message;
-        end
+        fprintf('Running hook for "%s": "%s".\n', record.name, record.hook);
+        results(tt).hookResult = evalIsolated(record.hook);
     end
+end
+
+%% Evaluate an expression, don't cd or clear.
+function message = evalIsolated(expression)
+originalDir = pwd();
+message = evalPrivateWorkspace(expression);
+cd(originalDir);
+
+%% Evaluate an expression, don't clear.
+function message = evalPrivateWorkspace(expression)
+try
+    message = evalc(expression);
+catch err
+    message = err.message;
 end

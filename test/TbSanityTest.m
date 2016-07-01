@@ -155,10 +155,11 @@ classdef TbSanityTest < matlab.unittest.TestCase
                     sprintf('command "%s" -> message "%s"', result.command, result.message));
                 
                 % expected files present?
+                toolboxPath = tbToolboxPath(obj.toolboxRoot, result, 'withSubfolder', true);
                 expected = expectedFiles.(result.name);
                 for ff = 1:numel(expected)
                     expectedFile = expected{ff};
-                    expectedPath = fullfile(obj.toolboxRoot, result.name, result.flavor, result.subfolder, expectedFile);
+                    expectedPath = fullfile(toolboxPath, expectedFile);
                     obj.assertEqual(exist(expectedPath, 'file'), 2, ...
                         sprintf('For toolbox "%s", expected file "%s" not found.', ...
                         result.name, expectedPath));
@@ -173,7 +174,7 @@ classdef TbSanityTest < matlab.unittest.TestCase
                 unexpected = unexpectedFiles.(result.name);
                 for ff = 1:numel(unexpected)
                     unexpectedFile = unexpected{ff};
-                    unexpectedPath = fullfile(obj.toolboxRoot, result.name, result.flavor, result.subfolder, unexpectedFile);
+                    unexpectedPath = fullfile(toolboxPath, unexpectedFile);
                     obj.assertEqual(exist(unexpectedPath, 'file'), 0, ...
                         sprintf('For toolbox "%s", unexpected file "%s" was found.', ...
                         result.name, unexpectedFile));

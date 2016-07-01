@@ -63,7 +63,7 @@ for tt = 1:nToolboxes
     end
     
     % is the toolbox pre-installed in the common location?
-    toolboxCommonFolder = fullfile(toolboxCommonRoot, record.name, record.flavor);
+    toolboxCommonFolder = tbToolboxPath(toolboxCommonRoot, record);
     if strategy.checkIfPresent(record, toolboxCommonRoot, toolboxCommonFolder);
         if strcmp(record.update, 'never')
             continue;
@@ -77,7 +77,7 @@ for tt = 1:nToolboxes
     end
     
     % is the toolbox alredy in the refular location?
-    toolboxFolder = fullfile(toolboxRoot, record.name, record.flavor);
+    toolboxFolder = tbToolboxPath(toolboxRoot, record);
     if strategy.checkIfPresent(record, toolboxRoot, toolboxFolder);
         if strcmp(record.update, 'never')
             continue;
