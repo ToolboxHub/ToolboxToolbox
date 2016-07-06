@@ -133,7 +133,7 @@ if all(isSuccess)
 else
     errorIndexes = find(~isSuccess);
     fprintf('The following toolboxes had nonzero status:\n');
-    for tt = 1:numel(errorIndexes)
+    for tt = errorIndexes
         record = results(tt);
         fprintf('  "%s": status %d, message "%s"\n', ...
             record.name, record.status, record.message);

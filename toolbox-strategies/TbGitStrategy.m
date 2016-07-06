@@ -4,6 +4,19 @@ classdef TbGitStrategy < TbToolboxStrategy
     %
     % 2016 benjamin.heasly@gmail.com
     
+    methods (Static)
+        function [status, result] = systemNoLibs(command)
+            if isunix()
+                commandNoLibs = ['LD_LIBRARY_PATH= ', command];
+            elseif ismac()
+                commandNoLibs = ['DYLD_LIBRARY_PATH= ', command];
+            else
+                commandNoLibs = command;
+            end
+            [status, result] = system(commandNoLibs);
+        end
+    end
+    
     methods
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
             % is there a ".git" special folder?
@@ -16,7 +29,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             % clone
             command = sprintf('git -C "%s" clone "%s" "%s"', ...
                 toolboxRoot, record.url, toolboxPath);
-            [status, message] = system(command);
+            [status, message] = TbGitStrategy.systemNoLibs(command);
             if 0 ~= status
                 return;
             end
@@ -24,14 +37,14 @@ classdef TbGitStrategy < TbToolboxStrategy
             if ~isempty(record.flavor)
                 % make a local branch for a specific branch/tag/commit
                 command = sprintf('git -C "%s" fetch origin +%s:%s', toolboxPath, record.flavor, record.flavor);
-                [status, message] = system(command);
+                [status, message] = TbGitStrategy.systemNoLibs(command);
                 if 0 ~= status
                     return;
                 end
                 
                 % check out the new local branch
                 command = sprintf('git -C "%s" checkout %s', toolboxPath, record.flavor);
-                [status, message] = system(command);
+                [status, message] = TbGitStrategy.systemNoLibs(command);
                 if 0 ~= status
                     return;
                 end
@@ -45,7 +58,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             else
                 command = sprintf('git -C "%s" pull origin %s', toolboxPath, record.flavor);
             end
-            [status, message] = system(command);
+            [status, message] = TbGitStrategy.systemNoLibs(command);
         end
     end
 end
