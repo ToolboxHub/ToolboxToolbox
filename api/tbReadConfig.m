@@ -21,6 +21,21 @@ configPath = parser.Results.configPath;
 
 config = struct();
 
+%% Read from Web?
+if ~isempty(strfind(lower(configPath), 'http://')) ...
+        || ~isempty(strfind(lower(configPath), 'https://'))
+    configUrl = configPath;
+    
+    tempFolder = fullfile(tempdir(), mfilename());
+    if 7 ~= exist(tempFolder, 'dir')
+        mkdir(tempFolder);
+    end
+    
+    [~, resourceBase, resourceExt] = fileparts(configUrl);
+    configPath = fullfile(tempFolder, [resourceBase, resourceExt]);
+    configPath = websave(configPath, configUrl);
+end
+
 %% Read from disk.
 if 2 ~= exist(configPath, 'file')
     return;
