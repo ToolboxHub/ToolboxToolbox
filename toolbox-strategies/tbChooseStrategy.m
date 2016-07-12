@@ -30,6 +30,9 @@ switch record.type
     case 'git'
         strategy = TbGitStrategy();
         return;
+    case 'webget'
+        strategy = TbWebGetStrategy();
+        return;
 end
 
 %% Use type as class name.

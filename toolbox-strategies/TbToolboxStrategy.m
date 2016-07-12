@@ -14,8 +14,16 @@ classdef TbToolboxStrategy < handle
     % 2016 benjamin.heasly@gmail.com
     
     methods (Abstract)
-        isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath);
         [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath);
         [command, status, message] = update(obj, record, toolboxRoot, toolboxPath);
+    end
+    
+    methods
+        function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
+            % default: is there a non-empty folder present?
+            isPresent = 7 == exist(toolboxPath, 'dir') ...
+                && 2 < numel(dir(toolboxPath));
+        end
+        
     end
 end
