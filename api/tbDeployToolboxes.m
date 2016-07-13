@@ -10,13 +10,15 @@ function results = tbDeployToolboxes(varargin)
 % results about what happened for each toolbox.
 %
 % tbReadConfig( ... 'configPath', configPath) specify where to look for the
-% config file.  The default location is '~/toolbox_config.json'.
+% config file.  The default location is getpref('ToolboxToolbox',
+% 'configPath'), or '~/toolbox_config.json'.
 %
 % tbReadConfig( ... 'config', config) specify an explicit config struct to
 % use instead of reading config from file.
 %
 % tbDeployToolboxes(... 'toolboxRoot', toolboxRoot) specifies the
-% toolboxRoot folder to set the path for.  The default is '~/toolboxes/'.
+% toolboxRoot folder to set the path for.  The default location is
+% getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
 %
 % tbDeployToolboxes(... 'restorePath', restorePath) specifies whether to
 % restore the default Matlab path before setting up the toolbox path.  The
@@ -31,16 +33,16 @@ function results = tbDeployToolboxes(varargin)
 % toolboxRoot.
 %
 % tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
-% where to look for shared toolboxes.  The default location is
-% '/srv/toolboxes'.
+% where to look for shared toolboxes. The default location is
+% getpref('ToolboxToolbox', 'toolboxCommonRoot'), or '/srv/toolboxes'.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('configPath', '~/toolbox_config.json', @ischar);
+parser.addParameter('configPath', tbGetPref('configPath', '~/toolbox_config.json'), @ischar);
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
-parser.addParameter('toolboxRoot', '~/toolboxes', @ischar);
-parser.addParameter('toolboxCommonRoot', '/srv/toolboxes', @ischar);
+parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
+parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('restorePath', false, @islogical);
 parser.addParameter('name', '', @ischar);
 parser.parse(varargin{:});

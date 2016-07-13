@@ -16,7 +16,8 @@ function results = tbAddToolbox(varargin)
 % toolbox config file.  The default location is '~/toolbox_config.json'.
 %
 % tbReadConfig( ... 'toolboxRoot', toolboxRoot) specify where to fetch
-% toolboxes.  The default location is '~/toolboxes'.
+% toolboxes.  The default location is
+% getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
 %
 % As an optimization for shares systems, toolboxes may be pre-deployed
 % (probably by an admin) to a common toolbox root folder.  Toolboxes found
@@ -24,15 +25,15 @@ function results = tbAddToolbox(varargin)
 %
 % tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
 % where to look for shared toolboxes.  The default location is
-% '/srv/toolboxes'.
+% getpref('ToolboxToolbox', 'toolboxCommonRoot'), or '/srv/toolboxes'.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
 parser.KeepUnmatched = true;
-parser.addParameter('configPath', '~/toolbox_config.json', @ischar);
-parser.addParameter('toolboxRoot', '~/toolboxes', @ischar);
-parser.addParameter('toolboxCommonRoot', '/srv/toolboxes', @ischar);
+parser.addParameter('configPath', tbGetPref('configPath', '~/toolbox_config.json'), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
+parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.parse(varargin{:});
 configPath = tbHomePathToAbsolute(parser.Results.configPath);
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
