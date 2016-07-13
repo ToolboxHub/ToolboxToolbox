@@ -63,13 +63,13 @@ for tt = 1:nToolboxes
     end
     
     % is the toolbox pre-installed in the common location?
-    toolboxCommonFolder = tbToolboxPath(toolboxCommonRoot, record);
+    [toolboxCommonFolder, displayName] = tbToolboxPath(toolboxCommonRoot, record);
     if strategy.checkIfPresent(record, toolboxCommonRoot, toolboxCommonFolder);
         if strcmp(record.update, 'never')
             continue;
         end
         
-        fprintf('Updating "%s".\n', record.name);
+        fprintf('Updating "%s".\n', displayName);
         results(tt).operation = 'update';
         [results(tt).command, results(tt).status, results(tt).message] = ...
             strategy.update(record, toolboxCommonRoot, toolboxCommonFolder);
@@ -77,13 +77,13 @@ for tt = 1:nToolboxes
     end
     
     % is the toolbox alredy in the refular location?
-    toolboxFolder = tbToolboxPath(toolboxRoot, record);
+    [toolboxFolder, displayName] = tbToolboxPath(toolboxRoot, record);
     if strategy.checkIfPresent(record, toolboxRoot, toolboxFolder);
         if strcmp(record.update, 'never')
             continue;
         end
         
-        fprintf('Updating "%s".\n', record.name);
+        fprintf('Updating "%s".\n', displayName);
         results(tt).operation = 'update';
         [results(tt).command, results(tt).status, results(tt).message] = ...
             strategy.update(record, toolboxRoot, toolboxFolder);
@@ -91,7 +91,7 @@ for tt = 1:nToolboxes
     end
     
     % obtain the toolbox
-    fprintf('Obtaining "%s".\n', record.name);
+    fprintf('Obtaining "%s".\n', displayName);
     results(tt).operation = 'obtain';
     [results(tt).command, results(tt).status, results(tt).message] = ...
         strategy.obtain(record, toolboxRoot, toolboxFolder);
