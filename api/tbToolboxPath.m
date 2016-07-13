@@ -26,7 +26,7 @@ toolboxPath = fullfile(toolboxRoot, record.name);
 % append flavor as "name-flavor"
 %   don't use name/flavor -- don't want to nest flavors inside basic
 if ~isempty(record.flavor)
-    toolboxPath = [toolboxPath '-' record.flavor];
+    toolboxPath = [toolboxPath '_' record.flavor];
 end
 
 if withSubfolder

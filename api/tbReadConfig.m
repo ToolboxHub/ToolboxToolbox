@@ -10,12 +10,12 @@ function [config, configPath] = tbReadConfig(varargin)
 % absolute path to the file that was read.
 %
 % tbReadConfig( ... 'configPath', configPath) specify where to look for the
-% config file.  The default location is '~/toolbox-config.json'.
+% config file.  The default location is '~/toolbox_config.json'.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('configPath', '~/toolbox-config.json', @ischar);
+parser.addParameter('configPath', '~/toolbox_config.json', @ischar);
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
 

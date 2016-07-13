@@ -13,7 +13,7 @@ function results = tbAddToolbox(varargin)
 % will be replaced with the new one.
 %
 % tbAddToolbox( ... 'configPath', configPath) specify where to look for the
-% toolbox config file.  The default location is '~/toolbox-config.json'.
+% toolbox config file.  The default location is '~/toolbox_config.json'.
 %
 % tbReadConfig( ... 'toolboxRoot', toolboxRoot) specify where to fetch
 % toolboxes.  The default location is '~/toolboxes'.
@@ -24,15 +24,15 @@ function results = tbAddToolbox(varargin)
 %
 % tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
 % where to look for shared toolboxes.  The default location is
-% '/srv/toolbox-toolbox/toolboxes'.
+% '/srv/toolboxes'.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
 parser.KeepUnmatched = true;
-parser.addParameter('configPath', '~/toolbox-config.json', @ischar);
+parser.addParameter('configPath', '~/toolbox_config.json', @ischar);
 parser.addParameter('toolboxRoot', '~/toolboxes', @ischar);
-parser.addParameter('toolboxCommonRoot', '/srv/toolbox-toolbox/toolboxes', @ischar);
+parser.addParameter('toolboxCommonRoot', '/srv/toolboxes', @ischar);
 parser.parse(varargin{:});
 configPath = tbHomePathToAbsolute(parser.Results.configPath);
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);

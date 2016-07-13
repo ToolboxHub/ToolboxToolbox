@@ -13,7 +13,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
     properties
         zipUrl = 'https://github.com/benjamin-heasly/sample-repo/archive/v0.1.zip';
         imageUrl = 'https://github.com/benjamin-heasly/sample-repo/releases/download/v0.1/sample-download.jpg';
-        configPath = fullfile(tempdir(), 'toolbox-config.json');
+        configPath = fullfile(tempdir(), 'toolbox_config.json');
         toolboxRoot = fullfile(tempdir(), 'toolboxes');
         originalMatlabPath;
     end

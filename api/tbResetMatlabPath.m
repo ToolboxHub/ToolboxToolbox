@@ -30,7 +30,7 @@ fprintf('Resetting Matlab path.\n');
 
 %% Start with or without this Toolbox Toolbox?
 if withSelf
-    % assume this function is located in toolbox-toolbox/api
+    % assume this function is located in ToolboxToolbox/api
     pathHere = fileparts(mfilename('fullpath'));
     pathToToolbox = fileparts(pathHere);
     selfPath = genpath(pathToToolbox);

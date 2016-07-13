@@ -11,7 +11,7 @@
 % 2016 benjamin.heasly@gmail.com
 
 %% Where is the Toolbox Toolbox installed?
-toolboxToolboxDir = '~/toolbox-toolbox';
+toolboxToolboxDir = '~/ToolboxToolbox';
 
 %% Set up the path.
 originalDir = pwd();

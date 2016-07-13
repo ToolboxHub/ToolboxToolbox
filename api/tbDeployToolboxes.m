@@ -10,7 +10,7 @@ function results = tbDeployToolboxes(varargin)
 % results about what happened for each toolbox.
 %
 % tbReadConfig( ... 'configPath', configPath) specify where to look for the
-% config file.  The default location is '~/toolbox-config.json'.
+% config file.  The default location is '~/toolbox_config.json'.
 %
 % tbReadConfig( ... 'config', config) specify an explicit config struct to
 % use instead of reading config from file.
@@ -32,15 +32,15 @@ function results = tbDeployToolboxes(varargin)
 %
 % tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
 % where to look for shared toolboxes.  The default location is
-% '/srv/toolbox-toolbox/toolboxes'.
+% '/srv/toolboxes'.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('configPath', '~/toolbox-config.json', @ischar);
+parser.addParameter('configPath', '~/toolbox_config.json', @ischar);
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', '~/toolboxes', @ischar);
-parser.addParameter('toolboxCommonRoot', '/srv/toolbox-toolbox/toolboxes', @ischar);
+parser.addParameter('toolboxCommonRoot', '/srv/toolboxes', @ischar);
 parser.addParameter('restorePath', false, @islogical);
 parser.addParameter('name', '', @ischar);
 parser.parse(varargin{:});

@@ -14,7 +14,7 @@ classdef TbSanityTest < matlab.unittest.TestCase
     % 2016 benjamin.heasly@gmail.com
     
     properties
-        configPath = fullfile(tempdir(), 'toolbox-config.json');
+        configPath = fullfile(tempdir(), 'toolbox_config.json');
         toolboxRoot = fullfile(tempdir(), 'toolboxes');
         originalMatlabPath;
     end
