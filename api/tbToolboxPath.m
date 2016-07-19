@@ -27,7 +27,7 @@ withSubfolder = parser.Results.withSubfolder;
 % basic subfolder for toolbox with no special flavor
 subfolder = record.name;
 
-% append flavor as "name-flavor"
+% append flavor as "name_flavor"
 %   don't use name/flavor -- don't want to nest flavors inside basic
 if ~isempty(record.flavor)
     subfolder = [subfolder '_' record.flavor];

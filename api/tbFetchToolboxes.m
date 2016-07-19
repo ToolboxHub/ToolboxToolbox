@@ -37,6 +37,7 @@ results = config;
 [results.command] = deal('');
 [results.status] = deal(0);
 [results.message] = deal('');
+[results.strategy] = deal([]);
 
 %% Make sure we have a place to put toolboxes.
 if 7 ~= exist(toolboxRoot, 'dir')
@@ -62,9 +63,10 @@ for tt = 1:nToolboxes
         results(tt).message = sprintf('Unknown toolbox type %s', record.type);
         continue;
     end
+    results(tt).strategy = strategy;
     
     % is the toolbox pre-installed in the common location?
-    [toolboxCommonFolder, displayName] = tbToolboxPath(toolboxCommonRoot, record);
+    [toolboxCommonFolder, displayName] = strategy.toolboxPath(toolboxCommonRoot, record);
     if strategy.checkIfPresent(record, toolboxCommonRoot, toolboxCommonFolder);
         if strcmp(record.update, 'never')
             continue;
@@ -78,7 +80,7 @@ for tt = 1:nToolboxes
     end
     
     % is the toolbox alredy in the refular location?
-    [toolboxFolder, displayName] = tbToolboxPath(toolboxRoot, record);
+    [toolboxFolder, displayName] = strategy.toolboxPath(toolboxRoot, record);
     if strategy.checkIfPresent(record, toolboxRoot, toolboxFolder);
         if strcmp(record.update, 'never')
             continue;

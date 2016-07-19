@@ -19,11 +19,15 @@ classdef TbToolboxStrategy < handle
     end
     
     methods
+        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record, varargin)
+            % default: standard folder instide toolboxRoot
+            [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, varargin{:});
+        end
+        
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
             % default: is there a non-empty folder present?
             isPresent = 7 == exist(toolboxPath, 'dir') ...
                 && 2 < numel(dir(toolboxPath));
         end
-        
     end
 end

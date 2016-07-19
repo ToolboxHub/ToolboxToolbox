@@ -22,7 +22,12 @@ function results = tbDeployToolboxes(varargin)
 %
 % tbDeployToolboxes(... 'restorePath', restorePath) specifies whether to
 % restore the default Matlab path before setting up the toolbox path.  The
-% default is false, just append to the existing path.
+% default is false, just add to the existing path.
+%
+% tbDeployToolboxes(... 'withBuiltIn', withBuiltIn) specifies whether to
+% include built-in matlab toolboxes.  This only has an effect when
+% restorePath is true.  The default is true, include all built-in toolboxes
+% on the path.
 %
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
 % to deploy if found.  Other toolboxes will be ignored.
@@ -44,6 +49,7 @@ parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('restorePath', false, @islogical);
+parser.addParameter('withBuiltIn', true, @islogical);
 parser.addParameter('name', '', @ischar);
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
@@ -51,6 +57,7 @@ config = parser.Results.config;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 restorePath = parser.Results.restorePath;
+withBuiltIn = parser.Results.withBuiltIn;
 name = parser.Results.name;
 
 %% Choose explicit config, or load from file.
@@ -80,7 +87,9 @@ results = tbFetchToolboxes(config, ...
 
 %% Add each toolbox to the path.
 if restorePath
-    tbResetMatlabPath();
+    tbResetMatlabPath( ...
+        'withSelf', true, ...
+        'withBuiltIn', withBuiltIn);
 end
 
 % add toolboxes one at a time so that we can check for errors
@@ -96,7 +105,8 @@ for tt = 1:nToolboxes
     end
     
     % add shared toolbox to path?
-    toolboxSharedPath = tbToolboxPath(toolboxCommonRoot, record, 'withSubfolder', true);
+    strategy = results(tt).strategy;
+    toolboxSharedPath = strategy.toolboxPath(toolboxCommonRoot, record, 'withSubfolder', true);
     if 7 == exist(toolboxSharedPath, 'dir')
         results(tt).path = toolboxSharedPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxSharedPath);
@@ -105,7 +115,7 @@ for tt = 1:nToolboxes
     end
     
     % add regular toolbox to path?
-    toolboxPath = tbToolboxPath(toolboxRoot, record, 'withSubfolder', true);
+    toolboxPath = strategy.toolboxPath(toolboxRoot, record, 'withSubfolder', true);
     if 7 == exist(toolboxPath, 'dir')
         results(tt).path = toolboxPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);

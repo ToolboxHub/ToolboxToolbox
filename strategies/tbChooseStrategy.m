@@ -33,6 +33,9 @@ switch record.type
     case 'webget'
         strategy = TbWebGetStrategy();
         return;
+    case 'local'
+        strategy = TbLocalStrategy();
+        return;
 end
 
 %% Use type as class name.
