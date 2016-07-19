@@ -24,10 +24,10 @@ function results = tbDeployToolboxes(varargin)
 % restore the default Matlab path before setting up the toolbox path.  The
 % default is false, just add to the existing path.
 %
-% tbDeployToolboxes(... 'withBuiltIn', withBuiltIn) specifies whether to
-% include built-in matlab toolboxes.  This only has an effect when
-% restorePath is true.  The default is true, include all built-in toolboxes
-% on the path.
+% tbDeployToolboxes(... 'withInstalled', withInstalled) specifies whether
+% to include installed matlab toolboxes.  This only has an effect when
+% restorePath is true.  The default is true, include all installed
+% toolboxes on the path.
 %
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
 % to deploy if found.  Other toolboxes will be ignored.
@@ -49,7 +49,7 @@ parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('restorePath', false, @islogical);
-parser.addParameter('withBuiltIn', true, @islogical);
+parser.addParameter('withInstalled', true, @islogical);
 parser.addParameter('name', '', @ischar);
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
@@ -57,7 +57,7 @@ config = parser.Results.config;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 restorePath = parser.Results.restorePath;
-withBuiltIn = parser.Results.withBuiltIn;
+withInstalled = parser.Results.withInstalled;
 name = parser.Results.name;
 
 %% Choose explicit config, or load from file.
@@ -89,7 +89,7 @@ results = tbFetchToolboxes(config, ...
 if restorePath
     tbResetMatlabPath( ...
         'withSelf', true, ...
-        'withBuiltIn', withBuiltIn);
+        'withInstalled', withInstalled);
 end
 
 % add toolboxes one at a time so that we can check for errors

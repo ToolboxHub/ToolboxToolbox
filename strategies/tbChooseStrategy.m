@@ -9,8 +9,7 @@ function strategy = tbChooseStrategy(record)
 %
 % Uses a "short" list of recognized tooblox types, like "git".
 % Alternatively, record.type may be the name of a TbToolboxStrategy
-% implemenation class, in which case the named implementaiton will be
-% chosen.
+% sub-class, in which case the named class will be chosen.
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -35,6 +34,9 @@ switch record.type
         return;
     case 'local'
         strategy = TbLocalStrategy();
+        return;
+    case 'installed'
+        strategy = TbInstalledStrategy();
         return;
 end
 

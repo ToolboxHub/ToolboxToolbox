@@ -22,7 +22,7 @@ classdef TbSanityTest < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('withSelf', true, 'withBuiltIn', true);
+            tbResetMatlabPath('withSelf', true, 'withInstalled', true);
         end
         
         function cleanUpTempFiles(obj)
