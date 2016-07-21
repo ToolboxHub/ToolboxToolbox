@@ -26,3 +26,8 @@ catch err
 end
 
 cd(originalDir);
+
+if ismac()
+    %% Put /usr/local/bin on path so we can things installed by Homebrew.
+    setenv('PATH', ['/usr/local/bin:' getenv('PATH')]);
+end
