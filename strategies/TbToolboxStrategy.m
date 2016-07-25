@@ -19,7 +19,7 @@ classdef TbToolboxStrategy < handle
     end
     
     methods
-        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record, varargin)
+        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record, varargin)            
             % default: standard folder instide toolboxRoot
             [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, varargin{:});
         end

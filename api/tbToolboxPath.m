@@ -20,10 +20,11 @@ parser.addRequired('toolboxRoot', @ischar);
 parser.addRequired('record', @isstruct);
 parser.addParameter('withSubfolder', false, @islogical);
 parser.parse(toolboxRoot, record, varargin{:});
-toolboxRoot = parser.Results.toolboxRoot;
+toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 record = parser.Results.record;
 withSubfolder = parser.Results.withSubfolder;
 
+%% Choose subfolder for the toolbox.
 % basic subfolder for toolbox with no special flavor
 subfolder = record.name;
 
@@ -37,5 +38,14 @@ if withSubfolder
     subfolder = fullfile(subfolder, record.subfolder);
 end
 
-% prepend the full path
-toolboxPath = fullfile(toolboxRoot, subfolder);
+%% Choose root folder to contain the subfolder.
+if isempty(record.toolboxRoot)
+    % put this toolbox with all the other toolboxes
+    pathRoot = toolboxRoot;
+else
+    % put this toolbox in its own special place
+    pathRoot = tbHomePathToAbsolute(record.toolboxRoot);
+end
+
+% return a full path
+toolboxPath = fullfile(pathRoot, subfolder);

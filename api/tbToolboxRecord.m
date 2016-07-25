@@ -3,8 +3,8 @@ function record = tbToolboxRecord(varargin)
 %
 % The idea is to represent a toolbox that we want, using a consistent
 % struct format.  Making the struct format consistent is useful because we
-% can check for required fields and, and put lots of records together into
-% a struct array, which is easier to work with than a cell array.
+% can check for required fields.  We can also put lots of records together
+% into a struct array, which is easier to work with than a cell array.
 %
 % record = tbToolboxRecord() creates a placeholder record with the correct
 % fields.
@@ -26,6 +26,8 @@ function record = tbToolboxRecord(varargin)
 %   the toolbox
 %   - 'hook' Matlab command to run after the toolbox is deployed and added
 %   to the path
+%   - 'toolboxRoot' where to deploy the toolbox, overrides toolboxRoot
+%   Matlab preference and toolboxRoot passed to tbDeployToolboxes().
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -38,6 +40,7 @@ parser.addParameter('flavor', '', @ischar);
 parser.addParameter('subfolder', '', @ischar);
 parser.addParameter('update', '', @ischar);
 parser.addParameter('hook', '', @ischar);
+parser.addParameter('toolboxRoot', '', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work

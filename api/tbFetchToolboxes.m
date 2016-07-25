@@ -39,11 +39,6 @@ results = config;
 [results.message] = deal('');
 [results.strategy] = deal([]);
 
-%% Make sure we have a place to put toolboxes.
-if 7 ~= exist(toolboxRoot, 'dir')
-    mkdir(toolboxRoot);
-end
-
 %% Fetch or update each toolbox.
 nToolboxes = numel(results);
 for tt = 1:nToolboxes
@@ -55,7 +50,7 @@ for tt = 1:nToolboxes
         continue;
     end
     
-    % what kind of toolbox is this
+    % what kind of toolbox is this?
     strategy = tbChooseStrategy(record);
     if isempty(strategy)
         results(tt).status = -1;
@@ -64,6 +59,18 @@ for tt = 1:nToolboxes
         continue;
     end
     results(tt).strategy = strategy;
+    
+    % make sure the toolbox destination exists
+    if isempty(record.toolboxRoot)
+        % put this toolbox with all the other toolboxes
+        fetchRoot = toolboxRoot;
+    else
+        % put this toolbox in its own special place
+        fetchRoot = tbHomePathToAbsolute(record.toolboxRoot);
+    end
+    if 7 ~= exist(fetchRoot, 'dir')
+        mkdir(fetchRoot);
+    end
     
     % is the toolbox pre-installed in the common location?
     [toolboxCommonFolder, displayName] = strategy.toolboxPath(toolboxCommonRoot, record);
@@ -79,9 +86,9 @@ for tt = 1:nToolboxes
         continue;
     end
     
-    % is the toolbox alredy in the refular location?
-    [toolboxFolder, displayName] = strategy.toolboxPath(toolboxRoot, record);
-    if strategy.checkIfPresent(record, toolboxRoot, toolboxFolder);
+    % is the toolbox alredy in the regular location?
+    [toolboxFolder, displayName] = strategy.toolboxPath(fetchRoot, record);
+    if strategy.checkIfPresent(record, fetchRoot, toolboxFolder);
         if strcmp(record.update, 'never')
             continue;
         end
@@ -89,7 +96,7 @@ for tt = 1:nToolboxes
         fprintf('Updating "%s".\n', displayName);
         results(tt).operation = 'update';
         [results(tt).command, results(tt).status, results(tt).message] = ...
-            strategy.update(record, toolboxRoot, toolboxFolder);
+            strategy.update(record, fetchRoot, toolboxFolder);
         continue;
     end
     
@@ -97,5 +104,5 @@ for tt = 1:nToolboxes
     fprintf('Obtaining "%s".\n', displayName);
     results(tt).operation = 'obtain';
     [results(tt).command, results(tt).status, results(tt).message] = ...
-        strategy.obtain(record, toolboxRoot, toolboxFolder);
+        strategy.obtain(record, fetchRoot, toolboxFolder);
 end
