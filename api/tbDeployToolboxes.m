@@ -122,7 +122,10 @@ for tt = 1:nToolboxes
     if 7 == exist(toolboxPath, 'dir')
         results(tt).path = toolboxPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
-        tbSetToolboxPath('toolboxPath', toolboxPath, 'restorePath', false);
+        tbSetToolboxPath( ...
+            'toolboxPath', toolboxPath, ...
+            'restorePath', false, ...
+            'pathPlacement', record.pathPlacement);
         continue;
     end
 end

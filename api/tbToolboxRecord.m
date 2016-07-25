@@ -28,6 +28,8 @@ function record = tbToolboxRecord(varargin)
 %   to the path
 %   - 'toolboxRoot' where to deploy the toolbox, overrides toolboxRoot
 %   Matlab preference and toolboxRoot passed to tbDeployToolboxes().
+%   - 'pathPlacement' whether to 'append' or 'prepend' to the Matlab path.
+%   The default is to 'append'.
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -41,6 +43,7 @@ parser.addParameter('subfolder', '', @ischar);
 parser.addParameter('update', '', @ischar);
 parser.addParameter('hook', '', @ischar);
 parser.addParameter('toolboxRoot', '', @ischar);
+parser.addParameter('pathPlacement', 'append', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work

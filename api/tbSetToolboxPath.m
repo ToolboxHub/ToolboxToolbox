@@ -16,6 +16,10 @@ function toolboxPath = tbSetToolboxPath(varargin)
 % restore the default Matlab path before setting up the toolbox path.  The
 % default is false, just append to the existing path.
 %
+% tbSetToolboxPath(... 'pathPlacement', pathPlacement) specifies whether to
+% 'append' or 'prepend' new path entries to the Matlab path.  The default
+% is to 'append'.
+%
 % Returns the parent folder from which the path was set.
 %
 % 2016 benjamin.heasly@gmail.com
@@ -23,9 +27,11 @@ function toolboxPath = tbSetToolboxPath(varargin)
 parser = inputParser();
 parser.addParameter('toolboxPath', pwd(), @ischar);
 parser.addParameter('restorePath', false, @islogical);
+parser.addParameter('pathPlacement', 'append', @ischar);
 parser.parse(varargin{:});
 toolboxPath = tbHomePathToAbsolute(parser.Results.toolboxPath);
 restorePath = parser.Results.restorePath;
+pathPlacement = parser.Results.pathPlacement;
 
 %% Start fresh?
 if restorePath
@@ -37,4 +43,8 @@ toolboxPath = genpath(toolboxPath);
 
 %% Put the new path in place.
 cleanPath = tbCleanPath(toolboxPath);
-addpath(cleanPath, '-end');
+if strcmp(pathPlacement, 'prepend')
+    addpath(cleanPath, '-begin');
+else
+    addpath(cleanPath, '-end');
+end
