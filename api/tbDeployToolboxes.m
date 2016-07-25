@@ -80,6 +80,9 @@ if ~isempty(name)
     config = config(isName);
 end
 
+%% Resolve "include" records into one big, flat config.
+config = TbIncludeStrategy.resolveIncludedConfigs(config);
+
 %% Obtain or update the toolboxes.
 results = tbFetchToolboxes(config, ...
     'toolboxRoot', toolboxRoot, ...
