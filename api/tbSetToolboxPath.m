@@ -37,4 +37,4 @@ toolboxPath = genpath(toolboxPath);
 
 %% Put the new path in place.
 cleanPath = tbCleanPath(toolboxPath);
-addpath(cleanPath);
+addpath(cleanPath, '-end');
