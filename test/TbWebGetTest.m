@@ -2,7 +2,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
     % Test the Toolbox Toolbox against a contrived Githib repository.
     %
     % The contrived GitHub repository at
-    % https://github.com/benjamin-heasly/sample-repo.git has an expected
+    % https://github.com/ToolboxHub/sample-repo.git has an expected
     % GitHub release named v0.1.
     %
     % The Toolbox Toolbox should be able to download regular and zip files
@@ -11,8 +11,8 @@ classdef TbWebGetTest < matlab.unittest.TestCase
     % 2016 benjamin.heasly@gmail.com
     
     properties
-        zipUrl = 'https://github.com/benjamin-heasly/sample-repo/archive/v0.1.zip';
-        imageUrl = 'https://github.com/benjamin-heasly/sample-repo/releases/download/v0.1/sample-download.jpg';
+        zipUrl = 'https://github.com/ToolboxHub/sample-repo/archive/v0.1.zip';
+        imageUrl = 'https://github.com/ToolboxHub/sample-repo/releases/download/v0.1/sample-download.jpg';
         configPath = fullfile(tempdir(), 'toolbox_config.json');
         toolboxRoot = fullfile(tempdir(), 'toolboxes');
         originalMatlabPath;

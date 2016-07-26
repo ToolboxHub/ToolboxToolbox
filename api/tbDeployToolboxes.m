@@ -37,6 +37,10 @@ function results = tbDeployToolboxes(varargin)
 % toolbox configurations.  The default is getpref('ToolboxToolbox',
 % 'registry'), or the public registry at Toolbox Hub.
 %
+% tbDeployToolboxes( ... 'registered', registered) specify a cell array of
+% toolbox names to be resolved in the given registry or the public registry
+% at Toolbox Hub.  These will be added to the given config, if any.
+%
 % As an optimization for shares systems, toolboxes may be pre-deployed
 % (probably by an admin) to a common toolbox root folder.  Toolboxes found
 % here will be added to the path instead of toolboxes in the given
@@ -57,6 +61,7 @@ parser.addParameter('restorePath', false, @islogical);
 parser.addParameter('withInstalled', true, @islogical);
 parser.addParameter('name', '', @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
+parser.addParameter('registered', {}, @iscellstr);
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
 config = parser.Results.config;
@@ -66,16 +71,33 @@ restorePath = parser.Results.restorePath;
 withInstalled = parser.Results.withInstalled;
 name = parser.Results.name;
 registry = parser.Results.registry;
+registered = parser.Results.registered;
 
 %% Choose explicit config, or load from file.
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = tbReadConfig('configPath', configPath);
+end
+
+%% Include toolboxes by name from registry.
+if ~isempty(registered)
+    nRegistered = numel(registered);
+    registeredRecords = cell(1, nRegistered);
+    for rr = 1:nRegistered
+        registeredRecords{rr} = tbToolboxRecord('name', registered{rr});
+    end
     
     if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
-        results = config;
-        return;
+        config = [registeredRecords{:}];
+    else
+        config = cat(2, config, [registeredRecords{:}]);
     end
 end
+
+if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
+    results = config;
+    return;
+end
+
 
 %% Single out one toolbox?
 if ~isempty(name)

@@ -40,36 +40,42 @@ classdef TbIncludeStrategy < TbToolboxStrategy
     methods (Static)
         % Iterate the given config, append new records as they come.
         function config = resolveIncludedConfigs(config, registry)
-            cc = 1;
-            while cc <= numel(config)
-                record = config(cc);
-                if isempty(record.type) || strcmp(record.type, 'include')
-                    if isempty(record.url)
-                        % look up config location by name in registry
-                        url = tbSearchRegistry(record.name, 'registry', registry);
-                    else
-                        % explicit location of config file
-                        url = record.url;
-                    end
-                    
-                    if ~isempty(url)
-                        % append the included config so it can be resolved
-                        newConfig = tbReadConfig('configPath', url);
-                        config = TbIncludeStrategy.appendMissingConfig(config, newConfig);
-                        
-                        % mark the "include" as already resolved
-                        config(cc).type = 'resolved';
-                    end
+            [includes, resolved] = TbIncludeStrategy.separateIncludes(config);
+            
+            ii = 1;
+            while ii <= numel(includes)
+                record = includes(ii);
+                if isempty(record.url)
+                    % look up config location by name in registry
+                    url = tbSearchRegistry(record.name, 'registry', registry);
+                else
+                    % explicit location of config file
+                    url = record.url;
                 end
-                cc = cc + 1;
+                
+                if ~isempty(url)
+                    % append the included config so it can be resolved
+                    newConfig = tbReadConfig('configPath', url);
+                    [newIncludes, newResolved] = TbIncludeStrategy.separateIncludes(newConfig);
+                    includes = TbIncludeStrategy.appendMissingConfig(includes, newIncludes);
+                    resolved = TbIncludeStrategy.appendMissingConfig(resolved, newResolved);
+                end
+                
+                ii = ii + 1;
             end
             
-            % trim out the "includes" that we already resolved
-            isInclude = strcmp({config.type}, 'resolved');
-            config = config(~isInclude);
+            % flattened out records with no more includes
+            config = resolved;
         end
         
-        % Doesn the given config contains a record with the given name?
+        % Separate "include" records from resolved records
+        function [includes, resolved] = separateIncludes(config)
+            isInclude = strcmp({config.type}, 'include') | strcmp({config.type}, '');
+            includes = config(isInclude);
+            resolved = config(~isInclude);
+        end
+        
+        % Does the given config contains a record with the given name?
         function config = appendMissingConfig(config, newConfig)
             if isempty(newConfig)
                 return;

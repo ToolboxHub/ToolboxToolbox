@@ -2,7 +2,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
     % Test the Toolbox Toolbox against a contrived Githib repository.
     %
     % The contrived GitHub repository at
-    % https://github.com/benjamin-heasly/sample-repo.git has and expected
+    % https://github.com/ToolboxHub/sample-repo.git has and expected
     % branch, tag, and commit, each with some expected and unexpected
     % files.  These expectations are declared in the properties of this
     % class.
@@ -90,7 +90,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
         
         function testSubfolderPath(obj)
             % deploy just "subfolder-1", not "subfolder-2".
-            testRepoUrl = 'https://github.com/benjamin-heasly/sample-repo.git';
+            testRepoUrl = 'https://github.com/ToolboxHub/sample-repo.git';
             result = tbAddToolbox( ...
                 'toolboxRoot', obj.toolboxRoot, ...
                 'configPath', obj.configPath, ...
@@ -110,7 +110,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
         end
         
         function testHook(obj)
-            testRepoUrl = 'https://github.com/benjamin-heasly/sample-repo.git';
+            testRepoUrl = 'https://github.com/ToolboxHub/sample-repo.git';
             hookFolder = fullfile(obj.toolboxRoot, 'testHook');
             result = tbAddToolbox( ...
                 'toolboxRoot', obj.toolboxRoot, ...
@@ -201,7 +201,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
     
     methods
         function [config, expectedFiles, unexpectedFiles] = createConfig(obj)
-            testRepoUrl = 'https://github.com/benjamin-heasly/sample-repo.git';
+            testRepoUrl = 'https://github.com/ToolboxHub/sample-repo.git';
             config = [ ...
                 tbToolboxRecord('name', 'simple', 'url', testRepoUrl, 'type', 'git'), ...
                 tbToolboxRecord('name', 'noUpdate', 'url', testRepoUrl, 'type', 'git', 'update', 'never'), ...

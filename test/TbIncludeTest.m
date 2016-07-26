@@ -175,6 +175,6 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'blue-1', 'blue-2', 'blue-3', ...
                 'green-1', 'green-2', 'green-3'};
             obj.assertEqual(resolvedNames, expectedNames);
-        end
+        end        
     end
 end
