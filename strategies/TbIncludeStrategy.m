@@ -39,24 +39,41 @@ classdef TbIncludeStrategy < TbToolboxStrategy
     
     methods (Static)
         % Iterate the given config, append new records as they come.
-        function config = resolveIncludedConfigs(config)
+        function config = resolveIncludedConfigs(config, registry)
             cc = 1;
             while cc <= numel(config)
                 record = config(cc);
-                if strcmp(record.type, 'include')
-                    newConfig = tbReadConfig('configPath', record.url)
-                    config = TbIncludeStrategy.appendMissingConfig(config, newConfig);
+                if isempty(record.type) || strcmp(record.type, 'include')
+                    if isempty(record.url)
+                        % look up config location by name in registry
+                        url = tbSearchRegistry(record.name, 'registry', registry);
+                    else
+                        % explicit location of config file
+                        url = record.url;
+                    end
+                    
+                    if ~isempty(url)
+                        % append the included config so it can be resolved
+                        newConfig = tbReadConfig('configPath', url);
+                        config = TbIncludeStrategy.appendMissingConfig(config, newConfig);
+                        
+                        % mark the "include" as already resolved
+                        config(cc).type = 'resolved';
+                    end
                 end
                 cc = cc + 1;
             end
             
             % trim out the "includes" that we already resolved
-            isInclude = strcmp({config.type}, 'include');
+            isInclude = strcmp({config.type}, 'resolved');
             config = config(~isInclude);
         end
         
         % Doesn the given config contains a record with the given name?
         function config = appendMissingConfig(config, newConfig)
+            if isempty(newConfig)
+                return;
+            end
             isMissing = ~ismember({newConfig.name}, {config.name});
             config = cat(2, config, newConfig(isMissing));
         end

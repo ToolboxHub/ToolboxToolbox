@@ -41,7 +41,7 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 tbToolboxRecord('name', 'simple-3', 'type', 'git'), ...
                 ];
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig);
             obj.assertEqual(resolvedConfig, originalConfig);
         end
         
@@ -66,7 +66,7 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'url', includedConfigPath), ...
                 ];
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig);
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'original-1', 'original-2', 'duplicate', 'included-1', 'included-2', 'included-3'};
             obj.assertEqual(resolvedNames, expectedNames);
@@ -98,16 +98,17 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'url', middleConfigPath), ...
                 ];
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig);
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'original-1', 'original-2', 'base-1', 'base-2', 'base-3'};
             obj.assertEqual(resolvedNames, expectedNames);
+            
         end
         
         function testReflexiveInclude(obj)
             % let a config include itself harmlessly
             selfConfigPath = fullfile(obj.tempFolder, 'self.json');
-            selfConfig = [ ...Include
+            selfConfig = [ ...
                 tbToolboxRecord('name', 'self-1', 'type', 'git'), ...
                 tbToolboxRecord('name', 'self-2', 'type', 'git'), ...
                 tbToolboxRecord('name', 'self-3', 'type', 'git'), ...
@@ -118,7 +119,7 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 ];
             tbWriteConfig(selfConfig, 'configPath', selfConfigPath);
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(selfConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(selfConfig);
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'self-1', 'self-2', 'self-3'};
             obj.assertEqual(resolvedNames, expectedNames);
@@ -150,31 +151,12 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 ];
             tbWriteConfig(blueConfig, 'configPath', blueConfigPath);
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(redConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(redConfig);
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'red-1', 'red-2', 'red-3', 'blue-1', 'blue-2', 'blue-3'};
             obj.assertEqual(resolvedNames, expectedNames);
         end
         
-        function testLocalRegistry(obj)
-            % locate a test registry
-            pathHere = fileparts(mfilename('fullpath'));
-            localRegistry = tbToolboxRecord( ...
-                'name', 'TestRegistry', ...
-                'type', 'local', ...
-                'url', fullfile(pathHere, 'fixture', 'registry'));
-            
-            % deploy the "red" toolbox by name
-            %   red includes "blue" by url
-            %   blue includes "green" by name
-            config = tbToolboxRecord('name', 'red');
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(config, localRegistry);
-            resolvedNames = {resolvedConfig.name};
-            expectedNames = { ...
-                'red-1', 'red-2', 'red-3', ...
-                'blue-1', 'blue-2', 'blue-3', ...
-                'green-1', 'green-2', 'green-3'};
-            obj.assertEqual(resolvedNames, expectedNames);
-        end
+        function testRegistryInclude(obj)
     end
 end

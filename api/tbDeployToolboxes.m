@@ -9,12 +9,12 @@ function results = tbDeployToolboxes(varargin)
 % toolbox configuration adds each to the Matlab path.  Returns a struct of
 % results about what happened for each toolbox.
 %
-% tbReadConfig( ... 'configPath', configPath) specify where to look for the
-% config file.  The default location is getpref('ToolboxToolbox',
+% tbDeployToolboxes( ... 'configPath', configPath) specify where to look
+% for the config file.  The default location is getpref('ToolboxToolbox',
 % 'configPath'), or '~/toolbox_config.json'.
 %
-% tbReadConfig( ... 'config', config) specify an explicit config struct to
-% use instead of reading config from file.
+% tbDeployToolboxes( ... 'config', config) specify an explicit config
+% struct to use instead of reading config from file.
 %
 % tbDeployToolboxes(... 'toolboxRoot', toolboxRoot) specifies the
 % toolboxRoot folder to set the path for.  The default location is
@@ -31,6 +31,11 @@ function results = tbDeployToolboxes(varargin)
 %
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
 % to deploy if found.  Other toolboxes will be ignored.
+%
+% tbDeployToolboxes( ... 'registry', registry) specify an explicit toolbox
+% record which indicates where and how to access a registry of shared
+% toolbox configurations.  The default is getpref('ToolboxToolbox',
+% 'registry'), or the public registry at Toolbox Hub.
 %
 % As an optimization for shares systems, toolboxes may be pre-deployed
 % (probably by an admin) to a common toolbox root folder.  Toolboxes found
@@ -51,6 +56,7 @@ parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/to
 parser.addParameter('restorePath', false, @islogical);
 parser.addParameter('withInstalled', true, @islogical);
 parser.addParameter('name', '', @ischar);
+parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
 config = parser.Results.config;
@@ -59,6 +65,7 @@ toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 restorePath = parser.Results.restorePath;
 withInstalled = parser.Results.withInstalled;
 name = parser.Results.name;
+registry = parser.Results.registry;
 
 %% Choose explicit config, or load from file.
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
@@ -81,7 +88,8 @@ if ~isempty(name)
 end
 
 %% Resolve "include" records into one big, flat config.
-config = TbIncludeStrategy.resolveIncludedConfigs(config);
+tbFetchRegistry('registry', registry, 'doUpdate', false);
+config = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
 
 %% Obtain or update the toolboxes.
 results = tbFetchToolboxes(config, ...

@@ -14,10 +14,10 @@ function record = tbToolboxRecord(varargin)
 % will be ignored.  The recognized names are:
 %   - 'name' unique name to identify the toolbox and the folder that
 %   contains it.
-%   - 'url' the url where the toolbox can be obtained, like a GitHub clone
-%   url.
-%   - 'type' the type of repository that contains the toolbox, currently
-%   only 'git' is allowed
+%   - 'url' the url where the toolbox can be obtained, like a web url or
+%   local file url.
+%   - 'type' the type of repository that contains the toolbox, or class
+%   name of a custom TbToolboxStrategy subclass.
 %   - 'flavor' optional flavor of toolbox, for example a Git
 %   branch/tag/commit to checkout after cloning
 %   - 'subfolder' optional toolbox subfolder to add to path, instead of the
@@ -37,7 +37,7 @@ parser = inputParser();
 parser.KeepUnmatched = true;
 parser.addParameter('name', '', @ischar);
 parser.addParameter('url', '', @ischar);
-parser.addParameter('type', 'git', @ischar);
+parser.addParameter('type', '', @ischar);
 parser.addParameter('flavor', '', @ischar);
 parser.addParameter('subfolder', '', @ischar);
 parser.addParameter('update', '', @ischar);
