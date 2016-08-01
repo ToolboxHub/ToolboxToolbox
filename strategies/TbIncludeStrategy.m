@@ -59,6 +59,16 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                     [newIncludes, newResolved] = TbIncludeStrategy.separateIncludes(newConfig);
                     includes = TbIncludeStrategy.appendMissingConfig(includes, newIncludes);
                     resolved = TbIncludeStrategy.appendMissingConfig(resolved, newResolved);
+                    
+                    % allow include to update itself
+                    %   as long as the content changes
+                    updateIndex = find(strcmp({newIncludes.name}, record.name), 1, 'first');
+                    if ~isempty(updateIndex)
+                        updated = newIncludes(updateIndex);
+                        if ~isequal(record, updated)
+                            includes = [includes updated];
+                        end
+                    end
                 end
                 
                 ii = ii + 1;
@@ -75,7 +85,7 @@ classdef TbIncludeStrategy < TbToolboxStrategy
             resolved = config(~isInclude);
         end
         
-        % Does the given config contains a record with the given name?
+        % Append new config, ensure uniqueness by name.
         function config = appendMissingConfig(config, newConfig)
             if isempty(newConfig)
                 return;

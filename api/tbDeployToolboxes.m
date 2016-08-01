@@ -1,10 +1,6 @@
 function results = tbDeployToolboxes(varargin)
 % Fetch toolboxes and add them to the Matlab path.
 %
-% The goal here is to make it a one-liner to fetch toolboxes and add them
-% to the Matlab path.  This should automate several steps that we usually
-% do by hand, which is good for consistency and convenience.
-%
 % results = tbDeployToolboxes() fetches each toolbox from the default
 % toolbox configuration adds each to the Matlab path.  Returns a struct of
 % results about what happened for each toolbox.
