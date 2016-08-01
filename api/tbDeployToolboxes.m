@@ -41,7 +41,12 @@ function results = tbDeployToolboxes(varargin)
 % toolbox names to be resolved in the given registry or the public registry
 % at Toolbox Hub.  These will be added to the given config, if any.
 %
-% As an optimization for shares systems, toolboxes may be pre-deployed
+% tbDeployToolboxes(... 'localHookFolder', localHookFolder) specifies the
+% path to the folder that contains local hook scripts.  The default
+% location is getpref('ToolboxToolbox', 'localHookFolder'), or
+% '~/toolboxes/localHooks'.
+%
+% As an optimization for shared systems, toolboxes may be pre-deployed
 % (probably by an admin) to a common toolbox root folder.  Toolboxes found
 % here will be added to the path instead of toolboxes in the given
 % toolboxRoot.
@@ -60,6 +65,7 @@ parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/to
 parser.addParameter('restorePath', false, @islogical);
 parser.addParameter('withInstalled', true, @islogical);
 parser.addParameter('name', '', @ischar);
+parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('registered', {}, @iscellstr);
 parser.parse(varargin{:});
@@ -70,6 +76,7 @@ toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 restorePath = parser.Results.restorePath;
 withInstalled = parser.Results.withInstalled;
 name = parser.Results.name;
+localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
 registered = parser.Results.registered;
 
@@ -113,10 +120,12 @@ end
 tbFetchRegistry('registry', registry, 'doUpdate', false);
 config = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
 
+
 %% Obtain or update the toolboxes.
 results = tbFetchToolboxes(config, ...
     'toolboxRoot', toolboxRoot, ...
     'toolboxCommonRoot', toolboxCommonRoot);
+
 
 %% Add each toolbox to the path.
 if restorePath
@@ -160,7 +169,11 @@ for tt = 1:nToolboxes
     end
 end
 
-%% Invoke Post-Deploy hooks.
+%% Set up and invoke "local" hooks with machine-specific setup.
+if ~isempty(localHookFolder) && 7 ~= exist(localHookFolder, 'dir')
+    mkdir(localHookFolder);
+end
+
 nToolboxes = numel(results);
 for tt = 1:nToolboxes
     record = results(tt);
@@ -168,8 +181,36 @@ for tt = 1:nToolboxes
         continue;
     end
     
-    if ~isempty(record.hook)
-        fprintf('Running hook for "%s": "%s".\n', record.name, record.hook);
+    % create a local hook if missing and a template exists
+    strategy = results(tt).strategy;
+    [~, hookName] = strategy.toolboxPath(toolboxCommonRoot, record);
+    templateLocalHoodPath = fullfile(record.path, record.localHookTemplate);
+    existingLocalHookPath = fullfile(localHookFolder, [hookName '.m']);
+    if 2 ~= exist(existingLocalHookPath, 'file') && 2 == exist(templateLocalHoodPath, 'file');
+        copyfile(templateLocalHoodPath, existingLocalHookPath);
+    end
+    
+    % invoke the local hook if it exists
+    if 2 == exist(existingLocalHookPath, 'file')
+        fprintf('Running local hook for "%s": "%s".\n', hookName, existingLocalHookPath);
+        command = ['run ' existingLocalHookPath];
+        [results(tt).status, results(tt).message] = evalIsolated(command);
+    end
+end
+
+
+%% Invoke post-deploy hooks.
+nToolboxes = numel(results);
+for tt = 1:nToolboxes
+    record = results(tt);
+    if record.status ~= 0
+        continue;
+    end
+    
+    strategy = results(tt).strategy;
+    [~, hookName] = strategy.toolboxPath(toolboxCommonRoot, record);
+    if ~isempty(record.hook) && 2 ~= exist(record.hook, 'file')
+        fprintf('Running hook for "%s": "%s".\n', hookName, record.hook);
         [results(tt).status, results(tt).message] = evalIsolated(record.hook);
     end
 end

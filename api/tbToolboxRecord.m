@@ -26,6 +26,8 @@ function record = tbToolboxRecord(varargin)
 %   the toolbox
 %   - 'hook' Matlab command to run after the toolbox is deployed and added
 %   to the path
+%   - 'localHookTemplate' template for script with local config file to
+%   copy to the local hook folder and run at reploy time
 %   - 'toolboxRoot' where to deploy the toolbox, overrides toolboxRoot
 %   Matlab preference and toolboxRoot passed to tbDeployToolboxes().
 %   - 'pathPlacement' whether to 'append' or 'prepend' to the Matlab path.
@@ -42,9 +44,10 @@ parser.addParameter('flavor', '', @ischar);
 parser.addParameter('subfolder', '', @ischar);
 parser.addParameter('update', '', @ischar);
 parser.addParameter('hook', '', @ischar);
+parser.addParameter('localHookTemplate', '', @ischar);
 parser.addParameter('toolboxRoot', '', @ischar);
 parser.addParameter('pathPlacement', 'append', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work
-record =  parser.Results;
+record = parser.Results;
