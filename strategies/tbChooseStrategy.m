@@ -38,6 +38,9 @@ switch record.type
     case 'installed'
         strategy = TbInstalledStrategy();
         return;
+    case 'docker'
+        strategy = TbDockerStrategy();
+        return;
 end
 
 %% Use type as class name.
