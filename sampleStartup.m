@@ -1,12 +1,10 @@
 %% Startup script for use with the Toolbox Toolbox.
 %
-% Here is a sample startup.m for works with the Toolbox Toolbox.  You
-% should copy this file to your system outside of the Toolbox Toolbox folder.
-% You should rename this file to "startup.m".  You should edit line 13 with 
-% the path to where you installed the Toolbox Toolbox.
-%
-% Locate Toolbox Toolbx and add it to the Matlab path.  Clear the rest of
-% the Matlab path!  No more Solera method (unless you're making Sherry).
+% Here is a sample startup.m for works with the ToolboxToolbox.  You
+% should copy this file to your system outside of the ToolboxToolbox
+% folder.  You should rename this file to "startup.m".  You should edit
+% Your startup.m with the correct toolboxToolboxDir, and any Matlab
+% preferences you wish to change for your local machine.
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -27,7 +25,31 @@ end
 
 cd(originalDir);
 
+%% Put /usr/local/bin on path so we can things installed by Homebrew.
 if ismac()
-    %% Put /usr/local/bin on path so we can things installed by Homebrew.
     setenv('PATH', ['/usr/local/bin:' getenv('PATH')]);
 end
+
+%% Matlab preferences that control ToolboxToolbox.
+
+% uncomment any or all of these that you wish to change
+
+% % default location for JSON configuration
+% configPath = '~/toolbox_config.json';
+% setpref('ToolboxToolbox', 'configPath', configPath);
+
+% % default folder to contain regular the toolboxes
+% toolboxRoot = '~/toolboxes';
+% setpref('ToolboxToolbox', 'toolboxRoot', toolboxRoot);
+
+% % default folder to contain shared, pre-installed toolboxes
+% toolboxCommonRoot = '/srv/toolboxes';
+% setpref('ToolboxToolbox', 'toolboxCommonRoot', toolboxCommonRoot);
+
+% % default folder for hooks that set up local config for each toolbox
+% localHookFolder = '~/localToolboxHooks';
+% setpref('ToolboxToolbox', 'localHookFolder', localHookFolder);
+
+% % location of ToolboxHub or other toolbox registry
+% registry = tbDefaultRegistry();
+% setpref('ToolboxToolbox', 'registry', registry);

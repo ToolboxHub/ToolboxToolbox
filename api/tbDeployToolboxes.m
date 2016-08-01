@@ -187,6 +187,7 @@ for tt = 1:nToolboxes
     templateLocalHoodPath = fullfile(record.path, record.localHookTemplate);
     existingLocalHookPath = fullfile(localHookFolder, [hookName '.m']);
     if 2 ~= exist(existingLocalHookPath, 'file') && 2 == exist(templateLocalHoodPath, 'file');
+        fprintf('Creating local hook from template for "%s": "%s".\n', hookName, templateLocalHoodPath);
         copyfile(templateLocalHoodPath, existingLocalHookPath);
     end
     
