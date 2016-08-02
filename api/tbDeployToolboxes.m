@@ -16,13 +16,13 @@ function results = tbDeployToolboxes(varargin)
 % toolboxRoot folder to set the path for.  The default location is
 % getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
 %
-% tbDeployToolboxes(... 'restorePath', restorePath) specifies whether to
+% tbDeployToolboxes(... 'resetPath', resetPath) specifies whether to
 % restore the default Matlab path before setting up the toolbox path.  The
 % default is false, just add to the existing path.
 %
 % tbDeployToolboxes(... 'withInstalled', withInstalled) specifies whether
 % to include installed matlab toolboxes.  This only has an effect when
-% restorePath is true.  The default is true, include all installed
+% resetPath is true.  The default is true, include all installed
 % toolboxes on the path.
 %
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
@@ -58,7 +58,7 @@ parser.addParameter('configPath', tbGetPref('configPath', '~/toolbox_config.json
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.addParameter('restorePath', false, @islogical);
+parser.addParameter('resetPath', false, @islogical);
 parser.addParameter('withInstalled', true, @islogical);
 parser.addParameter('name', '', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
@@ -69,7 +69,7 @@ configPath = parser.Results.configPath;
 config = parser.Results.config;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
-restorePath = parser.Results.restorePath;
+resetPath = parser.Results.resetPath;
 withInstalled = parser.Results.withInstalled;
 name = parser.Results.name;
 localHookFolder = parser.Results.localHookFolder;
@@ -124,7 +124,7 @@ results = tbFetchToolboxes(config, ...
 
 
 %% Add each toolbox to the path.
-if restorePath
+if resetPath
     tbResetMatlabPath( ...
         'withSelf', true, ...
         'withInstalled', withInstalled);
@@ -148,7 +148,7 @@ for tt = 1:nToolboxes
     if 7 == exist(toolboxSharedPath, 'dir')
         results(tt).path = toolboxSharedPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxSharedPath);
-        tbSetToolboxPath('toolboxPath', toolboxSharedPath, 'restorePath', false);
+        tbSetToolboxPath('toolboxPath', toolboxSharedPath, 'resetPath', false);
         continue;
     end
     
@@ -159,7 +159,7 @@ for tt = 1:nToolboxes
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
         tbSetToolboxPath( ...
             'toolboxPath', toolboxPath, ...
-            'restorePath', false, ...
+            'resetPath', false, ...
             'pathPlacement', record.pathPlacement);
         continue;
     end

@@ -12,7 +12,7 @@ function toolboxPath = tbSetToolboxPath(varargin)
 % tbSetToolboxPath(... 'toolboxPath', toolboxPath) specifies the
 % toolboxPath folder to set the path for.  The default is pwd().
 %
-% tbSetToolboxPath(... 'restorePath', restorePath) specifies whether to
+% tbSetToolboxPath(... 'resetPath', resetPath) specifies whether to
 % restore the default Matlab path before setting up the toolbox path.  The
 % default is false, just append to the existing path.
 %
@@ -26,15 +26,15 @@ function toolboxPath = tbSetToolboxPath(varargin)
 
 parser = inputParser();
 parser.addParameter('toolboxPath', pwd(), @ischar);
-parser.addParameter('restorePath', false, @islogical);
+parser.addParameter('resetPath', false, @islogical);
 parser.addParameter('pathPlacement', 'append', @ischar);
 parser.parse(varargin{:});
 toolboxPath = tbHomePathToAbsolute(parser.Results.toolboxPath);
-restorePath = parser.Results.restorePath;
+resetPath = parser.Results.resetPath;
 pathPlacement = parser.Results.pathPlacement;
 
 %% Start fresh?
-if restorePath
+if resetPath
     tbResetMatlabPath();
 end
 
