@@ -113,7 +113,7 @@ if ~isempty(name)
 end
 
 %% Resolve "include" records into one big, flat config.
-tbFetchRegistry('registry', registry, 'doUpdate', false);
+tbFetchRegistry('registry', registry, 'doUpdate', true);
 config = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
 
 
