@@ -1,9 +1,14 @@
-function results = tbDeployToolboxes(varargin)
+function [resolved, included] = tbDeployToolboxes(varargin)
 % Fetch toolboxes and add them to the Matlab path.
 %
 % results = tbDeployToolboxes() fetches each toolbox from the default
 % toolbox configuration adds each to the Matlab path.  Returns a struct of
 % results about what happened for each toolbox.
+%
+% [resolved, included] = tbDeployToolboxes( ... ) returns a struct of
+% results about what happened for each toolbox that was actually resolved
+% and deployed, and also for each "include" toolbox which was a pointer to
+% other toolboxes.
 %
 % tbDeployToolboxes( ... 'configPath', configPath) specify where to look
 % for the config file.  The default location is getpref('ToolboxToolbox',
@@ -97,7 +102,8 @@ if ~isempty(registered)
 end
 
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
-    results = config;
+    resolved = [];
+    included = [];
     return;
 end
 
@@ -106,7 +112,8 @@ end
 if ~isempty(name)
     isName = strcmp(name, {config.name});
     if ~any(isName)
-        results = config;
+        resolved = [];
+        included = [];
         return;
     end
     config = config(isName);
@@ -114,28 +121,26 @@ end
 
 %% Resolve "include" records into one big, flat config.
 tbFetchRegistry('registry', registry, 'doUpdate', true);
-config = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
+[resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
 
 
 %% Obtain or update the toolboxes.
-results = tbFetchToolboxes(config, ...
+resolved = tbFetchToolboxes(resolved, ...
     'toolboxRoot', toolboxRoot, ...
     'toolboxCommonRoot', toolboxCommonRoot);
 
 
 %% Add each toolbox to the path.
 if resetPath
-    tbResetMatlabPath( ...
-        'withSelf', true, ...
-        'withInstalled', withInstalled);
+    tbResetMatlabPath('withSelf', true, 'withInstalled', withInstalled);
 end
 
 % add toolboxes one at a time so that we can check for errors
-% and so we don't add extra cruft that might be in the toolboxRoog folder
-nToolboxes = numel(results);
+% and so we don't add extra cruft that might be in the toolboxRoot folder
+[resolved.path] = deal('');
+nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
-    record = results(tt);
-    results(tt).path = '';
+    record = resolved(tt);
     
     % don't add errored toolbox to path
     if record.status ~= 0
@@ -143,25 +148,13 @@ for tt = 1:nToolboxes
     end
     
     % add shared toolbox to path?
-    strategy = results(tt).strategy;
-    toolboxSharedPath = strategy.toolboxPath(toolboxCommonRoot, record, 'withSubfolder', true);
-    if 7 == exist(toolboxSharedPath, 'dir')
-        results(tt).path = toolboxSharedPath;
-        fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxSharedPath);
-        tbSetToolboxPath('toolboxPath', toolboxSharedPath, 'resetPath', false);
-        continue;
-    end
-    
-    % add regular toolbox to path?
-    toolboxPath = strategy.toolboxPath(toolboxRoot, record, 'withSubfolder', true);
+    toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
     if 7 == exist(toolboxPath, 'dir')
-        results(tt).path = toolboxPath;
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
         tbSetToolboxPath( ...
             'toolboxPath', toolboxPath, ...
             'resetPath', false, ...
             'pathPlacement', record.pathPlacement);
-        continue;
     end
 end
 
@@ -170,67 +163,114 @@ if ~isempty(localHookFolder) && 7 ~= exist(localHookFolder, 'dir')
     mkdir(localHookFolder);
 end
 
-nToolboxes = numel(results);
+% resolved toolboxes that were actually deployed
+nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
-    record = results(tt);
+    record = resolved(tt);
+    
+    % don't run hook after error
     if record.status ~= 0
         continue;
     end
     
-    % create a local hook if missing and a template exists
-    strategy = results(tt).strategy;
-    [~, hookName] = strategy.toolboxPath(toolboxCommonRoot, record);
-    templateLocalHoodPath = fullfile(record.path, record.localHookTemplate);
-    existingLocalHookPath = fullfile(localHookFolder, [hookName '.m']);
-    if 2 ~= exist(existingLocalHookPath, 'file') && 2 == exist(templateLocalHoodPath, 'file');
-        fprintf('Creating local hook from template for "%s": "%s".\n', hookName, templateLocalHoodPath);
-        copyfile(templateLocalHoodPath, existingLocalHookPath);
-    end
-    
-    % invoke the local hook if it exists
-    if 2 == exist(existingLocalHookPath, 'file')
-        fprintf('Running local hook for "%s": "%s".\n', hookName, existingLocalHookPath);
-        command = ['run ' existingLocalHookPath];
-        [results(tt).status, results(tt).message] = evalIsolated(command);
-    end
+    resolved(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record);
+end
+
+% included toolboxes that were not deployed but might have local hooks anyway
+[included.status] = deal(0);
+[included.message] = deal('');
+nToolboxes = numel(included);
+for tt = 1:nToolboxes
+    included(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, included(tt));
 end
 
 
-%% Invoke post-deploy hooks.
-nToolboxes = numel(results);
+%% Invoke portable, non-local post-deploy hooks.
+nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
-    record = results(tt);
-    if record.status ~= 0
-        continue;
-    end
-    
-    strategy = results(tt).strategy;
-    [~, hookName] = strategy.toolboxPath(toolboxCommonRoot, record);
+    record = resolved(tt);
+    [~, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
     if ~isempty(record.hook) && 2 ~= exist(record.hook, 'file')
         fprintf('Running hook for "%s": "%s".\n', hookName, record.hook);
-        [results(tt).status, results(tt).message] = evalIsolated(record.hook);
+        [resolved(tt).status, resolved(tt).message] = evalIsolated(record.hook);
     end
 end
 
 %% How did it go?
-isSuccess = 0 == [results.status];
-if all(isSuccess)
+isSuccessResolved = 0 == [resolved.status];
+isSuccessIncluded = 0 == [included.status];
+if all(isSuccessResolved) && all(isSuccessIncluded)
     fprintf('Looks good: all toolboxes deployed with status 0.\n');
+    return;
+end
+
+% details for resolved records
+if all(isSuccessResolved)
+    fprintf('All resolved toolboxes deployed with status 0.\n');
 else
-    errorIndexes = find(~isSuccess);
-    fprintf('The following toolboxes had nonzero status:\n');
+    errorIndexes = find(~isSuccessResolved);
+    fprintf('The following resolved toolboxes had nonzero status:\n');
     for tt = errorIndexes
-        record = results(tt);
+        record = resolved(tt);
         fprintf('  "%s": status %d, message "%s"\n', ...
             record.name, record.status, record.message);
     end
 end
+
+% details for included records
+if all(isSuccessIncluded)
+    fprintf('All included toolboxes deployed with status 0.\n');
+else
+    errorIndexes = find(~isSuccessIncluded);
+    fprintf('The following included toolboxes had nonzero status:\n');
+    for tt = errorIndexes
+        record = included(tt);
+        fprintf('  "%s": status %d, message "%s"\n', ...
+            record.name, record.status, record.message);
+    end
+end
+
+
+%% Choose a shared or normal path for the toolbox.
+function [toolboxPath, displayName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record)
+strategy = tbChooseStrategy(record);
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxCommonRoot, record, 'withSubfolder', true);
+if 7 == exist(toolboxPath, 'dir')
+    return;
+end
+
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record, 'withSubfolder', true);
+if 7 == exist(toolboxPath, 'dir')
+    return;
+end
+
+toolboxPath = '';
+
+%% Invoke a local hook, create if necessary.
+function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record)
+% create a local hook if missing and a template exists
+[toolboxPath, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
+templateLocalHookPath = fullfile(toolboxPath, record.localHookTemplate);
+existingLocalHookPath = fullfile(localHookFolder, [hookName '.m']);
+if 2 ~= exist(existingLocalHookPath, 'file') && 2 == exist(templateLocalHookPath, 'file');
+    fprintf('Creating local hook from template for "%s": "%s".\n', hookName, templateLocalHookPath);
+    copyfile(templateLocalHookPath, existingLocalHookPath);
+end
+
+% invoke the local hook if it exists
+if 2 == exist(existingLocalHookPath, 'file')
+    fprintf('Running local hook for "%s": "%s".\n', hookName, existingLocalHookPath);
+    command = ['run ' existingLocalHookPath];
+    [record.status, record.message] = evalIsolated(command);
+end
+
 
 %% Evaluate an expression, don't cd or clear.
 function [status, message] = evalIsolated(expression)
 originalDir = pwd();
 [status, message] = evalPrivateWorkspace(expression);
 cd(originalDir);
+
 
 %% Evaluate an expression, don't clear.
 function [status, message] = evalPrivateWorkspace(expression)

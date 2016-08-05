@@ -31,15 +31,11 @@ classdef TbIncludeStrategy < TbToolboxStrategy
         function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
             error('"include" record should have been resolved to another type.');
         end
-        
-        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record, varargin)
-            error('"include" record should have been resolved to another type.');
-        end
     end
     
     methods (Static)
-        % Iterate the given config, append new records as they come.
-        function config = resolveIncludedConfigs(config, registry)
+        % Iterate the given config, resolve and append new records as they come.
+        function [resolved, includes] = resolveIncludedConfigs(config, registry)
             [includes, resolved] = TbIncludeStrategy.separateIncludes(config);
             
             ii = 1;
@@ -73,9 +69,6 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                 
                 ii = ii + 1;
             end
-            
-            % flattened out records with no more includes
-            config = resolved;
         end
         
         % Separate "include" records from resolved records

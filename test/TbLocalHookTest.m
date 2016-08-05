@@ -72,12 +72,12 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
         function testExistingBadHook(obj)
             % make the "bad" hook exist in the local hooks folder
             pathHere = fileparts(mfilename('fullpath'));
-            goodHook = fullfile(pathHere, 'fixture', 'badHook.m');
+            badHook = fullfile(pathHere, 'fixture', 'badHook.m');
             localHook = fullfile(obj.localHookFolder, 'local_toolbox.m');
             mkdir(obj.localHookFolder);
-            copyfile(goodHook, localHook);
+            copyfile(badHook, localHook);
             
-            % deplpoy should detect and run the good hook
+            % deplpoy should detect and run the bad hook
             record = tbToolboxRecord( ...
                 'type', 'local', ...
                 'name', 'local_toolbox', ...
@@ -116,10 +116,10 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
         function testTemplateBadHook(obj)
             % make the "bad" hook exist in the toolbox folder
             pathHere = fileparts(mfilename('fullpath'));
-            goodHook = fullfile(pathHere, 'fixture', 'badHook.m');
-            copyfile(goodHook, obj.localFolder);
+            badHook = fullfile(pathHere, 'fixture', 'badHook.m');
+            copyfile(badHook, obj.localFolder);
             
-            % deplpoy should detect and run the good hook
+            % deplpoy should detect and run the bad hook
             record = tbToolboxRecord( ...
                 'type', 'local', ...
                 'name', 'local_toolbox', ...
@@ -149,6 +149,30 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
             
             % missing hook should be skipped
             obj.assertEqual(results.status, 0);
+        end
+        
+        function testHookInIncludeRecord(obj)
+            % run an existing local hook 
+            % even if it comes from an "include" record
+            % use the "bad" hook so that we know that it was run
+            pathHere = fileparts(mfilename('fullpath'));
+            badHook = fullfile(pathHere, 'fixture', 'badHook.m');
+            localHook = fullfile(obj.localHookFolder, 'include_record.m');
+            mkdir(obj.localHookFolder);
+            copyfile(badHook, localHook);
+            
+            % deplpoy should detect and run the bad hook
+            record = tbToolboxRecord( ...
+                'type', 'include', ...
+                'name', 'include_record');
+            [~, included] = tbDeployToolboxes( ...
+                'config', record, ...
+                'resetPath', true, ...
+                'localHookFolder', obj.localHookFolder);
+            
+            % bad hook should throw an error
+            obj.assertNotEqual(included.status, 0);
+            obj.assertEqual(included.message, 'I am not a nice hook.');
         end
     end
 end

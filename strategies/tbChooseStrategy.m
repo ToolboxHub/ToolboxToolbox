@@ -24,6 +24,12 @@ if ~isfield(record, 'type')
     return;
 end
 
+%% Default is "include"
+if isempty(record.type)
+    strategy = TbIncludeStrategy();
+    return;
+end
+
 %% Check the short list of recognized types.
 switch record.type
     case 'git'
@@ -40,6 +46,9 @@ switch record.type
         return;
     case 'docker'
         strategy = TbDockerStrategy();
+        return;
+    case 'include'
+        strategy = TbIncludeStrategy();
         return;
 end
 
