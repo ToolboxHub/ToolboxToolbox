@@ -126,17 +126,12 @@ resolved = tbFetchToolboxes(resolved, ...
 %% Add each toolbox to the path.
 tbResetMatlabPath('withSelf', true, 'reset', reset);
 
-% add toolboxes one at a time so that we can check for errors
-% and so we don't add extra cruft that might be in the toolboxRoot folder
+% add toolboxes one at a time 
+% so we don't add extra cruft that might be in the toolboxRoot folder
 [resolved.path] = deal('');
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
     record = resolved(tt);
-    
-    % don't add errored toolbox to path
-    if record.status ~= 0
-        continue;
-    end
     
     % add shared toolbox to path?
     toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
@@ -157,12 +152,6 @@ end
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
     record = resolved(tt);
-    
-    % don't run hook after error
-    if record.status ~= 0
-        continue;
-    end
-    
     resolved(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record);
 end
 

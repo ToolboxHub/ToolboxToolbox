@@ -62,7 +62,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                 'reset', 'local');
             obj.sanityCheckResults(results, expectedFiles, unexpectedFiles);
             
-            % fetch again should be sage
+            % fetch again should be safe
             results = tbDeployToolboxes(...
                 'config', config, ...
                 'toolboxRoot', obj.toolboxRoot, ...
@@ -222,6 +222,31 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
             obj.assertTrue(all([results.isOk]));
             obj.assertEqual(results(1).message, 'I am optional');
         end
+        
+        function testAddPathAfterError(obj)
+            % fetch toolboxes fresh
+            [config, expectedFiles, unexpectedFiles] = obj.createConfig();
+            results = tbDeployToolboxes( ...
+                'config', config, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'local');
+            obj.sanityCheckResults(results, expectedFiles, unexpectedFiles);
+            
+            % fetch again but introduce an error
+            config(1).hook = 'error(''Oops!'')';
+            results = tbDeployToolboxes(...
+                'config', config, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'local');
+            obj.assertFalse(results(1).isOk);
+            obj.assertEqual(results(1).message, 'Oops!');
+            
+            % despite error, should find config on the path
+            expectedFiles = expectedFiles.(config(1).name);
+            whichExpected = which(expectedFiles{1});
+            obj.assertNotEmpty(whichExpected);
+        end
+
     end
     
     methods
