@@ -22,7 +22,7 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
         
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('withSelf', true, 'withInstalled', true);
+            tbResetMatlabPath('withSelf', true, 'reset', 'local');
         end
     end
     

@@ -14,7 +14,7 @@ classdef TbHubTest < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('withSelf', true, 'withInstalled', true);
+            tbResetMatlabPath('withSelf', true, 'reset', 'local');
         end
         
         function cleanUpTempFiles(obj)

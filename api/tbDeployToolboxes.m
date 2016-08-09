@@ -21,14 +21,9 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % toolboxRoot folder to set the path for.  The default location is
 % getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
 %
-% tbDeployToolboxes(... 'resetPath', resetPath) specifies whether to
-% restore the default Matlab path before setting up the toolbox path.  The
-% default is false, just add to the existing path.
-%
-% tbDeployToolboxes(... 'withInstalled', withInstalled) specifies whether
-% to include installed matlab toolboxes.  This only has an effect when
-% resetPath is true.  The default is true, include all installed
-% toolboxes on the path.
+% tbDeployToolboxes(... 'reset', reset) specifies which parts of the
+% Matlab path to clear out before processing the given configuration.  The
+% default is 'none', don't reset the path at all.  See tbResetMatlabPath().
 %
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
 % to deploy if found.  Other toolboxes will be ignored.
@@ -63,8 +58,7 @@ parser.addParameter('configPath', tbGetPref('configPath', '~/toolbox_config.json
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.addParameter('resetPath', false, @islogical);
-parser.addParameter('withInstalled', true, @islogical);
+parser.addParameter('reset', 'none', @ischar);
 parser.addParameter('name', '', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
@@ -74,8 +68,7 @@ configPath = parser.Results.configPath;
 config = parser.Results.config;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
-resetPath = parser.Results.resetPath;
-withInstalled = parser.Results.withInstalled;
+reset = parser.Results.reset;
 name = parser.Results.name;
 localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
@@ -131,9 +124,7 @@ resolved = tbFetchToolboxes(resolved, ...
 
 
 %% Add each toolbox to the path.
-if resetPath
-    tbResetMatlabPath('withSelf', true, 'withInstalled', withInstalled);
-end
+tbResetMatlabPath('withSelf', true, 'reset', reset);
 
 % add toolboxes one at a time so that we can check for errors
 % and so we don't add extra cruft that might be in the toolboxRoot folder
@@ -151,9 +142,8 @@ for tt = 1:nToolboxes
     toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
     if 7 == exist(toolboxPath, 'dir')
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
-        tbSetToolboxPath( ...
+        tbAddToolboxPath( ...
             'toolboxPath', toolboxPath, ...
-            'resetPath', false, ...
             'pathPlacement', record.pathPlacement);
     end
 end

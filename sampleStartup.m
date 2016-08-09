@@ -17,7 +17,7 @@ originalDir = pwd();
 try
     apiDir = fullfile(toolboxToolboxDir, 'api');
     cd(apiDir);
-    tbResetMatlabPath('withInstalled', true, 'withSelf', true);
+    tbResetMatlabPath('reset', 'local', 'withSelf', true);
 catch err
     warning('Error setting Toolbox Toolbox path during startup: %s', ...
         err.message);

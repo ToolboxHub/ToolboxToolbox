@@ -13,14 +13,9 @@ function results = tbUse(registered, varargin)
 % toolboxRoot folder to set the path for.  The default location is
 % getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
 %
-% tbUse(... 'resetPath', resetPath) specifies whether to
-% restore the default Matlab path before setting up the toolbox path.  The
-% default is false, just add to the existing path.
-%
-% tbUse(... 'withInstalled', withInstalled) specifies whether
-% to include installed matlab toolboxes.  This only has an effect when
-% resetPath is true.  The default is true, include all installed
-% toolboxes on the path.
+% tbUse(... 'reset', reset) specifies which parts of the
+% Matlab path to clear out before processing the given configuration.  The
+% default is 'none', don't reset the path at all.  See tbResetMatlabPath().
 %
 % tbUse( ... 'registry', registry) specify an explicit toolbox
 % record which indicates where and how to access a registry of shared
@@ -42,16 +37,14 @@ parser = inputParser();
 parser.addRequired('registered', @iscellstr);
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.addParameter('resetPath', false, @islogical);
-parser.addParameter('withInstalled', true, @islogical);
+parser.addParameter('reset', 'none', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.parse(registered, varargin{:});
 registered = parser.Results.registered;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
-resetPath = parser.Results.resetPath;
-withInstalled = parser.Results.withInstalled;
+reset = parser.Results.reset;
 localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
 
@@ -59,7 +52,6 @@ results = tbDeployToolboxes( ...
     'registered', registered, ...
     'toolboxRoot', toolboxRoot, ...
     'toolboxCommonRoot', toolboxCommonRoot, ...
-    'resetPath', resetPath, ...
-    'withInstalled', withInstalled, ...
+    'reset', reset, ...
     'localHookFolder', localHookFolder, ...
     'registry', registry);

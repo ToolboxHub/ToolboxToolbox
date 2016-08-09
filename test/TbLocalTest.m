@@ -15,7 +15,7 @@ classdef TbLocalTest  < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('withSelf', true, 'withInstalled', true);
+            tbResetMatlabPath('withSelf', true, 'reset', 'local');
         end
         
         function copyFixture(obj)
@@ -51,7 +51,7 @@ classdef TbLocalTest  < matlab.unittest.TestCase
                 'url', obj.localFolder);
             results = tbDeployToolboxes( ...
                 'config', record, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             
             % now the local file should be on the path
@@ -70,7 +70,7 @@ classdef TbLocalTest  < matlab.unittest.TestCase
                 'url', ['file://' obj.localFolder]);
             results = tbDeployToolboxes( ...
                 'config', record, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             
             % now the local file should be on the path
@@ -85,7 +85,7 @@ classdef TbLocalTest  < matlab.unittest.TestCase
                 'url', fullfile(tempdir(), 'no-such-folder'));
             results = tbDeployToolboxes( ...
                 'config', record, ...
-                'resetPath', true);
+                'reset', 'local');
             
             % should fail on missing toolbox
             obj.assertNotEqual(results.status, 0);

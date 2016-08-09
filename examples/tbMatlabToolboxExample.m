@@ -30,7 +30,7 @@ fprintf('\n');
 
 
 %% Show that we can kick installed toolboxes off the path.
-tbResetMatlabPath('withInstalled', false);
+tbResetMatlabPath('reset', 'all');
 
 functionPath = which(functionName);
 fprintf('Looked for "%s" function, got path "%s".\n', functionName, functionPath);
@@ -42,8 +42,7 @@ record = tbToolboxRecord( ...
     'name', 'images');
 tbDeployToolboxes( ...
     'config', record, ...
-    'resetPath', true, ...
-    'withInstalled', false);
+    'reset', 'all');
 
 
 functionPath = which(functionName);

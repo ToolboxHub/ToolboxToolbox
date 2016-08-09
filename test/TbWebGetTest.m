@@ -21,7 +21,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('withSelf', true, 'withInstalled', true);
+            tbResetMatlabPath('withSelf', true, 'reset', 'local');
         end
         
         function cleanUpTempFiles(obj)
@@ -50,7 +50,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
             results = tbDeployToolboxes( ...
                 'config', record, ...
                 'toolboxRoot', obj.toolboxRoot, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             
             % zip should now be on the path
@@ -71,7 +71,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
             results = tbDeployToolboxes( ...
                 'config', record, ...
                 'toolboxRoot', obj.toolboxRoot, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             
             % image should now be on the path
@@ -92,7 +92,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
             results = tbDeployToolboxes( ...
                 'config', record, ...
                 'toolboxRoot', obj.toolboxRoot, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             
             % image should now be on the path
@@ -107,7 +107,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
             results = tbDeployToolboxes( ...
                 'config', record, ...
                 'toolboxRoot', obj.toolboxRoot, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             updateInfo = dir(imageFile);
             obj.assertGreaterThan(datenum(updateInfo.date), datenum(obtainInfo.date));
@@ -123,7 +123,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
             results = tbDeployToolboxes( ...
                 'config', record, ...
                 'toolboxRoot', obj.toolboxRoot, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             
             % image should now be on the path
@@ -138,7 +138,7 @@ classdef TbWebGetTest < matlab.unittest.TestCase
             results = tbDeployToolboxes( ...
                 'config', record, ...
                 'toolboxRoot', obj.toolboxRoot, ...
-                'resetPath', true);
+                'reset', 'local');
             obj.assertEqual(results.status, 0);
             updateInfo = dir(imageFile);
             obj.assertEqual(updateInfo.date, obtainInfo.date);

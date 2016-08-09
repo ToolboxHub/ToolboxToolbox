@@ -2,40 +2,51 @@ function [newPath, oldPath] = tbResetMatlabPath(varargin)
 % Set the Matlab path to a minimal, consistent state.
 %
 % [newPath, oldPath] = tbResetMatlabPath() sets the Matlab path to the
-% default path for the Toolbox Toolbox.  This path includes the user path,
-% all the Matlab installed toolboxes, the Toolbox Toolbox itself, and no
+% default path for the ToolboxToolbox.  This path includes the user path,
+% all the Matlab installed toolboxes, the ToolboxToolbox itself, and no
 % other folders.  It returns the new value of the path, and the old value
 % before the reset.
 %
-% tbResetMatlabPath( ... 'withInstalled', withInstalled) specify whether to
-% include installed Matlab toolboxes on the path.  The default is true,
-% include all the installed toolboxes.
+% tbResetMatlabPath(... 'reset', reset) specifies which parts of the
+% Matlab path to reset / clear out:
+%   - 'none' -- don't clear out anything
+%   - 'local' -- clear out toolboxes that are not part of matlab (the default)
+%   - 'matlab' -- clear out installed Matlab toolboxes
+%   - 'all' -- clear out user toolboxes and installed Matlab toolboxes
 %
 % tbResetMatlabPath( ... 'withSelf', withSelf) specify whether to
-% include the Toolbos Toolbox itself on the path.  The default is true,
-% include the Toolbox Toolbox (as determined by the location of this file).
+% include the ToolboxToolbox itself on the path.  The default is true,
+% include the ToolboxToolbox as determined by the location of this file.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('withInstalled', true, @islogical);
+parser.addParameter('reset', 'local', @ischar);
 parser.addParameter('withSelf', true, @islogical);
 parser.parse(varargin{:});
-withInstalled = parser.Results.withInstalled;
+reset = parser.Results.reset;
 withSelf = parser.Results.withSelf;
 
 oldPath = path();
 
+resetLocalToolboxes = any(strcmp(reset, {'all', 'local'}));
+resetMatlabToolboxes = any(strcmp(reset, {'all', 'matlab'}));
+
 %% Start with Matlab's consistent "factory" path.
-fprintf('Resetting Matlab path.\n');
-restoredefaultpath();
+if resetLocalToolboxes
+    fprintf('Resetting path for local toolboxes.\n');
+    restoredefaultpath();
+end
 
 %% Add the ToolboxToolbox itself?
 if withSelf
     % assume this function is located in ToolboxToolbox/api
     pathHere = fileparts(mfilename('fullpath'));
-    pathToToolbox = fileparts(pathHere);
-    selfPath = genpath(pathToToolbox);
+    toolboxToolboxPath = fileparts(pathHere);
+    
+    fprintf('Adding ToolboxToolbox to path at "%s".\n', toolboxToolboxPath);
+    
+    selfPath = genpath(toolboxToolboxPath);
     addpath(selfPath, '-end');
     
     % clean up folders like '.git'
@@ -43,7 +54,9 @@ if withSelf
 end
 
 %% Detect and Remove Extra Installed Toolboxes?
-if ~withInstalled
+if resetMatlabToolboxes
+    fprintf('Resetting path for installed Matlab toolboxes.\n');
+    
     % look in matlabroot()/toolboxes for built-in and installed toolboxes
     toolboxFolders = dir(toolboxdir(''));
     nToolboxes = numel(toolboxFolders);
