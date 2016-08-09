@@ -197,6 +197,31 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                 lastIndex = min(folderIndices);
             end
         end
+        
+        function testOptionalToolbox(obj)
+            % make the first record fail
+            config = obj.createConfig();
+            config(1).hook = 'error(''I am optional'')';
+            
+            % failure should break the deployment
+            results = tbDeployToolboxes( ...
+                'config', config, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'local');
+            obj.assertFalse(results(1).isOk);
+            obj.assertEqual(results(1).message, 'I am optional');
+            
+            % now make it optional
+            config(1).importance = 'optional';
+            
+            % failure should *not* break the deployment
+            results = tbDeployToolboxes( ...
+                'config', config, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'local');
+            obj.assertTrue(all([results.isOk]));
+            obj.assertEqual(results(1).message, 'I am optional');
+        end
     end
     
     methods

@@ -22,8 +22,9 @@ function record = tbToolboxRecord(varargin)
 %   branch/tag/commit to checkout after cloning
 %   - 'subfolder' optional toolbox subfolder to add to path, instead of the
 %   whole toolbox
-%   - 'update' optional update control, if "never", won't attempt to update
-%   the toolbox
+%   - 'update' optional update control, if "never", won't attempt to update the toolbox
+%   - 'importance' optional error control, if "optional", errors with this
+%   toolbox won't cause the whole deployment to fail. 
 %   - 'hook' Matlab command to run after the toolbox is deployed and added
 %   to the path
 %   - 'localHookTemplate' template for script with local config file to
@@ -47,6 +48,7 @@ parser.addParameter('hook', '', @ischar);
 parser.addParameter('localHookTemplate', '', @ischar);
 parser.addParameter('toolboxRoot', '', @ischar);
 parser.addParameter('pathPlacement', 'append', @ischar);
+parser.addParameter('importance', '', @ischar);
 parser.parse(varargin{:});
 
 % let the parser do all the work

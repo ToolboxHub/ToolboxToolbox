@@ -186,38 +186,14 @@ for tt = 1:nToolboxes
     end
 end
 
+
 %% How did it go?
-isSuccessResolved = 0 == [resolved.status];
-isSuccessIncluded = 0 == [included.status];
-if all(isSuccessResolved) && all(isSuccessIncluded)
-    fprintf('Looks good: all toolboxes deployed with status 0.\n');
-    return;
-end
-
-% details for resolved records
-if all(isSuccessResolved)
-    fprintf('All resolved toolboxes deployed with status 0.\n');
+resolved = reviewRecords(resolved);
+included = reviewRecords(included);
+if all([resolved.isOk]) && all([included.isOk])
+    fprintf('Looks good: all toolboxes deployed OK.\n');
 else
-    errorIndexes = find(~isSuccessResolved);
-    fprintf('The following resolved toolboxes had nonzero status:\n');
-    for tt = errorIndexes
-        record = resolved(tt);
-        fprintf('  "%s": status %d, message "%s"\n', ...
-            record.name, record.status, record.message);
-    end
-end
-
-% details for included records
-if all(isSuccessIncluded)
-    fprintf('All included toolboxes deployed with status 0.\n');
-else
-    errorIndexes = find(~isSuccessIncluded);
-    fprintf('The following included toolboxes had nonzero status:\n');
-    for tt = errorIndexes
-        record = included(tt);
-        fprintf('  "%s": status %d, message "%s"\n', ...
-            record.name, record.status, record.message);
-    end
+    fprintf('Something went wrong, please see above.\n');
 end
 
 
@@ -235,6 +211,7 @@ if 7 == exist(toolboxPath, 'dir')
 end
 
 toolboxPath = '';
+
 
 %% Invoke a local hook, create if necessary.
 function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record)
@@ -271,3 +248,26 @@ try
 catch err
     message = err.message;
 end
+
+
+%% Display errors and warnings for each record.
+function records = reviewRecords(records)
+isSuccess = 0 == [records.status];
+isOptional = strcmp({records.importance}, 'optional');
+
+isSkipped = ~isSuccess & isOptional;
+for tt = find(isSkipped)
+    record = records(tt);
+    fprintf('Skipped: "%s" had status %d, message "%s"\n', ...
+        record.name, record.status, record.message);
+end
+
+isError = ~isSuccess & ~isOptional;
+[records.isOk] = deal(true);
+for tt = find(isError)
+    record = records(tt);
+    fprintf('Error: "%s" had status %d, message "%s"\n', ...
+        record.name, record.status, record.message);
+    records(tt).isOk = false;
+end
+
