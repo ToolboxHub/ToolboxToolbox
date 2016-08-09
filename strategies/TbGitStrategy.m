@@ -15,6 +15,18 @@ classdef TbGitStrategy < TbToolboxStrategy
             end
             [status, result] = system(commandNoLibs);
         end
+        
+        function [status, result] = systemInFolder(command, folder)
+            originalFolder = pwd();
+            try
+                cd(folder);
+                [status, result] = TbGitStrategy.systemNoLibs(command);
+            catch err
+                status = -1;
+                result = err.message;
+            end
+            cd(originalFolder)
+        end
     end
     
     methods
@@ -27,24 +39,27 @@ classdef TbGitStrategy < TbToolboxStrategy
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
             % clone
-            command = sprintf('git -C "%s" clone "%s" "%s"', ...
-                toolboxRoot, record.url, toolboxPath);
-            [status, message] = TbGitStrategy.systemNoLibs(command);
+            command = sprintf('git clone "%s" "%s"', ...
+                record.url, ...
+                toolboxPath);
+            [status, message] = TbGitStrategy.systemInFolder(command, toolboxRoot);
             if 0 ~= status
                 return;
             end
             
             if ~isempty(record.flavor)
                 % make a local branch for a specific branch/tag/commit
-                command = sprintf('git -C "%s" fetch origin +%s:%s', toolboxPath, record.flavor, record.flavor);
-                [status, message] = TbGitStrategy.systemNoLibs(command);
+                command = sprintf('git fetch origin +%s:%s', ...
+                    record.flavor, ...
+                    record.flavor);
+                [status, message] = TbGitStrategy.systemInFolder(command, toolboxPath);
                 if 0 ~= status
                     return;
                 end
                 
                 % check out the new local branch
-                command = sprintf('git -C "%s" checkout %s', toolboxPath, record.flavor);
-                [status, message] = TbGitStrategy.systemNoLibs(command);
+                command = sprintf('git checkout %s', record.flavor);
+                [status, message] = TbGitStrategy.systemInFolder(command, toolboxPath);
                 if 0 ~= status
                     return;
                 end
@@ -54,11 +69,11 @@ classdef TbGitStrategy < TbToolboxStrategy
         function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
             % pull
             if isempty(record.flavor)
-                command = sprintf('git -C "%s" pull', toolboxPath);
+                command = sprintf('git pull');
             else
-                command = sprintf('git -C "%s" pull origin %s', toolboxPath, record.flavor);
+                command = sprintf('git pull origin %s', record.flavor);
             end
-            [status, message] = TbGitStrategy.systemNoLibs(command);
+            [status, message] = TbGitStrategy.systemInFolder(command, toolboxPath);
         end
     end
 end
