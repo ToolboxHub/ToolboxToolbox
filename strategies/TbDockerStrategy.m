@@ -17,13 +17,14 @@ classdef TbDockerStrategy < TbToolboxStrategy
         
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
-            try
+            try                
                 if isempty(record.flavor)
                     command = ['docker pull ' record.url];
                 else
                     command = ['docker pull ' record.url ':' record.flavor];
                 end
-                
+               
+                tbCheckInternet('asAssertion', true);
                 [status, result] = system(command);
                 if 0 ~= status
                     error('Docker pull failed: %s', result);

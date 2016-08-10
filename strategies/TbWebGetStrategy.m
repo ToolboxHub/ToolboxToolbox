@@ -8,7 +8,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
         
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
-            try
+            try                
                 command = 'mkdir';
                 if 7 ~= exist(toolboxPath, 'dir')
                     mkdir(toolboxPath);
@@ -17,6 +17,8 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 command = 'websave';
                 [~, resourceBase, resourceExt] = fileparts(record.url);
                 fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
+               
+                tbCheckInternet('asAssertion', true);
                 fileName = websave(fileName, record.url);
                 
                 if strcmp(resourceExt, '.zip')

@@ -53,3 +53,8 @@ end
 % % location of ToolboxHub or other toolbox registry
 % registry = tbDefaultRegistry();
 % setpref('ToolboxToolbox', 'registry', registry);
+
+% % system command used to check whether the Internet is reachable
+% checkInternetCommand = 'ping -c 1 -w 2 www.google.com';
+% setpref('ToolboxToolbox', 'checkInternetCommand', checkInternetCommand);
+

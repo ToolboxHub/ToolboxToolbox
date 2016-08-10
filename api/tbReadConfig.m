@@ -25,16 +25,22 @@ config = struct();
 %% Read from Web?
 if ~isempty(strfind(lower(configPath), 'http://')) ...
         || ~isempty(strfind(lower(configPath), 'https://'))
-    configUrl = configPath;
     
     tempFolder = fullfile(tempdir(), mfilename());
     if 7 ~= exist(tempFolder, 'dir')
         mkdir(tempFolder);
     end
     
+    configUrl = configPath;
     [~, resourceBase, resourceExt] = fileparts(configUrl);
     configPath = fullfile(tempFolder, [resourceBase, resourceExt]);
-    configPath = websave(configPath, configUrl);
+    
+    try
+        tbCheckInternet('asAssertion', true);
+        configPath = websave(configPath, configUrl);
+    catch
+        configPath = '';
+    end
 end
 
 %% Read from disk.

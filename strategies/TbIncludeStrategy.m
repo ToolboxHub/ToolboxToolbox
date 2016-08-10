@@ -41,6 +41,8 @@ classdef TbIncludeStrategy < TbToolboxStrategy
             ii = 1;
             while ii <= numel(includes)
                 record = includes(ii);
+                ii = ii + 1;
+                
                 if isempty(record.url)
                     % look up config location by name in registry
                     url = tbSearchRegistry(record.name, 'registry', registry);
@@ -52,6 +54,10 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                 if ~isempty(url)
                     % append the included config so it can be resolved
                     newConfig = tbReadConfig('configPath', url);
+                    if isempty(newConfig) || ~isstruct(newConfig) || ~isfield(newConfig, 'name')
+                        continue;
+                    end
+                    
                     [newIncludes, newResolved] = TbIncludeStrategy.separateIncludes(newConfig);
                     includes = TbIncludeStrategy.appendMissingConfig(includes, newIncludes);
                     resolved = TbIncludeStrategy.appendMissingConfig(resolved, newResolved);
@@ -65,9 +71,7 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                             includes = [includes updated];
                         end
                     end
-                end
-                
-                ii = ii + 1;
+                end                
             end
         end
         

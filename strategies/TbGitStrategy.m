@@ -19,6 +19,7 @@ classdef TbGitStrategy < TbToolboxStrategy
         function [status, result] = systemInFolder(command, folder)
             originalFolder = pwd();
             try
+                tbCheckInternet('asAssertion', true);
                 cd(folder);
                 [status, result] = TbGitStrategy.systemNoLibs(command);
             catch err
