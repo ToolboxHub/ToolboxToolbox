@@ -13,7 +13,7 @@ function [isOnline, result] = tbCheckInternet(varargin)
 % tbCheckInternet( ... 'checkInternetCommand', checkInternetCommand)
 % specify the command to pass to system() which will check for Internet
 % connectivity.  The default command is getpref('ToolboxToolbox',
-% 'checkInternetCommand'), or 'ping -c 1 -w 2 www.google.com'.
+% 'checkInternetCommand'), or 'ping -c 1 -t 2 www.google.com'.
 %
 % tbCheckInternet( ... 'asAssertion', asAssertion) specify whether to treat
 % the call to tbCheckInternet() as an assertion.  If asAssertion is true
@@ -24,7 +24,7 @@ function [isOnline, result] = tbCheckInternet(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', 'ping -c 1 -w 2 www.google.com'), @ischar);
+parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', 'ping -c 1 -t 2 www.google.com'), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
 parser.parse(varargin{:});
 checkInternetCommand = parser.Results.checkInternetCommand;
