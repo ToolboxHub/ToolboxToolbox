@@ -148,11 +148,12 @@ if ~isempty(localHookFolder) && 7 ~= exist(localHookFolder, 'dir')
     mkdir(localHookFolder);
 end
 
+%% TODO: make resolved and included unique by name, process in original order
+
 % resolved toolboxes that were actually deployed
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
-    record = resolved(tt);
-    resolved(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record);
+    resolved(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, resolved(tt));
 end
 
 % included toolboxes that were not deployed but might have local hooks anyway
@@ -204,6 +205,8 @@ toolboxPath = '';
 
 %% Invoke a local hook, create if necessary.
 function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record)
+rehash;
+
 % create a local hook if missing and a template exists
 [toolboxPath, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
 templateLocalHookPath = fullfile(toolboxPath, record.localHookTemplate);
@@ -230,11 +233,11 @@ cd(originalDir);
 
 %% Evaluate an expression, don't clear.
 function [status, message] = evalPrivateWorkspace(expression)
-status = -1;
 try
     message = evalc(expression);
     status = 0;
 catch err
+    status = -1;
     message = err.message;
 end
 
