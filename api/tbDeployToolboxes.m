@@ -148,8 +148,6 @@ if ~isempty(localHookFolder) && 7 ~= exist(localHookFolder, 'dir')
     mkdir(localHookFolder);
 end
 
-%% TODO: make resolved and included unique by name, process in original order
-
 % resolved toolboxes that were actually deployed
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
@@ -159,8 +157,8 @@ end
 % included toolboxes that were not deployed but might have local hooks anyway
 [included.status] = deal(0);
 [included.message] = deal('');
-nToolboxes = numel(included);
-for tt = 1:nToolboxes
+alreadyRun = ismember({included.name}, {resolved.name});
+for tt = find(~alreadyRun)
     included(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, included(tt));
 end
 
