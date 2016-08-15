@@ -137,7 +137,7 @@ for tt = 1:nToolboxes
     toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
     if 7 == exist(toolboxPath, 'dir')
         fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
-        record.strategy.addToPath(record, toolboxPath)
+        record.strategy.addToPath(record, toolboxPath);
     end
 end
 
