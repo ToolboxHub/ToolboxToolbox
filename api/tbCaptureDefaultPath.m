@@ -15,7 +15,12 @@ function defaultPath = tbCaptureDefaultPath()
 
 originalPath = path();
 try
+    wid = 'MATLAB:dispatcher:pathWarning';
+    oldWarningState = warning('query', wid);
+    warning('off', wid);
     restoredefaultpath();
+    warning(oldWarningState.state, wid);
+    
     defaultPath = path();
 catch err
     path(originalPath());
