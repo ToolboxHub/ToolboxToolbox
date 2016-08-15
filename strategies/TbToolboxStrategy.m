@@ -26,8 +26,7 @@ classdef TbToolboxStrategy < handle
         
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
             % default: is there a non-empty folder present?
-            isPresent = 7 == exist(toolboxPath, 'dir') ...
-                && 2 < numel(dir(toolboxPath));
+            isPresent = 7 == exist(toolboxPath, 'dir') && 2 < numel(dir(toolboxPath));
         end
     end
 end
