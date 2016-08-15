@@ -249,7 +249,7 @@ isSkipped = ~isSuccess & isOptional;
 for tt = find(isSkipped)
     record = records(tt);
     fprintf('Skipped: "%s" had status %d, message "%s"\n', ...
-        record.name, record.status, record.message);
+        record.name, record.status, strtrim(record.message));
 end
 
 isError = ~isSuccess & ~isOptional;
@@ -257,7 +257,7 @@ isError = ~isSuccess & ~isOptional;
 for tt = find(isError)
     record = records(tt);
     fprintf('Error: "%s" had status %d, message "%s"\n', ...
-        record.name, record.status, record.message);
+        record.name, record.status, strtrim(record.message));
     records(tt).isOk = false;
 end
 
