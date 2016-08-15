@@ -35,7 +35,12 @@ resetMatlabToolboxes = any(strcmp(reset, {'all', 'matlab'}));
 %% Start with Matlab's consistent "factory" path.
 if resetLocalToolboxes
     fprintf('Resetting path for local toolboxes.\n');
+    
+    wid = 'MATLAB:dispatcher:pathWarning';
+    oldWarningState = warning('query', wid);
+    warning('off', wid);
     restoredefaultpath();
+    warning(oldWarningState.state, wid);
 end
 
 %% Add the ToolboxToolbox itself?

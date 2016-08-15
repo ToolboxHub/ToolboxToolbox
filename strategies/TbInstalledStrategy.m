@@ -2,9 +2,7 @@ classdef TbInstalledStrategy < TbToolboxStrategy
     % Manage the path for Matlab installed toolboxes.
     %
     % Installed Matlab toolboxes require extra care to add them to the
-    % Matlab path the way Matlab wants them.  So we add them to the path
-    % with custom code here, instead of adding them the usual way in
-    % tbDeployToolboxes().
+    % Matlab path the way Matlab wants them.
     %
     % 2016 benjamin.heasly@gmail.com
     
@@ -12,16 +10,7 @@ classdef TbInstalledStrategy < TbToolboxStrategy
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             try
                 command = 'toolboxdir()';
-                installedPath = toolboxdir(record.name);
-                
-                % choose folders that come from Matlab's own default path
-                % and that match the name of this toolbox
-                command = 'TbInstalledStrategy.defaultPathMatches()';
-                toolboxPathEntries = TbInstalledStrategy.defaultPathMatches(installedPath);
-                
-                command = 'addpath()';
-                addpath(toolboxPathEntries);
-                
+                toolboxdir(record.name);
                 message = 'installed toolbox found OK';
                 status = 0;
             catch err
@@ -41,8 +30,19 @@ classdef TbInstalledStrategy < TbToolboxStrategy
             catch
                 toolboxPath = '';
             end
-            
             displayName = record.name;
+        end
+        
+        function toolboxPath = addToPath(obj, record, toolboxPath)
+            % start with folders that come from Matlab's own default path
+            % filter to those that match the name of this toolbox
+            toolboxPath = toolboxdir(record.name);
+            toolboxPathEntries = TbInstalledStrategy.defaultPathMatches(toolboxPath);
+            if strcmp(record.pathPlacement, 'prepend')
+                addpath(toolboxPathEntries, '-begin');
+            else
+                addpath(toolboxPathEntries, '-end');
+            end
         end
     end
     
