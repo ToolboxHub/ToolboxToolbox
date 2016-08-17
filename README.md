@@ -27,8 +27,7 @@ wiki page
 wiki page
 
 # Motivation
-Declarative dependency management is great.  It makes dependency management easy, reproducible, and non-interactive.  This keeps projects healty developers productive.  There are lots of declarative dependency tools out there.  For example:
-These tools include:
+Declarative dependency management tools are great.  They remove tedium and confusion from the process of wrangling dependencies, which helps keep projects healty developers productive.  There are lots of declarative dependency management tools out there.  For example:
  - [Maven](https://maven.apache.org/)
  - [Gradle](http://gradle.org/)
  - [Leiningen](http://leiningen.org/)
