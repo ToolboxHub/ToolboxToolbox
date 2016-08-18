@@ -4,7 +4,7 @@ Declarative dependency management for Matlab.
 # Intro
 The ToolboxToolbox is a declarative dependency management tool for Matlab.
 
-This means you can write down the dependencies for your Matlab projects, in a JSON file.  Then the ToolboxToolbox will go go get them for you and put them on your Matlab path.
+This means you can write down the dependencies for your Matlab projects, in a Matlab struct or JSON file.  Then the ToolboxToolbox will go go get them for you and put them on your Matlab path.
 
 You can also share your JSON configuration files on the ToolboxHub's [ToolboxRegistry](https://github.com/ToolboxHub/ToolboxRegistry).  This makes it easy to share toolboxes and install them by name.
 
@@ -23,13 +23,13 @@ cp -p ~/ToolboxToolbox/sampleStartup.m ~/Documents/MATLAB/startup.m
 matlab -nosplash -nodesktop -r "userpath(fullfile(getenv('HOME'), 'Documents', 'MATLAB'));exit"
 ```
 
-In Matlab, try deploying a sample toolbox called `sample-repo`, which contains a file called `master.txt`.  You should find find this file on your Matlab path.  
+In Matlab, try deploying a sample toolbox called [sample-repo](https://github.com/ToolboxHub/sample-repo), which contains a file called `master.txt`.  You should find find this file on your Matlab path.  
 ```
 tbUse('sample-repo');
 which master.txt
 ```
 
-You should see something like the following:
+You should see results like the following:
 ```
 >> tbUse('sample-repo')
 Updating "ToolboxRegistry".
@@ -44,9 +44,30 @@ Looks good: all toolboxes deployed OK.
 
 
 # Simpe Usages
-See code, too
+Here are some simple usage examples for ToolboxToolbox.  There are more examples in the [ToolboxToolbox code](https://github.com/ToolboxHub/ToolboxToolbox/tree/master/examples).
 
 ## Config in Matlab Struct
+You can declare toolboxes that you want in a Matlab struct, and deploy them directly from the struct.  Here's an example that obtains the [sample-repo](https://github.com/ToolboxHub/sample-repo) using Git.
+```
+record = tbToolboxRecord('name', 'sample-repo', 'type', 'git', 'url', 'https://github.com/ToolboxHub/sample-repo.git');
+tbDeployToolboxes('config', record);
+which master.txt
+```
+
+You should see results like this:
+```
+>> record = tbToolboxRecord('name', 'sample-repo', 'type', 'git', 'url', 'https://github.com/ToolboxHub/sample-repo.git');
+>> tbDeployToolboxes('config', record);
+Updating "ToolboxRegistry".
+Obtaining "sample-repo".
+Adding ToolboxToolbox to path at "/home/ben/ToolboxToolbox".
+Adding "sample-repo" to path at "/home/ben/toolboxes/sample-repo".
+Looks good: all toolboxes deployed OK.
+
+>> which master.txt
+/home/ben/toolboxes/sample-repo/master.txt
+>> 
+```
 
 ## Config in JSON
 
