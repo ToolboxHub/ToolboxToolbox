@@ -70,6 +70,30 @@ Looks good: all toolboxes deployed OK.
 ```
 
 ## Config in JSON
+You can also save your struct configuraiton in a JSON file to use later or share with others.
+```
+record = tbToolboxRecord('name', 'sample-repo', 'type', 'git', 'url', 'https://github.com/ToolboxHub/sample-repo.git');
+configPath = fullfile(tempdir(), 'sample-config.json');
+tbWriteConfig(record, 'configPath', configPath);
+tbDeployToolboxes('configPath', configPath);
+which master.txt
+```
+
+You should see results like this:
+```
+>> record = tbToolboxRecord('name', 'sample-repo', 'type', 'git', 'url', 'https://github.com/ToolboxHub/sample-repo.git');
+>> configPath = fullfile(tempdir(), 'sample-config.json');
+>> tbWriteConfig(record, 'configPath', configPath);
+>> tbDeployToolboxes('configPath', configPath);
+Updating "ToolboxRegistry".
+Updating "sample-repo".
+Adding ToolboxToolbox to path at "/home/ben/ToolboxToolbox".
+Adding "sample-repo" to path at "/home/ben/toolboxes/sample-repo".
+Looks good: all toolboxes deployed OK.
+
+>> which master.txt
+/home/ben/toolboxes/sample-repo/master.txt
+```
 
 ## Config from ToolboxHub Shared Registry
 
