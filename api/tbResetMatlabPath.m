@@ -63,6 +63,10 @@ if resetMatlabToolboxes
     fprintf('Resetting path for installed Matlab toolboxes.\n');
     
     % look in matlabroot()/toolboxes for built-in and installed toolboxes
+    wid = 'MATLAB:ver:ProductNameDeprecated';
+    oldWarningState = warning('query', wid);
+    warning('off', wid);
+    
     toolboxFolders = dir(toolboxdir(''));
     nToolboxes = numel(toolboxFolders);
     toRemove = false(1, nToolboxes);
@@ -79,16 +83,21 @@ if resetMatlabToolboxes
         toRemove(tt) = ~isempty(versionInfo);
     end
     
+    warning(oldWarningState.state, wid);
+    
+    
     % remove installed toolboxes from the path
     wid = 'MATLAB:rmpath:DirNotFound';
     oldWarningState = warning('query', wid);
     warning('off', wid);
+    
     removeFolders = {toolboxFolders(toRemove).name};
     nRemoveFolders = numel(removeFolders);
     for tt = 1:nRemoveFolders
         removePath = toolboxdir(removeFolders{tt});
         rmpath(genpath(removePath));
     end
+    
     warning(oldWarningState.state, wid);
 end
 
