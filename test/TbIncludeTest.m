@@ -165,8 +165,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'url', fullfile(pathHere, 'fixture', 'registry'));
             
             % deploy the "red" toolbox by name
-            %   red includes "blue" by url
-            %   blue includes "green" by name
+            %   red includes "blue"
+            %   blue includes "green"
             config = tbToolboxRecord('name', 'red');
             resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(config, localRegistry);
             resolvedNames = {resolvedConfig.name};
