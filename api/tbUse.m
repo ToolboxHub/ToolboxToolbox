@@ -6,6 +6,9 @@ function results = tbUse(registered, varargin)
 % automate several steps that we usually do by hand, which is good for
 % consistency and convenience.
 %
+% results = tbUse('foo') fetches one toolbox named 'foo' from ToolboxHub
+% and adds it to the Matlab path.
+%
 % results = tbUse({'foo', 'bar', ...}) fetches toolboxes named
 % 'foo', 'bar', etc. from ToolboxHub and adds them to the matlab path.
 %
@@ -34,7 +37,7 @@ function results = tbUse(registered, varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addRequired('registered', @iscellstr);
+parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('reset', 'none', @ischar);
@@ -47,6 +50,11 @@ toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 reset = parser.Results.reset;
 localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
+
+% convert convenient string form to general list form
+if ischar(registered)
+    registered = {registered};
+end
 
 results = tbDeployToolboxes( ...
     'registered', registered, ...
