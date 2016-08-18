@@ -95,7 +95,29 @@ Looks good: all toolboxes deployed OK.
 /home/ben/toolboxes/sample-repo/master.txt
 ```
 
-## Config from ToolboxHub Shared Registry
+## Config from ToolboxHub ToolboxRegistry
+So far so good.
+
+But things get really fun when you and others share your JSON configuration on the ToolboxHub [ToolboxRegistry](https://github.com/ToolboxHub/ToolboxRegistry).  The sample-repo is already [there](https://github.com/ToolboxHub/ToolboxRegistry/blob/master/configurations/sample-repo.json).
+
+You can use the convenience utility `tbUse()` to install registered toolboxes by name:
+```
+tbUse('sample-repo');
+which master.txt
+```
+
+You should get results like the following:
+```
+>> tbUse('sample-repo');
+Updating "ToolboxRegistry".
+Updating "sample-repo".
+Adding ToolboxToolbox to path at "/home/ben/ToolboxToolbox".
+Adding "sample-repo" to path at "/home/ben/toolboxes/sample-repo".
+Looks good: all toolboxes deployed OK.
+
+>> which master.txt
+/home/ben/toolboxes/sample-repo/master.txt
+```
 
 # Toolbox Records and Types
 wiki page
