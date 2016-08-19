@@ -121,10 +121,10 @@ Looks good: all toolboxes deployed OK.
 ```
 
 # Toolbox Records and Types
-wiki page
+You can declare toolboxes of different types using the `tbToolboxRecord()` function.  See details at [[Toolbox-Records-and-Types]].
 
 # Write your own Strategy
-wiki page
+You can extend the ToolboxToolbox to support additional types of toolbox.  See details at [[Custom-Toolbox-Strategies]].
 
 # Motivation
 Here is a rant/motivation about declarative dependency management, Matlab, and the ToolboxToolbox.
