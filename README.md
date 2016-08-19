@@ -4,7 +4,7 @@ Declarative dependency management for Matlab.
 # Intro
 The ToolboxToolbox is a declarative dependency management tool for Matlab.
 
-This means you can write down the dependencies for your Matlab projects, in a Matlab struct or JSON file.  Then the ToolboxToolbox will go go get them for you and put them on your Matlab path.
+This means you can write down the dependencies for your Matlab projects, in a Matlab struct or JSON file.  Then the ToolboxToolbox will go get them for you and put them on your Matlab path.
 
 You can also share your JSON configuration files on the ToolboxHub's [ToolboxRegistry](https://github.com/ToolboxHub/ToolboxRegistry).  This makes it easy to share toolboxes and install them by name.
 
