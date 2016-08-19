@@ -37,7 +37,7 @@ classdef TbInstalledStrategy < TbToolboxStrategy
             % start with folders that come from Matlab's own default path
             % filter to those that match the name of this toolbox
             toolboxPath = toolboxdir(record.name);
-            toolboxPathEntries = TbInstalledStrategy.defaultPathMatches(toolboxPath);
+            toolboxPathEntries = TbInstalledStrategy.factoryPathMatches(toolboxPath);
             if strcmp(record.pathPlacement, 'prepend')
                 addpath(toolboxPathEntries, '-begin');
             else
@@ -48,7 +48,7 @@ classdef TbInstalledStrategy < TbToolboxStrategy
     
     methods (Static)
         % filter default Matlab path for entries with the given prefix
-        function pathMatches = defaultPathMatches(pathPrefix)
+        function pathMatches = factoryPathMatches(pathPrefix)
             defaultPath = tbCaptureDefaultPath();
             scanResults = textscan(defaultPath, '%s', 'delimiter', pathsep());
             pathElements = scanResults{1};
@@ -66,6 +66,45 @@ classdef TbInstalledStrategy < TbToolboxStrategy
         function prefix = isPrefix(a, b)
             found = strfind(a, b);
             prefix = 1 == numel(found) && 1 == found;
+        end
+        
+        % discover names of extra installed toolboxes
+        function toolboxNames = installedToolboxNames()
+            % need to restore path, otherwise we can't detect toolboxes!
+            oldPath = path();
+            restoredefaultpath();
+            try
+                
+                
+                wid = 'MATLAB:ver:ProductNameDeprecated';
+                oldWarningState = warning('query', wid);
+                warning('off', wid);
+                
+                % look in matlabroot()/toolboxes for built-in and installed toolboxes
+                toolboxFolders = dir(toolboxdir(''));
+                nToolboxes = numel(toolboxFolders);
+                isInstalled = false(1, nToolboxes);
+                for tt = 1:nToolboxes
+                    toolboxName = toolboxFolders(tt).name;
+                    
+                    % skip folders that can't be considered "installed" toolboxes
+                    if any(strcmp(toolboxName, {'.', '..', 'matlab'}))
+                        continue;
+                    end
+                    
+                    % detect installed toolboxes as those that have version info
+                    versionInfo = ver(toolboxName);
+                    isInstalled(tt) = ~isempty(versionInfo);
+                end
+                
+                warning(oldWarningState.state, wid);
+                
+                toolboxNames = {toolboxFolders(isInstalled).name};
+            catch err
+                path(oldPath);
+                rethrow(err);
+            end
+            path(oldPath);
         end
     end
 end

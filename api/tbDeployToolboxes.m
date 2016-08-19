@@ -21,9 +21,9 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % toolboxRoot folder to set the path for.  The default location is
 % getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
 %
-% tbDeployToolboxes(... 'reset', reset) specifies which parts of the
-% Matlab path to clear out before processing the given configuration.  The
-% default is 'none', don't reset the path at all.  See tbResetMatlabPath().
+% tbDeployToolboxes(... 'reset', reset) specifies how to reset the Matlab
+% path before processing the given configuration.  The default is 'as-is',
+% don't reset the path at all.  See tbResetMatlabPath().
 %
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
 % to deploy if found.  Other toolboxes will be ignored.
@@ -58,7 +58,7 @@ parser.addParameter('configPath', tbGetPref('configPath', '~/toolbox_config.json
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.addParameter('reset', 'none', @ischar);
+parser.addParameter('reset', 'as-is', @ischar);
 parser.addParameter('name', '', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
@@ -124,7 +124,7 @@ resolved = tbFetchToolboxes(resolved, ...
 
 
 %% Add each toolbox to the path.
-tbResetMatlabPath('withSelf', true, 'reset', reset);
+tbResetMatlabPath(reset);
 
 % add toolboxes one at a time 
 % so we don't add extra cruft that might be in the toolboxRoot folder

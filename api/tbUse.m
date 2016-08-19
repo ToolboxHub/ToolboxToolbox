@@ -16,9 +16,9 @@ function results = tbUse(registered, varargin)
 % toolboxRoot folder to set the path for.  The default location is
 % getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
 %
-% tbUse(... 'reset', reset) specifies which parts of the
-% Matlab path to clear out before processing the given configuration.  The
-% default is 'none', don't reset the path at all.  See tbResetMatlabPath().
+% tbUse(... 'reset', reset) specifies how to reset the Matlab path before
+% processing the given configuration.  The default is 'as-is', don't reset
+% the path at all.  See tbResetMatlabPath().
 %
 % tbUse( ... 'registry', registry) specify an explicit toolbox
 % record which indicates where and how to access a registry of shared
@@ -40,7 +40,7 @@ parser = inputParser();
 parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.addParameter('reset', 'none', @ischar);
+parser.addParameter('reset', 'as-is', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.parse(registered, varargin{:});
