@@ -23,7 +23,8 @@ cp -p ~/ToolboxToolbox/sampleStartup.m ~/Documents/MATLAB/startup.m
 matlab -nosplash -nodesktop -r "userpath(fullfile(getenv('HOME'), 'Documents', 'MATLAB'));exit"
 ```
 
-In Matlab, try deploying a sample toolbox called [sample-repo](https://github.com/ToolboxHub/sample-repo), which contains a file called `master.txt`.  You should find find this file on your Matlab path.  
+## Test It
+In Matlab, try deploying a sample toolbox called [sample-repo](https://github.com/ToolboxHub/sample-repo), which contains a file called `master.txt`.  You should find this file on your Matlab path.  
 ```
 tbUse('sample-repo');
 which master.txt
