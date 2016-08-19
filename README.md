@@ -121,7 +121,7 @@ Looks good: all toolboxes deployed OK.
 ```
 
 # Toolbox Records and Types
-You can declare toolboxes of different types using the `tbToolboxRecord()` function.  See details at [Toolbox Records and Types](https://github.com/ToolboxHub/ToolboxToolbox/wiki/Toolbox-Records-and-Types).
+You can declare toolboxes of several types using the `tbToolboxRecord()` function.  See details at [Toolbox Records and Types](https://github.com/ToolboxHub/ToolboxToolbox/wiki/Toolbox-Records-and-Types).
 
 # Write your own Strategy
 You can extend the ToolboxToolbox to support additional types of toolbox.  See details at [Custom Toolbox Strategies](https://github.com/ToolboxHub/ToolboxToolbox/wiki/Custom-Toolbox-Strategies).
