@@ -8,7 +8,7 @@ This means you can write down the dependencies for your Matlab projects, in a Ma
 
 You can also share your JSON configuration files on the ToolboxHub's [ToolboxRegistry](https://github.com/ToolboxHub/ToolboxRegistry).  This makes it easy to share toolboxes and install them by name.
 
-Here's some more about [what motivated the ToolboxToolbox]().
+Here's some more about [what motivated the ToolboxToolbox](https://github.com/ToolboxHub/ToolboxToolbox/wiki/Motivation).
 
 # Installation
 To install the ToolboxToolbox itself, you have to get the code and do a little bit of setup.  The following should work on OS X or Linux:
