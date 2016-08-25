@@ -247,6 +247,20 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
             obj.assertNotEmpty(whichExpected);
         end
         
+        function testDoNotAddToPath(obj)
+            % fetch toolboxes fresh
+            [config, expectedFiles, unexpectedFiles] = obj.createConfig();
+            results = tbDeployToolboxes( ...
+                'config', config, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'full', ...
+                'addToPath', false);
+            obj.assertTrue(all([results.status] == 0));
+            
+            whichExpected = which('master.txt');
+            obj.assertEmpty(whichExpected);
+        end
+        
         function testWithJsonSlashEscapes(obj)
             % make sure we can read JSON that includes slash escapes
             %   like "https:\/\/github.com\/ToolboxHub\/sample-repo.git"

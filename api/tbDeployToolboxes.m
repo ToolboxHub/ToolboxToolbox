@@ -42,6 +42,14 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % location is getpref('ToolboxToolbox', 'localHookFolder'), or
 % '~/toolboxes/localHooks'.
 %
+% tbDeployToolboxes(... 'runLocalHooks', runLocalHooks) specifies whether
+% to run the local hooks deployed toolboxes (true), or not (false).  The
+% default is true, run the local hooks.
+%
+% tbDeployToolboxes(... 'addToPath', addToPath) specifies whether
+% to add deployed toolboxes (true) to the Matlab path, or not (false).  The
+% default is true, add toolboxes to the path.
+%
 % As an optimization for shared systems, toolboxes may be pre-deployed
 % (probably by an admin) to a common toolbox root folder.  Toolboxes found
 % here will be added to the path instead of toolboxes in the given
@@ -63,6 +71,8 @@ parser.addParameter('name', '', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('registered', {}, @iscellstr);
+parser.addParameter('runLocalHooks', true, @islogical);
+parser.addParameter('addToPath', true, @islogical);
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
 config = parser.Results.config;
@@ -73,11 +83,15 @@ name = parser.Results.name;
 localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
 registered = parser.Results.registered;
+runLocalHooks = parser.Results.runLocalHooks;
+addToPath = parser.Results.addToPath;
+
 
 %% Choose explicit config, or load from file.
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = tbReadConfig('configPath', configPath);
 end
+
 
 %% Include toolboxes by name from registry.
 if ~isempty(registered)
@@ -115,6 +129,11 @@ end
 %% Resolve "include" records into one big, flat config.
 tbFetchRegistry('registry', registry, 'doUpdate', true);
 [resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
+[resolved.path] = deal('');
+[resolved.status] = deal(0);
+[resolved.message] = deal('');
+[included.status] = deal(0);
+[included.message] = deal('');
 
 
 %% Obtain or update the toolboxes.
@@ -124,40 +143,42 @@ resolved = tbFetchToolboxes(resolved, ...
 
 
 %% Add each toolbox to the path.
-tbResetMatlabPath(reset);
-
-% add toolboxes one at a time 
-% so we don't add extra cruft that might be in the toolboxRoot folder
-[resolved.path] = deal('');
-nToolboxes = numel(resolved);
-for tt = 1:nToolboxes
-    record = resolved(tt);
+if addToPath
+    tbResetMatlabPath(reset);
     
-    % add shared toolbox to path?
-    toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
-    if 7 == exist(toolboxPath, 'dir')
-        fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
-        record.strategy.addToPath(record, toolboxPath);
+    % add toolboxes one at a time
+    % so we don't add extra cruft that might be in the toolboxRoot folder
+    nToolboxes = numel(resolved);
+    for tt = 1:nToolboxes
+        record = resolved(tt);
+        
+        % add shared toolbox to path?
+        toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
+        if 7 == exist(toolboxPath, 'dir')
+            fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
+            record.strategy.addToPath(record, toolboxPath);
+        end
     end
 end
 
+
 %% Set up and invoke "local" hooks with machine-specific setup.
-if ~isempty(localHookFolder) && 7 ~= exist(localHookFolder, 'dir')
-    mkdir(localHookFolder);
-end
-
-% resolved toolboxes that were actually deployed
-nToolboxes = numel(resolved);
-for tt = 1:nToolboxes
-    resolved(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, resolved(tt));
-end
-
-% included toolboxes that were not deployed but might have local hooks anyway
-[included.status] = deal(0);
-[included.message] = deal('');
-alreadyRun = ismember({included.name}, {resolved.name});
-for tt = find(~alreadyRun)
-    included(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, included(tt));
+if runLocalHooks
+    if ~isempty(localHookFolder) && 7 ~= exist(localHookFolder, 'dir')
+        mkdir(localHookFolder);
+    end
+    
+    % resolved toolboxes that were actually deployed
+    nToolboxes = numel(resolved);
+    for tt = 1:nToolboxes
+        resolved(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, resolved(tt));
+    end
+    
+    % included toolboxes that were not deployed but might have local hooks anyway
+    alreadyRun = ismember({included.name}, {resolved.name});
+    for tt = find(~alreadyRun)
+        included(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, included(tt));
+    end
 end
 
 

@@ -30,6 +30,14 @@ function results = tbUse(registered, varargin)
 % location is getpref('ToolboxToolbox', 'localHookFolder'), or
 % '~/toolboxes/localHooks'.
 %
+% tbUse(... 'runLocalHooks', runLocalHooks) specifies whether
+% to run the local hooks deployed toolboxes (true), or not (false).  The
+% default is true, run the local hooks.
+%
+% tbUse(... 'addToPath', addToPath) specifies whether
+% to add deployed toolboxes (true) to the Matlab path, or not (false).  The
+% default is true, add toolboxes to the path.
+%
 % tbUse( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
 % where to look for shared toolboxes. The default location is
 % getpref('ToolboxToolbox', 'toolboxCommonRoot'), or '/srv/toolboxes'.
@@ -43,6 +51,8 @@ parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/to
 parser.addParameter('reset', 'as-is', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
+parser.addParameter('runLocalHooks', true, @islogical);
+parser.addParameter('addToPath', true, @islogical);
 parser.parse(registered, varargin{:});
 registered = parser.Results.registered;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
@@ -50,6 +60,8 @@ toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 reset = parser.Results.reset;
 localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
+runLocalHooks = parser.Results.runLocalHooks;
+addToPath = parser.Results.addToPath;
 
 % convert convenient string form to general list form
 if ischar(registered)
@@ -62,4 +74,6 @@ results = tbDeployToolboxes( ...
     'toolboxCommonRoot', toolboxCommonRoot, ...
     'reset', reset, ...
     'localHookFolder', localHookFolder, ...
-    'registry', registry);
+    'registry', registry, ...
+    'runLocalHooks', runLocalHooks, ...
+    'addToPath', addToPath);

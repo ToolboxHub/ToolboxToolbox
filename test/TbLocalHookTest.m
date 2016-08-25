@@ -152,7 +152,7 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
         end
         
         function testHookInIncludeRecord(obj)
-            % run an existing local hook 
+            % run an existing local hook
             % even if it comes from an "include" record
             % use the "bad" hook so that we know that it was run
             pathHere = fileparts(mfilename('fullpath'));
@@ -174,5 +174,28 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
             obj.assertNotEqual(included.status, 0);
             obj.assertEqual(included.message, 'I am not a nice hook.');
         end
+        
+        function testSkipLocalHooks(obj)
+            % make the "bad" hook exist in the toolbox folder
+            pathHere = fileparts(mfilename('fullpath'));
+            badHook = fullfile(pathHere, 'fixture', 'badHook.m');
+            copyfile(badHook, obj.localFolder);
+            
+            % deplpoy should skip the bad hook
+            record = tbToolboxRecord( ...
+                'type', 'local', ...
+                'name', 'local_toolbox', ...
+                'url', obj.localFolder, ...
+                'localHookTemplate', 'badHook.m');
+            results = tbDeployToolboxes( ...
+                'config', record, ...
+                'reset', 'full', ...
+                'localHookFolder', obj.localHookFolder, ...
+                'runLocalHooks', false);
+            
+            % bad hook should not have run or errored
+            obj.assertEqual(results.status, 0);
+        end
+        
     end
 end
