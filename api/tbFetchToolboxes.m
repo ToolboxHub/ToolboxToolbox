@@ -11,7 +11,8 @@ function results = tbFetchToolboxes(config, varargin)
 %
 % tbFetchToolboxes( ... 'toolboxRoot', toolboxRoot) specify where to put
 % toolboxes.  The default location is
-% getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
+% getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in the
+% userpath() folder.
 %
 % As an optimization for shared systems, toolboxes may be pre-deployed
 % (by an admin) to a common toolbox root folder.  Toolboxes found here will
@@ -25,7 +26,7 @@ function results = tbFetchToolboxes(config, varargin)
 
 parser = inputParser();
 parser.addRequired('config', @isstruct);
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.parse(config, varargin{:});
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);

@@ -12,14 +12,15 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 %
 % tbDeployToolboxes( ... 'configPath', configPath) specify where to look
 % for the config file.  The default location is getpref('ToolboxToolbox',
-% 'configPath'), or '~/toolbox_config.json'.
+% 'configPath'), or 'toolbox_config.json' in the userpath() folder.
 %
 % tbDeployToolboxes( ... 'config', config) specify an explicit config
 % struct to use instead of reading config from file.
 %
 % tbDeployToolboxes(... 'toolboxRoot', toolboxRoot) specifies the
 % toolboxRoot folder to set the path for.  The default location is
-% getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
+% getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in the
+% userpath() folder.
 %
 % tbDeployToolboxes(... 'reset', reset) specifies how to reset the Matlab
 % path before processing the given configuration.  The default is 'as-is',
@@ -48,7 +49,7 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % tbDeployToolboxes(... 'localHookFolder', localHookFolder) specifies the
 % path to the folder that contains local hook scripts.  The default
 % location is getpref('ToolboxToolbox', 'localHookFolder'), or
-% '~/toolboxes/localHooks'.
+% 'localToolboxHooks' in the userpath() folder.
 %
 % tbDeployToolboxes(... 'runLocalHooks', runLocalHooks) specifies whether
 % to run the local hooks deployed toolboxes (true), or not (false).  The
@@ -70,15 +71,15 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('configPath', tbGetPref('configPath', '~/toolbox_config.json'), @ischar);
+parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('reset', 'as-is', @ischar);
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.addParameter('name', '', @ischar);
-parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
+parser.addParameter('localHookFolder', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('registered', {}, @iscellstr);
 parser.addParameter('runLocalHooks', true, @islogical);

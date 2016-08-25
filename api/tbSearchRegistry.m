@@ -12,14 +12,15 @@ function configPath = tbSearchRegistry(name, varargin)
 %
 % tbDeployToolboxes(... 'toolboxRoot', toolboxRoot) specifies the
 % toolboxRoot folder where the registry should be located.  The default
-% location is getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
+% location is getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in
+% the userpath() folder.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
 parser.addRequired('name', @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.parse(name, varargin{:});
 name = parser.Results.name;
 registry = parser.Results.registry;

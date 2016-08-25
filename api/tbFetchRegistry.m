@@ -15,7 +15,8 @@ function results = tbFetchRegistry(varargin)
 %
 % tbDeployToolboxes(... 'toolboxRoot', toolboxRoot) specifies the
 % toolboxRoot folder where the registry should be saved.  The default
-% location is getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
+% location is getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in
+% the userpath() folder.
 %
 % tbDeployToolboxes(... 'doUpdate', doUpdate) specifies whether to
 % update the registry if it already exists (true), or to leave an existing
@@ -27,7 +28,7 @@ function results = tbFetchRegistry(varargin)
 
 parser = inputParser();
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('doUpdate', true, @islogical);
 parser.parse(varargin{:});
 registry = parser.Results.registry;

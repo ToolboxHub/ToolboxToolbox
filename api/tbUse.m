@@ -14,7 +14,8 @@ function results = tbUse(registered, varargin)
 %
 % tbUse(... 'toolboxRoot', toolboxRoot) specifies the
 % toolboxRoot folder to set the path for.  The default location is
-% getpref('ToolboxToolbox', 'toolboxRoot'), or '~/toolboxes'.
+% getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in the
+% userpath() folder.
 %
 % tbUse(... 'reset', reset) specifies how to reset the Matlab path before
 % processing the given configuration.  The default is 'as-is', don't reset
@@ -36,7 +37,7 @@ function results = tbUse(registered, varargin)
 % tbUse(... 'localHookFolder', localHookFolder) specifies the
 % path to the folder that contains local hook scripts.  The default
 % location is getpref('ToolboxToolbox', 'localHookFolder'), or
-% '~/toolboxes/localHooks'.
+% 'localToolboxHooks' in the userpath() folder.
 %
 % tbUse(... 'runLocalHooks', runLocalHooks) specifies whether
 % to run the local hooks deployed toolboxes (true), or not (false).  The
@@ -54,12 +55,12 @@ function results = tbUse(registered, varargin)
 
 parser = inputParser();
 parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('reset', 'as-is', @ischar);
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
-parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
+parser.addParameter('localHookFolder', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('addToPath', true, @islogical);
