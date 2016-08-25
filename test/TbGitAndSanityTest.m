@@ -246,7 +246,39 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
             whichExpected = which(expectedFiles{1});
             obj.assertNotEmpty(whichExpected);
         end
-
+        
+        function testWithJsonSlashEscapes(obj)
+            % make sure we can read JSON that includes slash escapes
+            %   like "https:\/\/github.com\/ToolboxHub\/sample-repo.git"
+            
+            pathHere = fileparts(mfilename('fullpath'));
+            configFile = fullfile(pathHere, 'fixture', 'with-slash-escapes.json');
+            results = tbDeployToolboxes( ...
+                'configPath', configFile, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'full');
+            obj.assertEqual(results.status, 0);
+            
+            whichExpected = which('master.txt');
+            obj.assertNotEmpty(whichExpected);
+        end
+        
+        function testWithoutJsonSlashEscapes(obj)
+            % make sure we can read JSON that omits slash escapes
+            %   like "https://github.com/ToolboxHub/sample-repo.git"
+            
+            pathHere = fileparts(mfilename('fullpath'));
+            configFile = fullfile(pathHere, 'fixture', 'without-slash-escapes.json');
+            results = tbDeployToolboxes( ...
+                'configPath', configFile, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'full');
+            obj.assertEqual(results.status, 0);
+            
+            whichExpected = which('master.txt');
+            obj.assertNotEmpty(whichExpected);
+        end
+        
     end
     
     methods
