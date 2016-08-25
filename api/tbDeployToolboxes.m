@@ -27,7 +27,7 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 %
 % tbDeployToolboxes( ... 'remove', remove) specifies folders to remove from
 % to the Matlab path, after setting the path to the given flavor.  See
-% tbResetMatlabPath(). 
+% tbResetMatlabPath().
 %
 % tbDeployToolboxes( ... 'add', add) specifies folders to add to the Matlab
 % path, after setting the path to the given flavor.  See
@@ -167,7 +167,7 @@ if addToPath
         record = resolved(tt);
         
         % add shared toolbox to path?
-        toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
+        toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, true);
         if 7 == exist(toolboxPath, 'dir')
             fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
             record.strategy.addToPath(record, toolboxPath);
@@ -200,9 +200,9 @@ end
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
     record = resolved(tt);
-    [~, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
+    [~, toolboxName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, false);
     if ~isempty(record.hook) && 2 ~= exist(record.hook, 'file')
-        fprintf('Running hook for "%s": "%s".\n', hookName, record.hook);
+        fprintf('Running hook for "%s": "%s".\n', toolboxName, record.hook);
         [resolved(tt).status, resolved(tt).message] = evalIsolated(record.hook);
     end
 end
@@ -219,14 +219,14 @@ end
 
 
 %% Choose a shared or normal path for the toolbox.
-function [toolboxPath, displayName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record)
+function [toolboxPath, displayName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, withSubfolder)
 strategy = tbChooseStrategy(record);
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxCommonRoot, record, 'withSubfolder', true);
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxCommonRoot, record, 'withSubfolder', withSubfolder);
 if 7 == exist(toolboxPath, 'dir')
     return;
 end
 
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record, 'withSubfolder', true);
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record, 'withSubfolder', withSubfolder);
 if 7 == exist(toolboxPath, 'dir')
     return;
 end
@@ -239,7 +239,7 @@ function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolde
 rehash;
 
 % create a local hook if missing and a template exists
-[toolboxPath, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record);
+[toolboxPath, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, false);
 templateLocalHookPath = fullfile(toolboxPath, record.localHookTemplate);
 existingLocalHookPath = fullfile(localHookFolder, [hookName '.m']);
 if 2 ~= exist(existingLocalHookPath, 'file') && 2 == exist(templateLocalHookPath, 'file');
