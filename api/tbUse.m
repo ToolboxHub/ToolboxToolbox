@@ -20,6 +20,14 @@ function results = tbUse(registered, varargin)
 % processing the given configuration.  The default is 'as-is', don't reset
 % the path at all.  See tbResetMatlabPath().
 %
+% tbUse( ... 'remove', remove) specifies folders to remove from
+% to the Matlab path, after setting the path to the given flavor.  See
+% tbResetMatlabPath(). 
+%
+% tbUse( ... 'add', add) specifies folders to add to the Matlab
+% path, after setting the path to the given flavor.  See
+% tbResetMatlabPath().
+%
 % tbUse( ... 'registry', registry) specify an explicit toolbox
 % record which indicates where and how to access a registry of shared
 % toolbox configurations.  The default is getpref('ToolboxToolbox',
@@ -49,6 +57,8 @@ parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('reset', 'as-is', @ischar);
+parser.addParameter('add', '', @ischar);
+parser.addParameter('remove', '', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('runLocalHooks', true, @islogical);
@@ -58,6 +68,8 @@ registered = parser.Results.registered;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 reset = parser.Results.reset;
+add = parser.Results.add;
+remove = parser.Results.remove;
 localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
 runLocalHooks = parser.Results.runLocalHooks;
@@ -73,6 +85,8 @@ results = tbDeployToolboxes( ...
     'toolboxRoot', toolboxRoot, ...
     'toolboxCommonRoot', toolboxCommonRoot, ...
     'reset', reset, ...
+    'add', add, ...
+    'remove', remove, ...
     'localHookFolder', localHookFolder, ...
     'registry', registry, ...
     'runLocalHooks', runLocalHooks, ...

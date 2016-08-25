@@ -25,6 +25,14 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % path before processing the given configuration.  The default is 'as-is',
 % don't reset the path at all.  See tbResetMatlabPath().
 %
+% tbDeployToolboxes( ... 'remove', remove) specifies folders to remove from
+% to the Matlab path, after setting the path to the given flavor.  See
+% tbResetMatlabPath(). 
+%
+% tbDeployToolboxes( ... 'add', add) specifies folders to add to the Matlab
+% path, after setting the path to the given flavor.  See
+% tbResetMatlabPath().
+%
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
 % to deploy if found.  Other toolboxes will be ignored.
 %
@@ -67,6 +75,8 @@ parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', '~/toolboxes'), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('reset', 'as-is', @ischar);
+parser.addParameter('add', '', @ischar);
+parser.addParameter('remove', '', @ischar);
 parser.addParameter('name', '', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', '~/localToolboxHooks'), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
@@ -79,6 +89,8 @@ config = parser.Results.config;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 reset = parser.Results.reset;
+add = parser.Results.add;
+remove = parser.Results.remove;
 name = parser.Results.name;
 localHookFolder = parser.Results.localHookFolder;
 registry = parser.Results.registry;
@@ -144,7 +156,9 @@ resolved = tbFetchToolboxes(resolved, ...
 
 %% Add each toolbox to the path.
 if addToPath
-    tbResetMatlabPath(reset);
+    tbResetMatlabPath(reset, ...
+        'add', add, ...
+        'remove', remove);
     
     % add toolboxes one at a time
     % so we don't add extra cruft that might be in the toolboxRoot folder
