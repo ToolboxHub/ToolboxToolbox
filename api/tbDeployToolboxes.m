@@ -79,7 +79,7 @@ parser.addParameter('reset', 'as-is', @ischar);
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.addParameter('name', '', @ischar);
-parser.addParameter('localHookFolder', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
+parser.addParameter('localHookFolder', tbGetPref('localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('registered', {}, @iscellstr);
 parser.addParameter('runLocalHooks', true, @islogical);

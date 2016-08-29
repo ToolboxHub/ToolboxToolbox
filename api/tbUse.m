@@ -60,7 +60,7 @@ parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/to
 parser.addParameter('reset', 'as-is', @ischar);
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
-parser.addParameter('localHookFolder', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
+parser.addParameter('localHookFolder', tbGetPref('localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('addToPath', true, @islogical);
