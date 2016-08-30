@@ -18,7 +18,7 @@ classdef TbDockerTest < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function cleanUpTestImage(obj)
             command = ['docker rmi --force ' obj.imageName];
-            [status, result] = system(command);
+            [status, result] = tbSystem(command);
         end
     end
     

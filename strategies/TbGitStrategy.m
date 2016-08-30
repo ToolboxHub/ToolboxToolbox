@@ -5,23 +5,12 @@ classdef TbGitStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods (Static)
-        function [status, result] = systemNoLibs(command)
-            if isunix()
-                commandNoLibs = ['LD_LIBRARY_PATH= ', command];
-            elseif ismac()
-                commandNoLibs = ['DYLD_LIBRARY_PATH= ', command];
-            else
-                commandNoLibs = command;
-            end
-            [status, result] = system(commandNoLibs);
-        end
-        
         function [status, result] = systemInFolder(command, folder)
             originalFolder = pwd();
             try
                 tbCheckInternet('asAssertion', true);
                 cd(folder);
-                [status, result] = TbGitStrategy.systemNoLibs(command);
+                [status, result] = tbSystem(command);
             catch err
                 status = -1;
                 result = err.message;

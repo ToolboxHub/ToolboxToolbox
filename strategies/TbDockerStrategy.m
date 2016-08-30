@@ -11,7 +11,7 @@ classdef TbDockerStrategy < TbToolboxStrategy
             else
                 command = ['docker images ' record.url ' | grep ' record.flavor];
             end
-            [status, result] = system(command);
+            [status, result] = tbSystem(command);
             isPresent = status == 0 && ~isempty(result);
         end
         
@@ -25,7 +25,7 @@ classdef TbDockerStrategy < TbToolboxStrategy
                 end
                
                 tbCheckInternet('asAssertion', true);
-                [status, result] = system(command);
+                [status, result] = tbSystem(command);
                 if 0 ~= status
                     error('Docker pull failed: %s', result);
                 end
