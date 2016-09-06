@@ -20,11 +20,11 @@ git clone https://github.com/ToolboxHub/ToolboxToolbox.git
 
 Set up your Matlab `userpath()` and `startup.m`.  These let Matlab find the ToolboxToolbox when it starts.  The `startup.m` also gives you some sensible defaults for ToolboxToolbox preferences, like where to save installed toolboxes.  
 
-If you already know your Matlab `userpath`, you can skip this step.  If you want to know your `userpath`, you can just type `userpath` in Matlab.  Or from the terminal, `matlab -nodisplay -r "disp(userpath());exit`.  
+If you already know your Matlab "user path", you can skip this step.  If you want to know your user path, you can just type `userpath()` in Matlab.  Or from the terminal, `matlab -nodisplay -r "disp(userpath());exit"`.  
 
-You'll get a string like `/Users/ben/Documents/MATLAB:`.  Omit the last `:` to get the file path we need below.
+You'll get a string like `/Users/ben/Documents/MATLAB:`.  Omit the last `:` to get the user path we need below.
 
-Copy the ToolboxToolbox `sampleStartup.m` to your Matlab `userpath`, with the name `startup.m`.  From the terminal this would be:
+Copy the ToolboxToolbox `sampleStartup.m` to your Matlab user path, with the name `startup.m`.  From the terminal this would be:
 ```
 cp -p (where-you-cloned-it)/ToolboxToolbox/sampleStartup.m (your-userpath)/startup.m
 ```
