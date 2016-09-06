@@ -18,7 +18,8 @@ Use [Git](https://git-scm.com/) to get the ToolboxToolbox code:
 git clone https://github.com/ToolboxHub/ToolboxToolbox.git
 ```
 
-Set up your Matlab `userpath()` and `startup.m`.  These let Matlab find the ToolboxToolbox when it starts.  The `startup.m` also gives you some sensible defaults for ToolboxToolbox preferences, like where to save installed toolboxes.  
+Set up your Matlab `userpath()` and `startup.m`.  These let Matlab find the ToolboxToolbox when it starts.  The `startup.m` also gives you some sensible defaults for ToolboxToolbox preferences, like where you cloned the ToolboxToolbox, and where to save other installed toolboxes.  
+
 ## Find your Matlab "User Path"
 If you already know your Matlab "user path", you can skip this step.  If you want to know your user path, you can just type `userpath()` in Matlab.  Or from the terminal, `matlab -nodisplay -r "disp(userpath());exit"`.  
 
