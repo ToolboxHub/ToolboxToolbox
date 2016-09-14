@@ -142,11 +142,15 @@ end
 %% Resolve "include" records into one big, flat config.
 tbFetchRegistry('registry', registry, 'doUpdate', true);
 [resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
-[resolved.path] = deal('');
-[resolved.status] = deal(0);
-[resolved.message] = deal('');
-[included.status] = deal(0);
-[included.message] = deal('');
+if (~isempty(resolved))
+    [resolved.path] = deal('');
+    [resolved.status] = deal(0);
+    [resolved.message] = deal('');
+end
+if (~isempty(included))
+    [included.status] = deal(0);
+    [included.message] = deal('');
+end
 
 
 %% Obtain or update the toolboxes.
@@ -211,11 +215,20 @@ end
 
 %% How did it go?
 resolved = reviewRecords(resolved);
-included = reviewRecords(included);
-if all([resolved.isOk]) && all([included.isOk])
-    fprintf('Looks good: all toolboxes deployed OK.\n');
+if all([resolved.isOk])
+    fprintf('Looks good: all resolved toolboxes deployed OK.\n');
 else
-    fprintf('Something went wrong, please see above.\n');
+    fprintf('Something went wrong with resolved toolboxes, please see above.\n');
+end
+if (~isempty(included))
+    included = reviewRecords(included);
+    if all([included.isOk])
+        fprintf('Looks good: all included toolboxes deployed OK.\n');
+    else
+        fprintf('Something went wrong with included toolboxes, please see above.\n');
+    end
+else
+    fprintf('No included toolboxes were specified so we did not check them.\n');
 end
 
 
