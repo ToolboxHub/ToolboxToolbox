@@ -38,21 +38,12 @@ classdef TbGitStrategy < TbToolboxStrategy
             end
             
             if ~isempty(record.flavor)
-                % make a local branch for a specific branch/tag/commit
-                command = sprintf('git fetch origin +%s:%s', ...
-                    record.flavor, ...
-                    record.flavor);
-                [status, message] = TbGitStrategy.systemInFolder(command, toolboxPath);
-                if 0 ~= status
-                    return;
-                end
-                
-                % check out the new local branch
+                % git checkout sampleBranch
                 command = sprintf('git checkout %s', record.flavor);
                 [status, message] = TbGitStrategy.systemInFolder(command, toolboxPath);
                 if 0 ~= status
                     return;
-                end
+                end                
             end
         end
         
