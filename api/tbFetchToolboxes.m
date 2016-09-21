@@ -33,11 +33,11 @@ toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 
 results = config;
-[results.operation] = deal('skipped');
-[results.command] = deal('');
-[results.status] = deal(0);
-[results.message] = deal('');
-[results.strategy] = deal([]);
+results = tbDealField(results, 'operation', 'skipped');
+results = tbDealField(results, 'command', '');
+results = tbDealField(results, 'status', 0);
+results = tbDealField(results, 'message', '');
+results = tbDealField(results, 'strategy', []);
 
 %% Fetch or update each toolbox.
 nToolboxes = numel(results);

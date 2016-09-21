@@ -142,15 +142,11 @@ end
 %% Resolve "include" records into one big, flat config.
 tbFetchRegistry('registry', registry, 'doUpdate', true);
 [resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
-if (~isempty(resolved))
-    [resolved.path] = deal('');
-    [resolved.status] = deal(0);
-    [resolved.message] = deal('');
-end
-if (~isempty(included))
-    [included.status] = deal(0);
-    [included.message] = deal('');
-end
+resolved = tbDealField(resolved, 'path', '');
+resolved = tbDealField(resolved, 'status', 0);
+resolved = tbDealField(resolved, 'message', '');
+included = tbDealField(included, 'status', 0);
+included = tbDealField(included, 'message', '');
 
 
 %% Obtain or update the toolboxes.
@@ -215,14 +211,14 @@ end
 
 %% How did it go?
 resolved = reviewRecords(resolved);
-if all([resolved.isOk])
+if all(tbCollectField(resolved, 'isOk', 'template', []))
     fprintf('Looks good: all resolved toolboxes deployed OK.\n');
 else
     fprintf('Something went wrong with resolved toolboxes, please see above.\n');
 end
 if (~isempty(included))
     included = reviewRecords(included);
-    if all([included.isOk])
+    if all(tbCollectField(included, 'isOk', 'template', []))
         fprintf('Looks good: all included toolboxes deployed OK.\n');
     else
         fprintf('Something went wrong with included toolboxes, please see above.\n');
@@ -289,7 +285,7 @@ end
 
 %% Display errors and warnings for each record.
 function records = reviewRecords(records)
-isSuccess = 0 == [records.status];
+isSuccess = 0 == tbCollectField(records, 'status', 'template', []);
 isOptional = strcmp({records.importance}, 'optional');
 
 isSkipped = ~isSuccess & isOptional;
@@ -300,7 +296,7 @@ for tt = find(isSkipped)
 end
 
 isError = ~isSuccess & ~isOptional;
-[records.isOk] = deal(true);
+records = tbDealField(records, 'isOk', true);
 for tt = find(isError)
     record = records(tt);
     fprintf('Error: "%s" had status %d, message "%s"\n', ...

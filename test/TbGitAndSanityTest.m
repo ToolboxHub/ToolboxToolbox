@@ -219,7 +219,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                 'config', config, ...
                 'toolboxRoot', obj.toolboxRoot, ...
                 'reset', 'full');
-            obj.assertTrue(all([results.isOk]));
+            obj.assertTrue(all(tbCollectField(results, 'isOk', 'template', [])));
             obj.assertEqual(results(1).message, 'I am optional');
         end
         
@@ -255,7 +255,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                 'toolboxRoot', obj.toolboxRoot, ...
                 'reset', 'full', ...
                 'addToPath', false);
-            obj.assertTrue(all([results.status] == 0));
+            obj.assertTrue(all(tbCollectField(results, 'status', 'template', []) == 0));
             
             whichExpected = which('master.txt');
             obj.assertEmpty(whichExpected);
