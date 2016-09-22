@@ -106,25 +106,20 @@ if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
 end
 
 
-%% Include toolboxes by name from registry.
+%% Convert registered toolbox names to "include" records.
 if ~isempty(registered)
     nRegistered = numel(registered);
     registeredRecords = cell(1, nRegistered);
     for rr = 1:nRegistered
         registeredRecords{rr} = tbToolboxRecord('name', registered{rr});
     end
-    
+    registeredConfig = [registeredRecords{:}];
+        
     if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
-        config = [registeredRecords{:}];
+        config = registeredConfig;
     else
-        config = cat(2, config, [registeredRecords{:}]);
+        config = cat(2, config, registeredConfig);
     end
-end
-
-if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
-    resolved = [];
-    included = [];
-    return;
 end
 
 
@@ -132,6 +127,8 @@ end
 if ~isempty(name)
     isName = strcmp(name, {config.name});
     if ~any(isName)
+        fprintf('Have configurations with names: %s.\n', sprintf('"%s", ', config.name));
+        fprintf('  but none with name "%s".\n', name);
         resolved = [];
         included = [];
         return;
@@ -139,8 +136,20 @@ if ~isempty(name)
     config = config(isName);
 end
 
+
+%% Get or update the toolbox registry.
+registry = tbFetchRegistry('registry', registry, 'doUpdate', true);
+if 0 ~= registry.status
+    fprintf('Unable to fetch toolbox registry "%s".\n', registry.name);
+    fprintf('  command was: %s.\n', registry.command);
+    fprintf('  message was: %s\n', registry.message);
+    resolved = [];
+    included = [];
+    return;
+end
+
+
 %% Resolve "include" records into one big, flat config.
-tbFetchRegistry('registry', registry, 'doUpdate', true);
 [resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
 resolved = tbDealField(resolved, 'path', '');
 resolved = tbDealField(resolved, 'status', 0);
@@ -148,12 +157,21 @@ resolved = tbDealField(resolved, 'message', '');
 included = tbDealField(included, 'status', 0);
 included = tbDealField(included, 'message', '');
 
+if isempty(resolved)
+    fprintf('Unable to resolve any configurations.\n');
+    fprintf('  configPath to try loading was: %s\n', configPath);
+    fprintf('  explicit config struct contained %d records.\n', numel(config));
+    fprintf('  registered toolboxes had names: %s.\n', sprintf('"%s", ', registered{:}));
+    fprintf('Proceeding in case there''s a hook or localHook to be run.\n');    
+end
+
 
 %% Obtain or update the toolboxes.
-resolved = tbFetchToolboxes(resolved, ...
-    'toolboxRoot', toolboxRoot, ...
-    'toolboxCommonRoot', toolboxCommonRoot);
-
+if ~isempty(resolved)
+    resolved = tbFetchToolboxes(resolved, ...
+        'toolboxRoot', toolboxRoot, ...
+        'toolboxCommonRoot', toolboxCommonRoot);
+end
 
 %% Add each toolbox to the path.
 if addToPath
@@ -190,7 +208,7 @@ if runLocalHooks
     end
     
     % included toolboxes that were not deployed but might have local hooks anyway
-    alreadyRun = ismember({included.name}, {resolved.name});
+    alreadyRun = ismember(tbCollectField(included, 'name', 'template', {}), tbCollectField(resolved, 'name', 'template', {}));
     for tt = find(~alreadyRun)
         included(tt) = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, included(tt));
     end
@@ -211,20 +229,19 @@ end
 
 %% How did it go?
 resolved = reviewRecords(resolved);
-if all(tbCollectField(resolved, 'isOk', 'template', []))
-    fprintf('Looks good: all resolved toolboxes deployed OK.\n');
-else
-    fprintf('Something went wrong with resolved toolboxes, please see above.\n');
-end
-if (~isempty(included))
-    included = reviewRecords(included);
-    if all(tbCollectField(included, 'isOk', 'template', []))
-        fprintf('Looks good: all included toolboxes deployed OK.\n');
+if ~isempty(resolved)
+    if all(tbCollectField(resolved, 'isOk', 'template', []))
+        fprintf('Looks good: %d resolved toolboxes deployed OK.\n', numel(resolved));
     else
+        fprintf('Something went wrong with resolved toolboxes, please see above.\n');
+    end
+end
+
+if ~isempty(included)
+    included = reviewRecords(included);
+    if ~all(tbCollectField(included, 'isOk', 'template', []))
         fprintf('Something went wrong with included toolboxes, please see above.\n');
     end
-else
-    fprintf('No included toolboxes were specified so we did not check them.\n');
 end
 
 
@@ -286,7 +303,7 @@ end
 %% Display errors and warnings for each record.
 function records = reviewRecords(records)
 isSuccess = 0 == tbCollectField(records, 'status', 'template', []);
-isOptional = strcmp({records.importance}, 'optional');
+isOptional = strcmp(tbCollectField(records, 'importance', 'template', {}), 'optional');
 
 isSkipped = ~isSuccess & isOptional;
 for tt = find(isSkipped)

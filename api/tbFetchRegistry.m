@@ -42,3 +42,4 @@ end
 
 %% Obtain or update just like a toolbox.
 results = tbFetchToolboxes(registry, 'toolboxRoot', toolboxRoot);
+

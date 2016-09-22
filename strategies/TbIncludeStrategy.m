@@ -36,6 +36,12 @@ classdef TbIncludeStrategy < TbToolboxStrategy
     methods (Static)
         % Iterate the given config, resolve and append new records as they come.
         function [resolved, includes] = resolveIncludedConfigs(config, registry)
+            if isempty(config)
+                resolved = [];
+                includes = [];
+                return;
+            end
+            
             [includes, resolved] = TbIncludeStrategy.separateIncludes(config);
             
             ii = 1;
@@ -71,7 +77,7 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                             includes = [includes updated];
                         end
                     end
-                end                
+                end
             end
         end
         

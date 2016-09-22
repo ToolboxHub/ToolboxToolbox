@@ -12,7 +12,7 @@ function values = tbCollectField(s, fieldName, varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addRequired('s', @isstruct);
+parser.addRequired('s', @(s) isempty(s) || isstruct(s));
 parser.addRequired('fieldName', @ischar);
 parser.addParameter('template', {});
 parser.parse(s, fieldName, varargin{:});

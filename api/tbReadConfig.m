@@ -20,7 +20,7 @@ parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
 
-config = struct();
+config = [];
 
 %% Read from Web?
 if ~isempty(strfind(lower(configPath), 'http://')) ...
