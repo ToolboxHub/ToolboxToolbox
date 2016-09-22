@@ -1,4 +1,4 @@
-function [status, result] = tbSystem(command, varargin)
+function [status, result, fullCommand] = tbSystem(command, varargin)
 % Run a comand with system() and a clean environment.
 %
 % [status, result] = tbSystem(command) locates the given command on
@@ -18,6 +18,8 @@ parser.addParameter('keep', {}, @iscellstr);
 parser.parse(command, varargin{:});
 command = parser.Results.command;
 keep = parser.Results.keep;
+
+fullCommand = command;
 
 if ispc()
     [status, result] = system(command);

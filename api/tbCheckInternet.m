@@ -31,9 +31,15 @@ checkInternetCommand = parser.Results.checkInternetCommand;
 asAssertion = parser.Results.asAssertion;
 
 % are we online?
-[status, result] = tbSystem(checkInternetCommand);
+[status, result, fullCommand] = tbSystem(checkInternetCommand);
 strtrim(result);
 isOnline = status == 0;
+
+if ~isOnline
+    fprintf('Could not reach the internet.\n');
+    fprintf('  command: %s\n', fullCommand);
+    fprintf('  message: %s\n', result);
+end
 
 % if not, do we throw an error?
 assert(~asAssertion || isOnline, 'tbCheckInternet:internetUnreachable', result);
