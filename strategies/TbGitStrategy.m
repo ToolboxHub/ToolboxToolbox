@@ -5,17 +5,18 @@ classdef TbGitStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods (Static)
-        function [status, result] = systemInFolder(command, folder)
+        function [status, result, fullCommand] = systemInFolder(command, folder)
             originalFolder = pwd();
             try
                 tbCheckInternet('asAssertion', true);
                 cd(folder);
-                [status, result] = tbSystem(command);
+                [status, result, fullCommand] = tbSystem(command);
             catch err
                 status = -1;
                 result = err.message;
+                fullCommand = command;
             end
-            cd(originalFolder)
+            cd(originalFolder);
         end
     end
     
@@ -26,13 +27,13 @@ classdef TbGitStrategy < TbToolboxStrategy
             isPresent = 7 == exist(gitPath, 'dir');
         end
         
-        function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
+        function [fullCommand, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
             % clone
             command = sprintf('git clone "%s" "%s"', ...
                 record.url, ...
                 toolboxPath);
-            [status, message] = TbGitStrategy.systemInFolder(command, toolboxRoot);
+            [status, message, fullCommand] = TbGitStrategy.systemInFolder(command, toolboxRoot);
             if 0 ~= status
                 return;
             end
@@ -40,21 +41,21 @@ classdef TbGitStrategy < TbToolboxStrategy
             if ~isempty(record.flavor)
                 % git checkout sampleBranch
                 command = sprintf('git checkout %s', record.flavor);
-                [status, message] = TbGitStrategy.systemInFolder(command, toolboxPath);
+                [status, message, fullCommand] = TbGitStrategy.systemInFolder(command, toolboxPath);
                 if 0 ~= status
                     return;
                 end                
             end
         end
         
-        function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
+        function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath)
             % pull
             if isempty(record.flavor)
                 command = sprintf('git pull');
             else
                 command = sprintf('git pull origin %s', record.flavor);
             end
-            [status, message] = TbGitStrategy.systemInFolder(command, toolboxPath);
+            [status, message, fullCommand] = TbGitStrategy.systemInFolder(command, toolboxPath);
         end
     end
 end
