@@ -54,4 +54,4 @@ keepString = sprintf('%s=%s ', keepVals{:});
 
 % run the command with a clean environment
 fullCommand = ['env -i ' keepString whichExecutable args];
-[status, result] = system(fullCommand);
+[status, result] = system(fullCommand, '-echo');
