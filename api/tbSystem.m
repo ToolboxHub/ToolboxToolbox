@@ -6,7 +6,12 @@ function [status, result, fullCommand] = tbSystem(command, varargin)
 % beforehand, so unusual environment variables set by Matlab can be
 % ignored.
 %
-% tbSystem( ... 'keep' keep) specifies a list of existing environment
+% tbSystem( ... 'echo', echo) specifies whether to echo system command
+% output to the Matlab Command Window (true) or hide it (false).  The
+% default is true, echo command output to the Command Window.  This is good
+% for interactive commands.
+%
+% tbSystem( ... 'keep', keep) specifies a list of existing environment
 % variables to preserve in the clean shell environment.  The default is {},
 % don't preserve any existing variables.
 %
@@ -15,14 +20,20 @@ function [status, result, fullCommand] = tbSystem(command, varargin)
 parser = inputParser();
 parser.addRequired('command', @ischar);
 parser.addParameter('keep', {}, @iscellstr);
+parser.addParameter('echo', true, @islogical);
 parser.parse(command, varargin{:});
 command = parser.Results.command;
 keep = parser.Results.keep;
+echo = parser.Results.echo;
 
 fullCommand = command;
 
 if ispc()
-    [status, result] = system(command);
+    if echo
+        [status, result] = system(command, '-echo');
+    else
+        [status, result] = system(command);
+    end
     return;
 end
 
@@ -54,4 +65,8 @@ keepString = sprintf('%s=%s ', keepVals{:});
 
 % run the command with a clean environment
 fullCommand = ['env -i ' keepString whichExecutable args];
-[status, result] = system(fullCommand, '-echo');
+if echo
+    [status, result] = system(fullCommand, '-echo');
+else
+    [status, result] = system(fullCommand);
+end
