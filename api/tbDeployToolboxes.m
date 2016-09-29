@@ -316,7 +316,7 @@ isError = ~isSuccess & ~isOptional;
 records = tbDealField(records, 'isOk', true);
 for tt = find(isError)
     record = records(tt);
-    fprintf('Error: "%s" had status %d, message "%s"\n', ...
+    fprintf('<strong>Error: "%s" had status %d, message "%s<strong>"\n', ...
         record.name, record.status, strtrim(record.message));
     records(tt).isOk = false;
 end
