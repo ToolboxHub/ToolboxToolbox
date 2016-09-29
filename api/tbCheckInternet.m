@@ -31,7 +31,7 @@ checkInternetCommand = parser.Results.checkInternetCommand;
 asAssertion = parser.Results.asAssertion;
 
 % are we online?
-[status, result, fullCommand] = tbSystem(checkInternetCommand);
+[status, result, fullCommand] = tbSystem(checkInternetCommand, 'echo', false);
 strtrim(result);
 isOnline = status == 0;
 
