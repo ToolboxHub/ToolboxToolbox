@@ -1,3 +1,7 @@
+[![Build Status](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/buildStatus/icon?job=github-test)](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/job/github-test/)
+
+[![Build Status](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/buildStatus/icon?job=github-test)](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/job/github-test)
+
 # ToolboxToolbox
 Declarative dependency management for Matlab.
 
