@@ -1,3 +1,5 @@
+[![Build Status](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/buildStatus/icon?job=github-test)](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/job/github-test)
+
 # ToolboxToolbox
 Declarative dependency management for Matlab.
 
@@ -144,4 +146,3 @@ If you want to contribute your own toolbox configuration to this public registry
  - Create a [Pull Request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/) from your fork so that we can see your contribution and merge it in.
 
 The same goes for the ToolboxToolbox itself.  Please fork this repository and create pull requests.
-
