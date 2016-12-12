@@ -16,6 +16,12 @@ classdef TbDockerTest < matlab.unittest.TestCase
     end
     
     methods (TestMethodSetup)
+        
+        function checkIfServerPresent(testCase)
+            [dockerExists, ~, result] = TbDockerStrategy.dockerExists();
+            testCase.assumeTrue(dockerExists, result);
+        end
+        
         function cleanUpTestImage(obj)
             command = ['docker rmi --force ' obj.imageName];
             [status, result] = tbSystem(command);
