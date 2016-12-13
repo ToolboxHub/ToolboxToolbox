@@ -71,7 +71,9 @@ path(tbCleanPath(path()));
 
 %% Add or remobe installed Toolboxes.
 if removeMatlab
+    S = warning('off','MATLAB:dispatcher:pathWarning');
     installedNames = TbInstalledStrategy.installedToolboxNames();
+    warning(S);
     for ii = 1:numel(installedNames)
         name = installedNames{ii};
         toolboxRoot = toolboxdir(name);
