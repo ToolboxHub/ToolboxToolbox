@@ -17,13 +17,13 @@ classdef TbDockerStrategy < TbToolboxStrategy
         
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
-            try                
+            try
                 if isempty(record.flavor)
                     command = ['docker pull ' record.url];
                 else
                     command = ['docker pull ' record.url ':' record.flavor];
                 end
-               
+                
                 tbCheckInternet('asAssertion', true);
                 [status, result] = tbSystem(command);
                 if 0 ~= status
@@ -44,6 +44,14 @@ classdef TbDockerStrategy < TbToolboxStrategy
         function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
             % just keep obtaining.  Use record.neverUpdate to prevent this.
             [command, status, message] = obj.obtain(record, toolboxRoot, toolboxPath);
+        end
+    end
+    
+    methods (Static)
+        %% Check whether we can find and use Docker.
+        function [exists, status, result] = dockerExists()
+            [status, result] = system('docker ps');
+            exists = 0 == status;
         end
     end
 end

@@ -1,7 +1,7 @@
 classdef TbDockerTest < matlab.unittest.TestCase
-    % Test the Toolbox Toolbox against DockerHub
+    % Test the ToolboxToolbox against DockerHub
     %
-    % The Toolbox Toolbox should be able to pull down an image from Docker
+    % The ToolboxToolbox should be able to pull down an image from Docker
     % Hub and detect whether it's already present.
     %
     % This test assumes Docker is installed and useable by Matlab without
@@ -16,6 +16,12 @@ classdef TbDockerTest < matlab.unittest.TestCase
     end
     
     methods (TestMethodSetup)
+        
+        function checkIfServerPresent(testCase)
+            [dockerExists, ~, result] = TbDockerStrategy.dockerExists();
+            testCase.assumeTrue(dockerExists, result);
+        end
+        
         function cleanUpTestImage(obj)
             command = ['docker rmi --force ' obj.imageName];
             [status, result] = tbSystem(command);
