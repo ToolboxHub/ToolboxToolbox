@@ -68,7 +68,6 @@ selfPath = genpath(selfRoot);
 appendPath('ToolboxToolbox', selfRoot, selfPath);
 path(tbCleanPath(path()));
 
-
 %% Add or remobe installed Toolboxes.
 if removeMatlab
     S = warning('off','MATLAB:dispatcher:pathWarning');
