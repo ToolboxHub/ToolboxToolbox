@@ -180,7 +180,10 @@ if addToPath
         record = resolved(tt);
         
         % add shared toolbox to path?
-        toolboxPath = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, true);
+        toolboxPath = tbLocateToolbox(record, ...
+            'toolboxCommonRoot', toolboxCommonRoot, ...
+            'toolboxRoot', toolboxRoot, ...
+            'withSubfolder', true);
         if 7 == exist(toolboxPath, 'dir')
             fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
             record.strategy.addToPath(record, toolboxPath);
@@ -213,7 +216,10 @@ end
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
     record = resolved(tt);
-    [~, toolboxName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, false);
+    [~, toolboxName] = tbLocateToolbox(record, ...
+        'toolboxCommonRoot', toolboxCommonRoot, ...
+        'toolboxRoot', toolboxRoot, ...
+        'withSubfolder', false);
     if ~isempty(record.hook) && 2 ~= exist(record.hook, 'file')
         fprintf('Running hook for "%s": "%s".\n', toolboxName, record.hook);
         [resolved(tt).status, resolved(tt).message] = evalIsolated(record.hook);
@@ -239,25 +245,12 @@ if ~isempty(included)
 end
 
 
-%% Choose a shared or normal path for the toolbox.
-function [toolboxPath, displayName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, withSubfolder)
-strategy = tbChooseStrategy(record);
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxCommonRoot, record, 'withSubfolder', withSubfolder);
-if 7 == exist(toolboxPath, 'dir')
-    return;
-end
-
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record, 'withSubfolder', withSubfolder);
-if 7 == exist(toolboxPath, 'dir')
-    return;
-end
-
-toolboxPath = '';
-
-
 %% Invoke a local hook, create if necessary.
 function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record)
-[toolboxPath, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, false);
+[toolboxPath, hookName] = tbLocateToolbox(record, ...
+    'toolboxCommonRoot', toolboxCommonRoot, ...
+    'toolboxRoot', toolboxRoot, ...
+    'withSubfolder', false);
 fprintf('Checking for "%s" local hook.\n', hookName);
 
 % create a local hook if missing and a template exists
