@@ -4,6 +4,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
     % The Toolbox Toolbox should be able to nest configurations using the
     % "include" record type.  It should be able to avoid "include" loops.
     % It should be able to include toolboxes from a registry of JSON files.
+    % It should resolbe and deploy records in the same order they were
+    % included.
     %
     % 2016 benjamin.heasly@gmail.com
     
@@ -175,6 +177,30 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'blue-1', 'blue-2', 'blue-3', ...
                 'green-1', 'green-2', 'green-3'};
             obj.assertEqual(resolvedNames, expectedNames);
-        end        
+        end
+        
+        function testLocalRegistryOrder(obj)
+            % locate a test registry
+            pathHere = fileparts(mfilename('fullpath'));
+            localRegistry = tbToolboxRecord( ...
+                'name', 'TestRegistry', ...
+                'type', 'local', ...
+                'url', fullfile(pathHere, 'fixture', 'registry'));
+            
+            % deploy "red", then "different".
+            % "blue" and "green" should be inserted near "red",
+            % not appended after "different"
+            config = [ ...
+                tbToolboxRecord('name', 'red'), ...
+                tbToolboxRecord('name', 'different')];
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(config, localRegistry);
+            resolvedNames = {resolvedConfig.name};
+            expectedNames = { ...
+                'red-1', 'red-2', 'red-3', ...
+                'blue-1', 'blue-2', 'blue-3', ...
+                'green-1', 'green-2', 'green-3', ...
+                'different'};
+            obj.assertEqual(resolvedNames, expectedNames);
+        end
     end
 end
