@@ -114,7 +114,7 @@ if ~isempty(registered)
         registeredRecords{rr} = tbToolboxRecord('name', registered{rr});
     end
     registeredConfig = [registeredRecords{:}];
-        
+    
     if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
         config = registeredConfig;
     else
@@ -162,7 +162,7 @@ if isempty(resolved)
     fprintf('  configPath to try loading was: %s\n', configPath);
     fprintf('  explicit config struct contained %d records.\n', numel(config));
     fprintf('  registered toolboxes had names: %s.\n', sprintf('"%s", ', registered{:}));
-    fprintf('Proceeding in case there''s a hook or localHook to be run.\n');    
+    fprintf('Proceeding in case there''s a hook or localHook to be run.\n');
 end
 
 
@@ -263,22 +263,29 @@ toolboxPath = '';
 
 %% Invoke a local hook, create if necessary.
 function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record)
-rehash;
+[toolboxPath, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, false);
+fprintf('Checking for "%s" local hook.\n', hookName);
 
 % create a local hook if missing and a template exists
-[toolboxPath, hookName] = commonOrNormalPath(toolboxCommonRoot, toolboxRoot, record, false);
 templateLocalHookPath = fullfile(toolboxPath, record.localHookTemplate);
 existingLocalHookPath = fullfile(localHookFolder, [hookName '.m']);
 if 2 ~= exist(existingLocalHookPath, 'file') && 2 == exist(templateLocalHookPath, 'file');
-    fprintf('Creating local hook from template for "%s": "%s".\n', hookName, templateLocalHookPath);
+    fprintf('  Creating local hook from template "%s".\n', templateLocalHookPath);
     copyfile(templateLocalHookPath, existingLocalHookPath);
 end
 
 % invoke the local hook if it exists
 if 2 == exist(existingLocalHookPath, 'file')
-    fprintf('Running local hook for "%s": "%s".\n', hookName, existingLocalHookPath);
+    fprintf('  Running local hook "%s".\n', existingLocalHookPath);
     command = ['run ' existingLocalHookPath];
     [record.status, record.message] = evalIsolated(command);
+    
+    if 0 == record.status
+        fprintf('  Hook success with status 0.\n');
+    else
+        fprintf('  Hook had an error with status %d and result "%s".\n', ...
+            record.status, record.message);
+    end
 end
 
 
