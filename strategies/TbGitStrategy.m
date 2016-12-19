@@ -13,20 +13,6 @@ classdef TbGitStrategy < TbToolboxStrategy
             assert(gitWorks, 'TbGitStrategy:gitNotWorking', ...
                 'Git seems not to be working.  Got error: <%s>.', result);
         end
-        
-        function [status, result, fullCommand] = systemInFolder(command, folder)
-            originalFolder = pwd();
-            try
-                tbCheckInternet('asAssertion', true);
-                cd(folder);
-                [status, result, fullCommand] = tbSystem(command);
-            catch err
-                status = -1;
-                result = err.message;
-                fullCommand = command;
-            end
-            cd(originalFolder);
-        end
     end
     
     methods
@@ -45,7 +31,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             command = sprintf('git clone "%s" "%s"', ...
                 record.url, ...
                 toolboxPath);
-            [status, message, fullCommand] = TbGitStrategy.systemInFolder(command, toolboxRoot);
+            [status, message, fullCommand] = obj.systemInFolder(command, toolboxRoot);
             if 0 ~= status
                 return;
             end
@@ -53,7 +39,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             if ~isempty(record.flavor)
                 % git checkout sampleBranch
                 command = sprintf('git checkout %s', record.flavor);
-                [status, message, fullCommand] = TbGitStrategy.systemInFolder(command, toolboxPath);
+                [status, message, fullCommand] = obj.systemInFolder(command, toolboxPath);
                 if 0 ~= status
                     return;
                 end
@@ -71,7 +57,22 @@ classdef TbGitStrategy < TbToolboxStrategy
             else
                 command = sprintf('git pull origin %s', record.flavor);
             end
-            [status, message, fullCommand] = TbGitStrategy.systemInFolder(command, toolboxPath);
+            [status, message, fullCommand] = obj.systemInFolder(command, toolboxPath);
         end
+        
+        function [status, result, fullCommand] = systemInFolder(obj, command, folder)
+            originalFolder = pwd();
+            try
+                obj.checkInternet('asAssertion', true);
+                cd(folder);
+                [status, result, fullCommand] = tbSystem(command);
+            catch err
+                status = -1;
+                result = err.message;
+                fullCommand = command;
+            end
+            cd(originalFolder);
+        end
+        
     end
 end

@@ -8,6 +8,7 @@ function absolutePath = tbHomePathToAbsolute(homePath)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addRequired('homePath', @ischar);
 parser.parse(homePath);
 homePath = parser.Results.homePath;

@@ -12,8 +12,8 @@ function [isOnline, result] = tbCheckInternet(varargin)
 %
 % tbCheckInternet( ... 'checkInternetCommand', checkInternetCommand)
 % specify the command to pass to system() which will check for Internet
-% connectivity.  The default command is getpref('ToolboxToolbox',
-% 'checkInternetCommand'), or 'ping -c 1 www.google.com'.
+% connectivity.  The default command is the empty '', which means to skip
+% the check and assume connectivity.
 %
 % tbCheckInternet( ... 'asAssertion', asAssertion) specify whether to treat
 % the call to tbCheckInternet() as an assertion.  If asAssertion is true
@@ -24,16 +24,15 @@ function [isOnline, result] = tbCheckInternet(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
-parser.addParameter('checkInternet', true, @islogical);
 parser.parse(varargin{:});
 checkInternetCommand = parser.Results.checkInternetCommand;
 asAssertion = parser.Results.asAssertion;
-checkInternet = parser.Results.checkInternet;
 
 % caller wants to skip the check?
-if ~checkInternet || isempty(checkInternetCommand)
+if isempty(checkInternetCommand)
     fprintf('Skipping internet check.\n');
     isOnline = true;
     result = 'skipping internet check';

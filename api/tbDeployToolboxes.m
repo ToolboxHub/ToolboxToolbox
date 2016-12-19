@@ -64,14 +64,15 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % here will be added to the path instead of toolboxes in the given
 % toolboxRoot.
 %
-% tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
+% tbDeployToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
 % where to look for shared toolboxes. The default location is
 % getpref('ToolboxToolbox', 'toolboxCommonRoot'), or '/srv/toolboxes'.
 %
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
+parser.KeepUnmatched = true;
+parser.PartialMatching = false;
 parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
@@ -81,22 +82,17 @@ parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.addParameter('name', '', @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
-parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('registered', {}, @iscellstr);
 parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('addToPath', true, @islogical);
 parser.parse(varargin{:});
-checkInternetCommand = parser.Results.checkInternetCommand;
 configPath = parser.Results.configPath;
 config = parser.Results.config;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 reset = parser.Results.reset;
-add = parser.Results.add;
-remove = parser.Results.remove;
 name = parser.Results.name;
 localHookFolder = parser.Results.localHookFolder;
-registry = parser.Results.registry;
 registered = parser.Results.registered;
 runLocalHooks = parser.Results.runLocalHooks;
 addToPath = parser.Results.addToPath;
@@ -104,8 +100,7 @@ addToPath = parser.Results.addToPath;
 
 %% Choose explicit config, or load from file.
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
-    config = tbReadConfig('configPath', configPath, ...
-        'checkInternetCommand', checkInternetCommand);
+    config = tbReadConfig(varargin{:});
 end
 
 
@@ -141,7 +136,7 @@ end
 
 
 %% Get or update the toolbox registry.
-registry = tbFetchRegistry('registry', registry, 'doUpdate', true);
+registry = tbFetchRegistry(varargin{:}, 'doUpdate', true);
 if 0 ~= registry.status
     fprintf('Unable to fetch toolbox registry "%s".\n', registry.name);
     fprintf('  command was: %s.\n', registry.command);
@@ -153,7 +148,7 @@ end
 
 
 %% Resolve "include" records into one big, flat config.
-[resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry);
+[resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry, varargin{:});
 resolved = tbDealField(resolved, 'path', '');
 resolved = tbDealField(resolved, 'status', 0);
 resolved = tbDealField(resolved, 'message', '');
@@ -171,16 +166,12 @@ end
 
 %% Obtain or update the toolboxes.
 if ~isempty(resolved)
-    resolved = tbFetchToolboxes(resolved, ...
-        'toolboxRoot', toolboxRoot, ...
-        'toolboxCommonRoot', toolboxCommonRoot);
+    resolved = tbFetchToolboxes(resolved, varargin{:});
 end
 
 %% Add each toolbox to the path.
 if addToPath
-    tbResetMatlabPath(reset, ...
-        'add', add, ...
-        'remove', remove);
+    tbResetMatlabPath(reset, varargin{:});
     
     % add toolboxes one at a time
     % so we don't add extra cruft that might be in the toolboxRoot folder

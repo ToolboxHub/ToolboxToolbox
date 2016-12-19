@@ -16,11 +16,11 @@ function [config, configPath] = tbReadConfig(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
+parser.PartialMatching = false;
 parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
-parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.parse(varargin{:});
 configPath = parser.Results.configPath;
-checkInternetCommand = parser.Results.checkInternetCommand;
 
 config = [];
 
@@ -38,8 +38,7 @@ if ~isempty(strfind(lower(configPath), 'http://')) ...
     configPath = fullfile(tempFolder, [resourceBase, resourceExt]);
     
     try
-        tbCheckInternet('asAssertion', true, ...
-            'checkInternetCommand', checkInternetCommand);
+        tbCheckInternet(varargin{:}, 'asAssertion', true);
         configPath = websave(configPath, configUrl);
     catch
         configPath = '';

@@ -12,6 +12,7 @@ function value = tbGetPref(preferenceName, defaultValue)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addRequired('preferenceName', @ischar);
 parser.addRequired('defaultValue');
 parser.parse(preferenceName, defaultValue);

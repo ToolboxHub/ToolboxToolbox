@@ -18,7 +18,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 [~, resourceBase, resourceExt] = fileparts(record.url);
                 fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
                
-                tbCheckInternet('asAssertion', true);
+                obj.checkInternet('asAssertion', true);
                 fileName = websave(fileName, record.url);
                 
                 if strcmp(resourceExt, '.zip')

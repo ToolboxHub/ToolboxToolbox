@@ -35,7 +35,7 @@ classdef TbIncludeStrategy < TbToolboxStrategy
     
     methods (Static)
         % Iterate the given config, resolve and append new records as they come.
-        function [resolved, includes] = resolveIncludedConfigs(config, registry)
+        function [resolved, includes] = resolveIncludedConfigs(config, registry, varargin)
             if isempty(config)
                 resolved = [];
                 includes = [];
@@ -55,7 +55,9 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                 
                 if isempty(record.url)
                     % look up config location by name in registry
-                    url = tbSearchRegistry(record.name, 'registry', registry);
+                    url = tbSearchRegistry(record.name, ...
+                        varargin{:}, ...
+                        'registry', registry);
                 else
                     % explicit location of config file
                     url = record.url;
@@ -63,7 +65,7 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                 
                 if ~isempty(url)
                     % append the included config so it can be resolved
-                    newConfig = tbReadConfig('configPath', url);
+                    newConfig = tbReadConfig(varargin{:}, 'configPath', url);
                     if isempty(newConfig) || ~isstruct(newConfig) || ~isfield(newConfig, 'name')
                         continue;
                     end
@@ -81,7 +83,7 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                     if ~isempty(updateIndex)
                         updated = newIncludes(updateIndex);
                         if ~isequal(record, updated)
-                            includes = [includes updated];
+                            includes = [includes updated];%#ok
                         end
                     end
                 end

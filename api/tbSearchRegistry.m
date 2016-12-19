@@ -18,6 +18,7 @@ function configPath = tbSearchRegistry(name, varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addRequired('name', @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
@@ -27,7 +28,7 @@ registry = parser.Results.registry;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 
 %% Locate the folder that contains the registry.
-strategy = tbChooseStrategy(registry);
+strategy = tbChooseStrategy(registry, varargin{:});
 registryPath = strategy.toolboxPath(toolboxRoot, registry, 'withSubfolder', true);
 
 %% Check for the named configuration.

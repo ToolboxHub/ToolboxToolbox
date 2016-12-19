@@ -25,6 +25,7 @@ function results = tbFetchToolboxes(config, varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addRequired('config', @isstruct);
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
@@ -51,7 +52,7 @@ for tt = 1:nToolboxes
     end
     
     % what kind of toolbox is this?
-    strategy = tbChooseStrategy(record);
+    strategy = tbChooseStrategy(record, varargin{:});
     if isempty(strategy)
         results(tt).status = -1;
         results(tt).command = 'tbChooseStrategy';
