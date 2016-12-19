@@ -24,7 +24,7 @@ function [isOnline, result] = tbCheckInternet(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', 'ping -c 1 www.google.com'), @ischar);
+parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
 parser.addParameter('checkInternet', true, @islogical);
 parser.parse(varargin{:});
