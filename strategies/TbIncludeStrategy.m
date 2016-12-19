@@ -42,6 +42,10 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                 return;
             end
             
+            % keep track of original config order
+            inputOrder = num2cell(1:numel(config));
+            [config.order] = deal(inputOrder{:});
+            
             [includes, resolved] = TbIncludeStrategy.separateIncludes(config);
             
             ii = 1;
@@ -64,6 +68,9 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                         continue;
                     end
                     
+                    % keep track of original config order
+                    [newConfig.order] = deal(record.order);
+                    
                     [newIncludes, newResolved] = TbIncludeStrategy.separateIncludes(newConfig);
                     includes = TbIncludeStrategy.appendMissingConfig(includes, newIncludes);
                     resolved = TbIncludeStrategy.appendMissingConfig(resolved, newResolved);
@@ -79,6 +86,13 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                     end
                 end
             end
+            
+            % put results in same order as inputs
+            [~, resolvedOrder] = sort([resolved.order]);
+            resolved = resolved(resolvedOrder);
+            
+            [~, includesOrder] = sort([includes.order]);
+            includes = includes(includesOrder);
         end
         
         % Separate "include" records from resolved records
