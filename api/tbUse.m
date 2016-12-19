@@ -55,6 +55,7 @@ function results = tbUse(registered, varargin)
 
 parser = inputParser();
 parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
+parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('reset', 'as-is', @ischar);
@@ -66,6 +67,7 @@ parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('addToPath', true, @islogical);
 parser.parse(registered, varargin{:});
 registered = parser.Results.registered;
+checkInternetCommand = parser.Results.checkInternetCommand;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 reset = parser.Results.reset;
@@ -83,6 +85,7 @@ end
 
 results = tbDeployToolboxes( ...
     'registered', registered, ...
+    'checkInternetCommand', checkInternetCommand, ...
     'toolboxRoot', toolboxRoot, ...
     'toolboxCommonRoot', toolboxCommonRoot, ...
     'reset', reset, ...

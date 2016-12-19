@@ -71,6 +71,7 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
@@ -85,6 +86,7 @@ parser.addParameter('registered', {}, @iscellstr);
 parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('addToPath', true, @islogical);
 parser.parse(varargin{:});
+checkInternetCommand = parser.Results.checkInternetCommand;
 configPath = parser.Results.configPath;
 config = parser.Results.config;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
@@ -102,7 +104,8 @@ addToPath = parser.Results.addToPath;
 
 %% Choose explicit config, or load from file.
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
-    config = tbReadConfig('configPath', configPath);
+    config = tbReadConfig('configPath', configPath, ...
+        'checkInternetCommand', checkInternetCommand);
 end
 
 
