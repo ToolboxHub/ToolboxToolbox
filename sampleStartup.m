@@ -93,7 +93,7 @@ rmpref('ToolboxToolbox');
 % checkInternetCommand = 'wget www.google.com';
 %
 % no-op to assume Internet is always reachable
-%checkInternetCommand = 'echo';
+% checkInternetCommand = '';
 %
 %setpref('ToolboxToolbox', 'checkInternetCommand', checkInternetCommand);
 
