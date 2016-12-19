@@ -42,7 +42,7 @@ classdef TbIncludeStrategy < TbToolboxStrategy
                 return;
             end
             
-            % keep track of original config order
+            % extra bookkeeping field to track original config order
             inputOrder = num2cell(1:numel(config));
             [config.order] = deal(inputOrder{:});
             
@@ -90,9 +90,12 @@ classdef TbIncludeStrategy < TbToolboxStrategy
             % put results in same order as inputs
             [~, resolvedOrder] = sort([resolved.order]);
             resolved = resolved(resolvedOrder);
-            
             [~, includesOrder] = sort([includes.order]);
             includes = includes(includesOrder);
+            
+            % remove extra bookkeeping field
+            resolved = rmfield(resolved, 'order');
+            includes = rmfield(includes, 'order');
         end
         
         % Separate "include" records from resolved records
