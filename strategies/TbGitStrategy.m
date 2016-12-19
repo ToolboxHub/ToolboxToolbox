@@ -5,6 +5,15 @@ classdef TbGitStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods (Static)
+        function assertGitWorks()
+            gitCommand = 'git --version';
+            [status, result] = tbSystem(gitCommand, 'echo', false);
+            strtrim(result);
+            gitWorks = status == 0;
+            assert(gitWorks, 'TbGitStrategy:gitNotWorking', ...
+                'Git seems not to be working.  Got error: <%s>.', result);
+        end
+        
         function [status, result, fullCommand] = systemInFolder(command, folder)
             originalFolder = pwd();
             try
@@ -29,6 +38,9 @@ classdef TbGitStrategy < TbToolboxStrategy
         
         function [fullCommand, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
+            % fail fast if git is not working
+            TbGitStrategy.assertGitWorks();
+            
             % clone
             command = sprintf('git clone "%s" "%s"', ...
                 record.url, ...
@@ -44,11 +56,15 @@ classdef TbGitStrategy < TbToolboxStrategy
                 [status, message, fullCommand] = TbGitStrategy.systemInFolder(command, toolboxPath);
                 if 0 ~= status
                     return;
-                end                
+                end
             end
         end
         
         function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath)
+            
+            % fail fast if git is not working
+            TbGitStrategy.assertGitWorks();
+            
             % pull
             if isempty(record.flavor)
                 command = sprintf('git pull');
