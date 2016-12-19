@@ -17,6 +17,7 @@ function toolboxPath = tbAddToolboxPath(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addParameter('toolboxPath', pwd(), @ischar);
 parser.addParameter('pathPlacement', 'append', @ischar);
 parser.parse(varargin{:});

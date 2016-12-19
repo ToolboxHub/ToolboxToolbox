@@ -16,6 +16,8 @@ function configPath = tbWriteConfig(config, varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
+parser.PartialMatching = false;
 parser.addRequired('config', @isstruct);
 parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
 parser.parse(config, varargin{:});

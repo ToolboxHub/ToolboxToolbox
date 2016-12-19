@@ -24,7 +24,7 @@ classdef TbDockerStrategy < TbToolboxStrategy
                     command = ['docker pull ' record.url ':' record.flavor];
                 end
                 
-                tbCheckInternet('asAssertion', true);
+                obj.checkInternet('asAssertion', true);
                 [status, result] = tbSystem(command);
                 if 0 ~= status
                     error('Docker pull failed: %s', result);

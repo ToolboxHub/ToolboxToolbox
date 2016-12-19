@@ -13,6 +13,10 @@ classdef TbToolboxStrategy < handle
     %
     % 2016 benjamin.heasly@gmail.com
     
+    properties
+        checkInternetCommand = '';
+    end
+    
     methods (Abstract)
         [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath);
         [command, status, message] = update(obj, record, toolboxRoot, toolboxPath);
@@ -33,6 +37,12 @@ classdef TbToolboxStrategy < handle
             tbAddToolboxPath( ...
                 'toolboxPath', toolboxPath, ...
                 'pathPlacement', record.pathPlacement);
+        end
+        
+        function [isOnline, result] = checkInternet(obj, varargin)
+            [isOnline, result] = tbCheckInternet( ...
+                'checkInternetCommand', obj.checkInternetCommand, ...
+                varargin{:});
         end
     end
 end

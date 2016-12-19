@@ -27,12 +27,11 @@ function results = tbFetchRegistry(varargin)
 
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('doUpdate', true, @islogical);
 parser.parse(varargin{:});
 registry = parser.Results.registry;
-toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 doUpdate = parser.Results.doUpdate;
 
 %% Force no update?
@@ -41,5 +40,5 @@ if ~doUpdate
 end
 
 %% Obtain or update just like a toolbox.
-results = tbFetchToolboxes(registry, 'toolboxRoot', toolboxRoot);
+results = tbFetchToolboxes(registry, varargin{:});
 

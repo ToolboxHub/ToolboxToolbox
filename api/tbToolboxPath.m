@@ -16,6 +16,7 @@ function [toolboxPath, subfolder] = tbToolboxPath(toolboxRoot, record, varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addRequired('toolboxRoot', @ischar);
 parser.addRequired('record', @isstruct);
 parser.addParameter('withSubfolder', false, @islogical);

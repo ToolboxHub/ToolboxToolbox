@@ -18,6 +18,7 @@ function [status, result, fullCommand] = tbSystem(command, varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
+parser.KeepUnmatched = true;
 parser.addRequired('command', @ischar);
 parser.addParameter('keep', {}, @iscellstr);
 parser.addParameter('echo', true, @islogical);

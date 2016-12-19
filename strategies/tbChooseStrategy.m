@@ -1,4 +1,4 @@
-function strategy = tbChooseStrategy(record)
+function strategy = tbChooseStrategy(record, varargin)
 % Choose a TbToolboxStrategy appropriate for the given toolbox record.
 %
 % strategy = tbChooseStrategy(record) chooses an implementaton of
@@ -15,8 +15,10 @@ function strategy = tbChooseStrategy(record)
 
 parser = inputParser();
 parser.addRequired('record', @isstruct);
+parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.parse(record);
 record = parser.Results.record;
+checkInternetCommand = parser.Results.checkInternetCommand;
 
 strategy = [];
 
@@ -27,6 +29,7 @@ end
 %% Default is "include"
 if isempty(record.type)
     strategy = TbIncludeStrategy();
+    strategy.checkInternetCommand = checkInternetCommand;
     return;
 end
 
@@ -34,21 +37,27 @@ end
 switch record.type
     case 'git'
         strategy = TbGitStrategy();
+        strategy.checkInternetCommand = checkInternetCommand;
         return;
     case 'webget'
         strategy = TbWebGetStrategy();
+        strategy.checkInternetCommand = checkInternetCommand;
         return;
     case 'local'
         strategy = TbLocalStrategy();
+        strategy.checkInternetCommand = checkInternetCommand;
         return;
     case 'installed'
         strategy = TbInstalledStrategy();
+        strategy.checkInternetCommand = checkInternetCommand;
         return;
     case 'docker'
         strategy = TbDockerStrategy();
+        strategy.checkInternetCommand = checkInternetCommand;
         return;
     case 'include'
         strategy = TbIncludeStrategy();
+        strategy.checkInternetCommand = checkInternetCommand;
         return;
 end
 
@@ -56,5 +65,6 @@ end
 if 2 == exist(record.type, 'class')
     constructor = str2func(record.type);
     strategy = feval(constructor);
+    strategy.checkInternetCommand = checkInternetCommand;
     return;
 end

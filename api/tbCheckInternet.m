@@ -12,8 +12,8 @@ function [isOnline, result] = tbCheckInternet(varargin)
 %
 % tbCheckInternet( ... 'checkInternetCommand', checkInternetCommand)
 % specify the command to pass to system() which will check for Internet
-% connectivity.  The default command is getpref('ToolboxToolbox',
-% 'checkInternetCommand'), or 'ping -c 1 www.google.com'.
+% connectivity.  The default command is the empty '', which means to skip
+% the check and assume connectivity.
 %
 % tbCheckInternet( ... 'asAssertion', asAssertion) specify whether to treat
 % the call to tbCheckInternet() as an assertion.  If asAssertion is true
@@ -24,11 +24,20 @@ function [isOnline, result] = tbCheckInternet(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
-parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', 'ping -c 1 www.google.com'), @ischar);
+parser.KeepUnmatched = true;
+parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
 parser.parse(varargin{:});
 checkInternetCommand = parser.Results.checkInternetCommand;
 asAssertion = parser.Results.asAssertion;
+
+% caller wants to skip the check?
+if isempty(checkInternetCommand)
+    fprintf('Skipping internet check.\n');
+    isOnline = true;
+    result = 'skipping internet check';
+    return;
+end
 
 % are we online?
 [status, result, fullCommand] = tbSystem(checkInternetCommand, 'echo', false);
@@ -39,6 +48,11 @@ if ~isOnline
     fprintf('Could not reach the internet.\n');
     fprintf('  command: %s\n', fullCommand);
     fprintf('  message: %s\n', result);
+    fprintf('You can skip this internet check if you want.  Either:\n');
+    fprintf(' - choose an empty ''checkInternetCommand'' in your startup.m, and re-run startup\n');
+    fprintf(' - call functions with the ''checkInternetCommand'' parameter set to empty.  For example:\n');
+    fprintf('     tbUse( ... ''checkInternetCommand'', '''')\n');
+    fprintf('     tbDeployToolboxes( ... ''checkInternetCommand'', '''')\n');
 end
 
 % if not, do we throw an error?

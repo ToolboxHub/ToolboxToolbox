@@ -7,48 +7,24 @@ function results = tbAddToolbox(varargin)
 %
 % results = tbAddToolbox( ... name, value) creates a new toolbox record
 % based on the given name-value pairs and adds it to the toolbox
-% configuration.  See tbToolboxRecord for recognized names.
+% configuration.  See tbToolboxRecord() for recognized names.
+%
+% You can also specify additional name-value pairs to specify
+% how toolboxes should be deployed.  See tbDeployToolboxes() which also
+% shares parameters with this function.
 %
 % If a toolbox with the same 'name" already exists in the configuration, it
 % will be replaced with the new one.
 %
-% tbAddToolbox( ... 'configPath', configPath) specify where to look for the
-% toolbox config file.  The default location is getpref('ToolboxToolbox',
-% 'toolboxRoot') or 'toolbox_config.json' in the userpath() folder.
-%
-% tbReadConfig( ... 'toolboxRoot', toolboxRoot) specify where to fetch
-% toolboxes.  The default location is
-% getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in the
-% userpath() folder.
-%
-% As an optimization for shares systems, toolboxes may be pre-deployed
-% (probably by an admin) to a common toolbox root folder.  Toolboxes found
-% here will be updated, instead adding new ones to the given toolboxRoot.
-%
-% tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
-% where to look for shared toolboxes.  The default location is
-% getpref('ToolboxToolbox', 'toolboxCommonRoot'), or '/srv/toolboxes'.
-%
 % 2016 benjamin.heasly@gmail.com
-
-parser = inputParser();
-parser.KeepUnmatched = true;
-parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
-parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.parse(varargin{:});
-configPath = tbHomePathToAbsolute(parser.Results.configPath);
-toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
-toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 
 %% Make a new toolbox record.
 newRecord = tbToolboxRecord(varargin{:});
 
 %% Deploy just the new toolbox.
 results = tbDeployToolboxes( ...
+    varargin{:}, ...
     'config', newRecord, ...
-    'toolboxRoot', toolboxRoot, ...
-    'toolboxCommonRoot', toolboxCommonRoot, ...
     'reset', 'as-is');
 
 if 0 ~= results.status
@@ -57,7 +33,7 @@ if 0 ~= results.status
 end
 
 %% Add new toolbox to the existing config.
-config = tbReadConfig('configPath', configPath);
+config = tbReadConfig(varargin{:});
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = newRecord;
 else
@@ -71,5 +47,5 @@ else
 end
 
 %% Write back the new config. after success.
-tbWriteConfig(config, 'configPath', configPath);
+tbWriteConfig(config, varargin{:});
 
