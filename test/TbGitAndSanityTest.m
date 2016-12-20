@@ -4,8 +4,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
     % The contrived GitHub repository at
     % https://github.com/ToolboxHub/sample-repo.git has and expected
     % branch, tag, and commit, each with some expected and unexpected
-    % files.  These expectations are declared in the properties of this
-    % class.
+    % files.
     %
     % The Toolbox Toolbox should be able to fetch each flavor of the
     % repository.  This test suite will verify the expected and unexpected
