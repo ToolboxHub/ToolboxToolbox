@@ -109,6 +109,31 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
             obj.assertEmpty(inSubfolder2);
         end
         
+        function testTwoSubfolderPaths(obj)
+            % deploy "subfolder-1" and "subfolder-2", but not the root
+            testRepoUrl = 'https://github.com/ToolboxHub/sample-repo.git';
+            result = tbAddToolbox( ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'configPath', obj.configPath, ...
+                'name', 'subfoldersOnly', ...
+                'url', testRepoUrl, ...
+                'subfolder', {'subfolder-1', 'subfolder-2'}, ...
+                'type', 'git');
+            obj.assertEqual(result.status, 0);
+            
+            % should have subfolder-1 on the path
+            inSubfolder1 = which('in-subfolder-1.txt');
+            obj.assertNotEmpty(inSubfolder1);
+            
+            % should have subfolder-2 on the path
+            inSubfolder2 = which('in-subfolder-2.txt');
+            obj.assertNotEmpty(inSubfolder2);
+            
+            % should have root folder on the path
+            inRoot = which('master.txt');
+            obj.assertEmpty(inRoot);
+        end
+        
         function testHook(obj)
             testRepoUrl = 'https://github.com/ToolboxHub/sample-repo.git';
             hookFolder = fullfile(obj.toolboxRoot, 'testHook');
@@ -332,8 +357,13 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                 obj.assertEqual(result.status, 0, ...
                     sprintf('command "%s" -> message "%s"', result.command, result.message));
                 
-                % expected files present?
+                % toolbox with optional subfolder
                 toolboxPath = tbToolboxPath(obj.toolboxRoot, result, 'withSubfolder', true);
+                if ~isempty(result.subfolder) && ischar(result.subfolder)
+                    toolboxPath = fullfile(toolboxPath, result.subfolder);
+                end
+                
+                % expected files present?
                 expected = expectedFiles.(result.name);
                 for ff = 1:numel(expected)
                     expectedFile = expected{ff};
@@ -348,7 +378,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                         result.name, expectedFile));
                 end
                 
-                % unexpected files not on Matlab path?
+                % unexpected files present?
                 unexpected = unexpectedFiles.(result.name);
                 for ff = 1:numel(unexpected)
                     unexpectedFile = unexpected{ff};

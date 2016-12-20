@@ -6,8 +6,8 @@ function results = tbFetchToolboxes(config, varargin)
 %
 % results = tbFetchToolboxes(config) fetches or updates each of the
 % toolboxes named in the given config struct (see tbReadConfig).  Each
-% toolbox will be located in a subfolder of the default toolbox root
-% folder.
+% toolbox will be located in a subfolder of the configured toolboxRoot or
+% toolboxCommonRoot folder.
 %
 % tbFetchToolboxes( ... 'toolboxRoot', toolboxRoot) specify where to put
 % toolboxes.  The default location is
