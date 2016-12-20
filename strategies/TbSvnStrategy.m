@@ -76,6 +76,5 @@ classdef TbSvnStrategy < TbToolboxStrategy
             end
             cd(originalFolder);
         end
-        
     end
 end

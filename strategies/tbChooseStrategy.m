@@ -37,34 +37,27 @@ end
 switch record.type
     case 'git'
         strategy = TbGitStrategy();
-        strategy.checkInternetCommand = checkInternetCommand;
-        return;
+    case 'svn'
+        strategy = TbSvnStrategy();
     case 'webget'
         strategy = TbWebGetStrategy();
-        strategy.checkInternetCommand = checkInternetCommand;
-        return;
     case 'local'
         strategy = TbLocalStrategy();
-        strategy.checkInternetCommand = checkInternetCommand;
-        return;
     case 'installed'
         strategy = TbInstalledStrategy();
-        strategy.checkInternetCommand = checkInternetCommand;
-        return;
     case 'docker'
         strategy = TbDockerStrategy();
-        strategy.checkInternetCommand = checkInternetCommand;
-        return;
     case 'include'
         strategy = TbIncludeStrategy();
-        strategy.checkInternetCommand = checkInternetCommand;
-        return;
 end
 
 %% Use type as class name.
-if 2 == exist(record.type, 'class')
+if isempty(strategy) && 2 == exist(record.type, 'class')
     constructor = str2func(record.type);
     strategy = feval(constructor);
+end
+
+%% Let the strategy use the current check internet command
+if ~ismepty(strategy)
     strategy.checkInternetCommand = checkInternetCommand;
-    return;
 end
