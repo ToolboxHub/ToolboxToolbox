@@ -58,6 +58,6 @@ if isempty(strategy) && 2 == exist(record.type, 'class')
 end
 
 %% Let the strategy use the current check internet command
-if ~ismepty(strategy)
+if ~isempty(strategy)
     strategy.checkInternetCommand = checkInternetCommand;
 end
