@@ -20,7 +20,14 @@ classdef TbSvnTest < matlab.unittest.TestCase
     
     methods (TestMethodSetup)
         function checkIfSvnPresent(testCase)
-            [svnExists, ~, result] = TbSvnStrategy.assertSvnWorks();
+            try
+                TbSvnStrategy.assertSvnWorks();
+                svnExists = true;
+                result = '';
+            catch err
+                svnExists = false;
+                result = err.message;
+            end
             testCase.assumeTrue(svnExists, result);
         end
         
