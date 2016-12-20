@@ -95,5 +95,5 @@ rmpref('ToolboxToolbox');
 % no-op to assume Internet is always reachable
 % checkInternetCommand = '';
 %
-%setpref('ToolboxToolbox', 'checkInternetCommand', checkInternetCommand);
+% setpref('ToolboxToolbox', 'checkInternetCommand', checkInternetCommand);
 
