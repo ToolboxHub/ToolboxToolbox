@@ -29,7 +29,16 @@ toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 
 %% Locate the folder that contains the registry.
 strategy = tbChooseStrategy(registry, varargin{:});
-registryPath = strategy.toolboxPath(toolboxRoot, registry, 'withSubfolder', true);
+registryBasePath = strategy.toolboxPath(toolboxRoot, registry);
+
+% use one registry subfolder, if any
+if ischar(registry.subfolder)
+    registryPath = fullfile(registryBasePath, registry.subfolder);
+elseif iscellstr(registry.subfolder)
+    registryPath = fullfile(registryBasePath, registry.subfolder{1});
+else
+    registryPath = registryBasePath;
+end
 
 %% Check for the named configuration.
 registryContents = dir(registryPath);

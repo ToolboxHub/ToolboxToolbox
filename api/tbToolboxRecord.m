@@ -20,8 +20,8 @@ function record = tbToolboxRecord(varargin)
 %   name of a custom TbToolboxStrategy subclass.
 %   - 'flavor' optional flavor of toolbox, for example a Git
 %   branch/tag/commit to checkout after cloning
-%   - 'subfolder' optional toolbox subfolder to add to path, instead of the
-%   whole toolbox
+%   - 'subfolder' optional toolbox subfolder or cell array of subfolders to
+%   add to path, instead of the whole toolbox
 %   - 'update' optional update control, if "never", won't attempt to update the toolbox
 %   - 'importance' optional error control, if "optional", errors with this
 %   toolbox won't cause the whole deployment to fail. 
@@ -42,7 +42,7 @@ parser.addParameter('name', '', @ischar);
 parser.addParameter('url', '', @ischar);
 parser.addParameter('type', '', @ischar);
 parser.addParameter('flavor', '', @ischar);
-parser.addParameter('subfolder', '', @ischar);
+parser.addParameter('subfolder', '', @(val) ischar(val) || iscellstr(val));
 parser.addParameter('update', '', @ischar);
 parser.addParameter('hook', '', @ischar);
 parser.addParameter('localHookTemplate', '', @ischar);

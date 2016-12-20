@@ -1,17 +1,12 @@
-function [toolboxPath, subfolder] = tbToolboxPath(toolboxRoot, record, varargin)
+function [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, varargin)
 % Build a consistent toolbox path based on the root and a toolbox record.
 %
 % toolboxPath = tbToolboxPath(toolboxRoot, record) builds a
 % consistently-formatted toolbox path which incorporates the given
 % toolboxRoot folder and the name and flavor of the given toolbox record.
 %
-% tbToolboxPath( ... 'withSubfolder', withSubfolder) specify whether to
-% append the given record.subfolder to the toolbox path (true) or not
-% (false).  The default is false, omit the subfolder.
-%
 % Returns an absolute path where the toolbox is located.  Also returns a
-% subfolder which is the last part of the absolute path, handy as a display
-% name for the toolbox.
+% part of the path, that would make for a handy as a display name.
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -19,27 +14,24 @@ parser = inputParser();
 parser.KeepUnmatched = true;
 parser.addRequired('toolboxRoot', @ischar);
 parser.addRequired('record', @isstruct);
-parser.addParameter('withSubfolder', false, @islogical);
 parser.parse(toolboxRoot, record, varargin{:});
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 record = parser.Results.record;
-withSubfolder = parser.Results.withSubfolder;
 
-%% Choose subfolder for the toolbox.
-% basic subfolder for toolbox with no special flavor
-subfolder = record.name;
+
+%% Choose folder name for the toolbox.
+% basic folder name for toolbox with no special flavor
+toolboxFolder = record.name;
 
 % append flavor as "name_flavor"
 %   don't use name/flavor -- don't want to nest flavors inside basic
 if ~isempty(record.flavor)
-    subfolder = [subfolder '_' record.flavor];
+    toolboxFolder = [toolboxFolder '_' record.flavor];
 end
+displayName = toolboxFolder;
 
-if withSubfolder
-    subfolder = fullfile(subfolder, record.subfolder);
-end
 
-%% Choose root folder to contain the subfolder.
+%% Choose root folder to contain the toolbox.
 if isempty(record.toolboxRoot)
     % put this toolbox with all the other toolboxes
     pathRoot = toolboxRoot;
@@ -49,4 +41,4 @@ else
 end
 
 % return a full path
-toolboxPath = fullfile(pathRoot, subfolder);
+toolboxPath = fullfile(pathRoot, toolboxFolder);

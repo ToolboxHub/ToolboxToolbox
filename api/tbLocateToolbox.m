@@ -16,12 +16,10 @@ parser.PartialMatching = false;
 parser.addRequired('toolbox', @(val) ischar(val) || isstruct(val));
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.addParameter('withSubfolder', true, @islogical);
 parser.parse(toolbox, varargin{:});
 toolbox = parser.Results.toolbox;
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
-withSubfolder = parser.Results.withSubfolder;
 
 % convert convenient string to general toolbox record
 if ischar(toolbox)
@@ -32,15 +30,13 @@ end
 strategy = tbChooseStrategy(record, varargin{:});
 
 % first, look for a shared toolbox
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxCommonRoot, record, ...
-    'withSubfolder', withSubfolder);
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxCommonRoot, record);
 if 7 == exist(toolboxPath, 'dir')
     return;
 end
 
 % then look for a regular toolbox
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record, ...
-    'withSubfolder', withSubfolder);
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record);
 if 7 == exist(toolboxPath, 'dir')
     return;
 end

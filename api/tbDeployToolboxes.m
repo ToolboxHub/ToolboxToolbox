@@ -173,20 +173,32 @@ end
 if addToPath
     tbResetMatlabPath(reset, varargin{:});
     
-    % add toolboxes one at a time
-    % so we don't add extra cruft that might be in the toolboxRoot folder
     nToolboxes = numel(resolved);
     for tt = 1:nToolboxes
         record = resolved(tt);
         
-        % add shared toolbox to path?
-        toolboxPath = tbLocateToolbox(record, ...
+        % base folder for the toolbox
+        [toolboxPath, displayName] = tbLocateToolbox(record, ...
             'toolboxCommonRoot', toolboxCommonRoot, ...
-            'toolboxRoot', toolboxRoot, ...
-            'withSubfolder', true);
-        if 7 == exist(toolboxPath, 'dir')
-            fprintf('Adding "%s" to path at "%s".\n', record.name, toolboxPath);
-            record.strategy.addToPath(record, toolboxPath);
+            'toolboxRoot', toolboxRoot);
+        
+        % any subfolders to use instead of base folder?
+        if ischar(record.subfolder)
+            subfolders = {record.subfolder};
+        elseif iscellstr(record.subfolder)
+            subfolders = record.subfolder;
+        else
+            subfolders = {''};
+        end
+        
+        % add each toolbox folder to the path
+        nSubfolders = numel(subfolders);
+        for ss = 1:nSubfolders
+            pathToAdd = fullfile(toolboxPath, subfolders{ss});
+            if 7 == exist(pathToAdd, 'dir')
+                fprintf('Adding "%s" to path at "%s".\n', displayName, pathToAdd);
+                record.strategy.addToPath(record, pathToAdd);
+            end
         end
     end
 end
@@ -218,8 +230,7 @@ for tt = 1:nToolboxes
     record = resolved(tt);
     [~, toolboxName] = tbLocateToolbox(record, ...
         'toolboxCommonRoot', toolboxCommonRoot, ...
-        'toolboxRoot', toolboxRoot, ...
-        'withSubfolder', false);
+        'toolboxRoot', toolboxRoot);
     if ~isempty(record.hook) && 2 ~= exist(record.hook, 'file')
         fprintf('Running hook for "%s": "%s".\n', toolboxName, record.hook);
         [resolved(tt).status, resolved(tt).message] = evalIsolated(record.hook);
@@ -249,8 +260,7 @@ end
 function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolder, record)
 [toolboxPath, hookName] = tbLocateToolbox(record, ...
     'toolboxCommonRoot', toolboxCommonRoot, ...
-    'toolboxRoot', toolboxRoot, ...
-    'withSubfolder', false);
+    'toolboxRoot', toolboxRoot);
 fprintf('Checking for "%s" local hook.\n', hookName);
 
 % create a local hook if missing and a template exists
