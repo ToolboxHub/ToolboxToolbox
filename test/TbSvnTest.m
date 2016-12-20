@@ -19,6 +19,11 @@ classdef TbSvnTest < matlab.unittest.TestCase
     end
     
     methods (TestMethodSetup)
+        function checkIfSvnPresent(testCase)
+            [svnExists, ~, result] = TbSvnStrategy.assertSvnWorks();
+            testCase.assumeTrue(svnExists, result);
+        end
+        
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
             tbResetMatlabPath('full');
