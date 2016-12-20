@@ -149,6 +149,7 @@ end
 
 %% Resolve "include" records into one big, flat config.
 [resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, registry, varargin{:});
+resolved = tbDealField(resolved, 'path', '');
 resolved = tbDealField(resolved, 'status', 0);
 resolved = tbDealField(resolved, 'message', '');
 included = tbDealField(included, 'status', 0);
