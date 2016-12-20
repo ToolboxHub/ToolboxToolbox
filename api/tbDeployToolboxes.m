@@ -263,18 +263,34 @@ function record = invokeLocalHook(toolboxCommonRoot, toolboxRoot, localHookFolde
     'toolboxRoot', toolboxRoot);
 fprintf('Checking for "%s" local hook.\n', hookName);
 
+% look for Foo.m or FooLocalHook.m
+simpleHookPath = fullfile(localHookFolder, [hookName '.m']);
+simpleHookExists = 2 == exist(simpleHookPath, 'file');
+explicitHookPath = fullfile(localHookFolder, [hookName 'LocalHook.m']);
+explicitHookExists = 2 == exist(explicitHookPath, 'file');
+
 % create a local hook if missing and a template exists
-templateLocalHookPath = fullfile(toolboxPath, record.localHookTemplate);
-existingLocalHookPath = fullfile(localHookFolder, [hookName '.m']);
-if 2 ~= exist(existingLocalHookPath, 'file') && 2 == exist(templateLocalHookPath, 'file');
-    fprintf('  Creating local hook from template "%s".\n', templateLocalHookPath);
-    copyfile(templateLocalHookPath, existingLocalHookPath);
+templatePath = fullfile(toolboxPath, record.localHookTemplate);
+templateExists = 2 == exist(templatePath, 'file');
+if ~simpleHookExists && ~explicitHookExists && templateExists
+    fprintf('  Creating local hook from template "%s".\n', templatePath);
+    copyfile(templatePath, explicitHookPath);
+    explicitHookExists = true;
+end
+
+% which hook exists, if any?
+if explicitHookExists
+    hookPath = explicitHookPath;
+elseif simpleHookExists
+    hookPath = simpleHookPath;
+else
+    hookPath = '';
 end
 
 % invoke the local hook if it exists
-if 2 == exist(existingLocalHookPath, 'file')
-    fprintf('  Running local hook "%s".\n', existingLocalHookPath);
-    command = ['run ' existingLocalHookPath];
+if ~isempty(hookPath);
+    fprintf('  Running local hook "%s".\n', hookPath);
+    command = ['run ' hookPath];
     [record.status, record.message] = evalIsolated(command);
     
     if 0 == record.status
