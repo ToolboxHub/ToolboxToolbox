@@ -47,8 +47,32 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
     end
     
     methods (Test)
-        function testExistingGoodHook(obj)
+        function testExistingGoodHookSimpleName(obj)
             % make the "good" hook exist in the local hooks folder
+            %   with the simple name "local_toolbox.m"
+            pathHere = fileparts(mfilename('fullpath'));
+            goodHook = fullfile(pathHere, 'fixture', 'goodHook.m');
+            localHook = fullfile(obj.localHookFolder, 'local_toolbox.m');
+            mkdir(obj.localHookFolder);
+            copyfile(goodHook, localHook);
+            
+            % deplpoy should detect and run the good hook
+            record = tbToolboxRecord( ...
+                'type', 'local', ...
+                'name', 'local_toolbox', ...
+                'url', obj.localFolder);
+            results = tbDeployToolboxes( ...
+                'config', record, ...
+                'reset', 'full', ...
+                'localHookFolder', obj.localHookFolder);
+            
+            % good hook should have run without error
+            obj.assertEqual(results.status, 0);
+        end
+        
+        function testExistingGoodHookExplicitName(obj)
+            % make the "good" hook exist in the local hooks folder
+            %   with the simple name "local_toolboxLocalHook.m"
             pathHere = fileparts(mfilename('fullpath'));
             goodHook = fullfile(pathHere, 'fixture', 'goodHook.m');
             localHook = fullfile(obj.localHookFolder, 'local_toolbox.m');
