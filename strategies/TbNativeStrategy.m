@@ -11,15 +11,18 @@ classdef TbNativeStrategy < TbToolboxStrategy
     %   toolbox deployment time, as opposed to waiting for an obscure error
     %   to crop up later on.
     %
-    % The way it works, is the user must supply a special hook for the
-    % toolbox record.  This should be the name of a function in the
-    % toolbox.  This function must return 3 values:
-    %   - a status code indicating whether the native dependency was
-    %   found -- 0 -> success, non-zero -> failure
-    %   - a message indicating success or failure, such as the result
-    %   returned from system()
-    %   - on failure, useful links and/or advice to the user about how to
-    %   obtain the missing dependency -- may be empty on success
+    % The user must supply a special hook function for the toolbox record.
+    % The name of the hook function must go in record.hook.  The function
+    % should have no side-effects -- it must be safe to call it
+    % repeatedly.  The function must take no arguments.  The function must
+    % behave like this:
+    %   - check whether the native dependency is present with appropriate
+    %   calls to funcitons like ispc(), ismac(), isunix(), system(), etc.
+    %   - on success, return a friendly message indicating that the
+    %   dependency was found
+    %   - on failure, throw an exception with a message that gives the user
+    %   useful links and/or advice about how to obtain the missing
+    %   dependency
     %
     % 2016-2017 benjamin.heasly@gmail.com
     
@@ -29,14 +32,15 @@ classdef TbNativeStrategy < TbToolboxStrategy
             command = record.hook;
             fprintf('Checking for native dependency "%s" using function "%s":\n', ...
                 record.name, command);
-            [status, message, advice] = eval(command);
             
-            % try to display useful messages
-            if 0 == status
+            try
+                message = eval(command);
+                status = 0;
                 fprintf('  OK: "%s":\n', message);
-            else
-                fprintf('  Not found: "%s":\n\n', message);
-                fprintf('  Suggestion: "%s":\n\n', advice);
+            catch err
+                message = err.message;
+                status = -1;
+                fprintf('  Not found.  Suggestion: "%s":\n\n', message);
             end
         end
         
