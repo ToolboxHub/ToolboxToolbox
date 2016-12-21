@@ -44,5 +44,10 @@ classdef TbToolboxStrategy < handle
                 'checkInternetCommand', obj.checkInternetCommand, ...
                 varargin{:});
         end
+        
+        function flavor = detectFlavor(obj, record, varargin)
+            % default: just report the original declared flavor
+            flavor = record.flavor;
+        end
     end
 end
