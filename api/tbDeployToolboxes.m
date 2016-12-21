@@ -223,6 +223,38 @@ if runLocalHooks
     end
 end
 
+%% requirementHook checks dependencies that ToolboxToolbox can't install.
+nToolboxes = numel(resolved);
+for tt = 1:nToolboxes
+    record = resolved(tt);
+    [~, toolboxName] = tbLocateToolbox(record, ...
+        'toolboxCommonRoot', toolboxCommonRoot, ...
+        'toolboxRoot', toolboxRoot);
+    
+    if isempty(record.requirementHook)
+        continue;
+    end
+    
+    try
+        fprintf('Checking requirementHook for "%s": "%s".\n', ...
+            toolboxName, record.requirementHook);
+        [status, message, advice] = feval(record.requirementHook);
+    catch err
+        status = -1;
+        message = err.message;
+        advice = 'Please check that the function "%s" exists and has sinature [status, result, advice] = foo()';
+    end
+    resolved(tt).status = status;
+    resolved(tt).message = message;
+    
+    if 0 == status
+        fprintf('  OK: "%s".\n', message);
+    else
+        fprintf('  Requirement not met: "%s".\n', message);
+        fprintf('  Suggestion: "%s".\n', advice);
+    end
+end
+
 
 %% Invoke portable, non-local post-deploy hooks.
 nToolboxes = numel(resolved);
@@ -231,9 +263,20 @@ for tt = 1:nToolboxes
     [~, toolboxName] = tbLocateToolbox(record, ...
         'toolboxCommonRoot', toolboxCommonRoot, ...
         'toolboxRoot', toolboxRoot);
-    if ~isempty(record.hook) && 2 ~= exist(record.hook, 'file')
-        fprintf('Running hook for "%s": "%s".\n', toolboxName, record.hook);
-        [resolved(tt).status, resolved(tt).message] = evalIsolated(record.hook);
+    
+    if isempty(record.hook)
+        continue;
+    end
+    
+    fprintf('Evaluating general-purpose hook for "%s": "%s".\n', ...
+        toolboxName, record.hook);
+    [status, message] = evalIsolated(record.hook);
+    resolved(tt).status = status;
+    resolved(tt).message = message;
+    if 0 == status
+        fprintf('  OK: "%s".\n', message);
+    else
+        fprintf('  Hook had an error with status %d and message "%s".\n', status, message);
     end
 end
 
