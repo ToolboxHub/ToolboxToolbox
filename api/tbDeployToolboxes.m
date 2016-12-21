@@ -242,7 +242,8 @@ for tt = 1:nToolboxes
     catch err
         status = -1;
         message = err.message;
-        advice = 'Please check that the function "%s" exists and has sinature [status, result, advice] = foo()';
+        advice = sprintf('Please check that the function "%s" exists and has signature [status, result, advice] = foo()', ...
+            record.requirementHook);
     end
     resolved(tt).status = status;
     resolved(tt).message = message;
