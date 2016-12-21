@@ -49,6 +49,8 @@ switch record.type
         strategy = TbDockerStrategy();
     case 'include'
         strategy = TbIncludeStrategy();
+    case 'native'
+        strategy = TbNativeStrategy();
 end
 
 %% Use type as class name.

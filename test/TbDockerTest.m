@@ -17,7 +17,7 @@ classdef TbDockerTest < matlab.unittest.TestCase
     
     methods (TestMethodSetup)
         
-        function checkIfServerPresent(testCase)
+        function checkIfDockerPresent(testCase)
             [dockerExists, ~, result] = TbDockerStrategy.dockerExists();
             testCase.assumeTrue(dockerExists, result);
         end
