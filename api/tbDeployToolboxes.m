@@ -104,11 +104,6 @@ if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
 end
 
 
-%% Ignore records without names -- they're just comments.
-isComment = cellfun(@isempty, {config.name});
-config = config(~isComment);
-
-
 %% Convert registered toolbox names to "include" records.
 if ~isempty(registered)
     nRegistered = numel(registered);
@@ -125,6 +120,12 @@ if ~isempty(registered)
     end
 end
 
+
+%% Ignore records without names -- they're just comments.
+if ~isempty(config)
+    isComment = cellfun(@isempty, {config.name});
+    config = config(~isComment);
+end
 
 %% Single out one toolbox?
 if ~isempty(name)
