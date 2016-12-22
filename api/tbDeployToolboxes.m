@@ -121,6 +121,12 @@ if ~isempty(registered)
 end
 
 
+%% Ignore records without names -- they're just comments.
+if ~isempty(config)
+    isComment = cellfun(@isempty, {config.name});
+    config = config(~isComment);
+end
+
 %% Single out one toolbox?
 if ~isempty(name)
     isName = strcmp(name, {config.name});

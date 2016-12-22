@@ -60,12 +60,12 @@ classdef TbGitStrategy < TbToolboxStrategy
             [status, message, fullCommand] = obj.systemInFolder(command, toolboxPath);
         end
         
-        function [status, result, fullCommand] = systemInFolder(obj, command, folder)
+        function [status, result, fullCommand] = systemInFolder(obj, command, folder, varargin)
             originalFolder = pwd();
             try
                 obj.checkInternet('asAssertion', true);
                 cd(folder);
-                [status, result, fullCommand] = tbSystem(command);
+                [status, result, fullCommand] = tbSystem(command, varargin{:});
             catch err
                 status = -1;
                 result = err.message;
@@ -74,5 +74,38 @@ classdef TbGitStrategy < TbToolboxStrategy
             cd(originalFolder);
         end
         
+        function flavor = detectFlavor(obj, record, varargin)
+            % preserve declared flavor, if any
+            if ~isempty(record.flavor)
+                flavor = record.flavor;
+                return;
+            end
+            
+            % detect flavor with git command.
+            toolboxPath = tbLocateToolbox(record, varargin{:});
+            command = 'git rev-parse HEAD';
+            [status, result] = obj.systemInFolder(command, toolboxPath, ...
+                varargin{:}, ...
+                'echo', false);
+            if 0 == status
+                flavor = strtrim(result);
+            else
+                flavor = '';
+            end
+        end
+        
+        function url = detectOriginUrl(obj, record, varargin)            
+            % try to detect the url from where this was cloned
+            toolboxPath = tbLocateToolbox(record, varargin{:});
+            command = 'git config --get remote.origin.url';
+            [status, result] = obj.systemInFolder(command, toolboxPath, ...
+                varargin{:}, ...
+                'echo', false);
+            if 0 == status
+                url = strtrim(result);
+            else
+                url = '';
+            end
+        end
     end
 end

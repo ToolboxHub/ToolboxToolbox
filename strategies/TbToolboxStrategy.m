@@ -24,7 +24,7 @@ classdef TbToolboxStrategy < handle
     
     methods
         function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record, varargin)
-            % default: standard folder instide toolboxRoot
+            % default: standard folder inside toolboxRoot
             [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, varargin{:});
         end
         
@@ -43,6 +43,11 @@ classdef TbToolboxStrategy < handle
             [isOnline, result] = tbCheckInternet( ...
                 'checkInternetCommand', obj.checkInternetCommand, ...
                 varargin{:});
+        end
+        
+        function flavor = detectFlavor(obj, record, varargin)
+            % default: just report the original declared flavor
+            flavor = record.flavor;
         end
     end
 end

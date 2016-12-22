@@ -25,7 +25,7 @@ function record = tbToolboxRecord(varargin)
 %   - 'update' optional update control, if "never", won't attempt to update the toolbox
 %   - 'importance' optional error control, if "optional", errors with this
 %   toolbox won't cause the whole deployment to fail.
-%   - 'hook' Matlab command to eval() after the toolbox is deployed and added
+%   - 'hook' Matlab command to eval() after the toolbox is added
 %   to the path
 %   - 'requirementHook' name of a function to feval() that checks for
 %   system requirements that ToolboxToolbox can't install.  Must have the
@@ -36,6 +36,8 @@ function record = tbToolboxRecord(varargin)
 %   Matlab preference and toolboxRoot passed to tbDeployToolboxes().
 %   - 'pathPlacement' whether to 'append' or 'prepend' to the Matlab path.
 %   The default is to 'append'.
+%   - 'extra' a free-form field for notes, comments, etc., ignored during
+%   deployment
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -53,6 +55,7 @@ parser.addParameter('localHookTemplate', '', @ischar);
 parser.addParameter('toolboxRoot', '', @ischar);
 parser.addParameter('pathPlacement', 'append', @ischar);
 parser.addParameter('importance', '', @ischar);
+parser.addParameter('extra', '');
 parser.parse(varargin{:});
 
 % let the parser do all the work
