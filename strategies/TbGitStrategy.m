@@ -92,5 +92,18 @@ classdef TbGitStrategy < TbToolboxStrategy
                 flavor = '';
             end
         end
+        
+        function url = detectOriginUrl(obj, record, varargin)            
+            % try to detect the url from where this was cloned
+            toolboxPath = tbLocateToolbox(record, varargin{:});
+            command = 'git config --get remote.origin.url';
+            [status, result] = obj.systemInFolder(command, toolboxPath, ...
+                'echo', false);
+            if 0 == status
+                url = strtrim(result);
+            else
+                url = '';
+            end
+        end
     end
 end

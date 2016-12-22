@@ -8,7 +8,7 @@ function snapshot = tbDeploymentSnapshot(config, varargin)
 % configuration has already been deployed.  For example:
 %   results = tbUse('sample-repo');
 %   snapshot = tbDeploymentSnapshot(results);
-%   tbWriteConfig(snapshot, 'conigPath', 'my-snapshot.json');
+%   tbWriteConfig(snapshot, 'consfigPath', 'my-snapshot.json');
 %
 % snapshot = tbDeploymentSnapshot(config) attempts to detect the toolbox
 % version for each toolbox record in the given config.  Returns a new,
@@ -44,19 +44,19 @@ for tt = 1:nToolboxes
 end
 
 
-%% Gather system-wide version info.
-systemInfo.matlab_ver = evalc('ver');
+%% Gather system-wide version info, just for reference.
 systemInfo.matlab_version = version();
+systemInfo.matlab_ver = evalc('ver');
 systemInfo.java = version('-java');
 systemInfo.computer = computer();
-systemInfo.toolboxRegistry = detectRegistryFlavor(varargin{:});
-systemInfo.toolboxToolbox = detectSelfFlavor(varargin{:});
+systemInfo.toolboxRegistry = getRegistryInfo(varargin{:});
+systemInfo.toolboxToolbox = getSelfInfo(varargin{:});
 
-% store in a bogus toolbox record, to be ignored by other functions
+% store in an empty toolbox record, to be ignored during deployment
 systemRecord = tbToolboxRecord( ...
     'importance', 'optional', ...
     'type', 'system info');
-systemRecord.flavor = systemInfo;
+systemRecord.extra = systemInfo;
 
 
 %% Results as struct array.
@@ -64,16 +64,20 @@ snapshot = [systemRecord snapshotCell{:}];
 
 
 %% Try to detect the toolbox registry version.
-function registryFlavor = detectRegistryFlavor(varargin)
+function registryInfo = getRegistryInfo(varargin)
 registry = tbFetchRegistry(varargin{:}, 'doUpdate', false);
-registryFlavor = registry.strategy.detectFlavor(registry, varargin{:});
+flavor = registry.strategy.detectFlavor(registry, varargin{:});
+registryInfo = tbToolboxRecord(registry, 'flavor', flavor);
 
 
 %% Try to detect the ToolboxToolbox flavor, assuming it's with Git.
-function selfFlavor = detectSelfFlavor(varargin)
+function selfInfo = getSelfInfo(varargin)
 self = tbToolboxRecord( ...
     'toolboxRoot', fileparts(tbLocateSelf()), ...
     'name', 'ToolboxToolbox', ...
     'type', 'git');
 strategy = TbGitStrategy(varargin{:});
-selfFlavor = strategy.detectFlavor(self, varargin{:});
+flavor = strategy.detectFlavor(self, varargin{:});
+url = strategy.detectOriginUrl(self, varargin{:});
+selfInfo = tbToolboxRecord(self, 'flavor', flavor, 'url', url);
+
