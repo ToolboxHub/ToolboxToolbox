@@ -65,9 +65,6 @@ for tt = 1:nToolboxes
         record = rawConfig(tt);
     end
     
-    if ~isstruct(record) || ~isfield(record, 'name') || isempty(record.name)
-        continue;
-    end
     wellFormedRecords{tt} = tbToolboxRecord(record);
 end
 config = [wellFormedRecords{:}];

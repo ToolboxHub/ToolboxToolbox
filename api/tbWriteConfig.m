@@ -29,9 +29,6 @@ nToolboxes = numel(config);
 wellFormedRecords = cell(1, nToolboxes);
 for tt = 1:nToolboxes
     record = config(tt);
-    if ~isfield(record, 'name') || isempty(record.name)
-        continue;
-    end
     wellFormedRecords{tt} = tbToolboxRecord(record);
 end
 records = [wellFormedRecords{:}];
