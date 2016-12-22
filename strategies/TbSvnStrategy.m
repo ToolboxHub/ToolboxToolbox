@@ -88,6 +88,7 @@ classdef TbSvnStrategy < TbToolboxStrategy
             toolboxPath = tbLocateToolbox(record, varargin{:});
             command = 'svn info';
             [status, result] = obj.systemInFolder(command, toolboxPath, ...
+                varargin{:}, ...
                 'echo', false);
             if 0 == status
                 % scrape out just the revision number

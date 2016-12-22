@@ -85,6 +85,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             toolboxPath = tbLocateToolbox(record, varargin{:});
             command = 'git rev-parse HEAD';
             [status, result] = obj.systemInFolder(command, toolboxPath, ...
+                varargin{:}, ...
                 'echo', false);
             if 0 == status
                 flavor = strtrim(result);
@@ -98,6 +99,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             toolboxPath = tbLocateToolbox(record, varargin{:});
             command = 'git config --get remote.origin.url';
             [status, result] = obj.systemInFolder(command, toolboxPath, ...
+                varargin{:}, ...
                 'echo', false);
             if 0 == status
                 url = strtrim(result);

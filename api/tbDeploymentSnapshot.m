@@ -60,7 +60,7 @@ systemRecord.extra = systemInfo;
 
 
 %% Results as struct array.
-snapshot = [systemRecord snapshotCell{:}];
+snapshot = [snapshotCell{:} systemRecord];
 
 
 %% Try to detect the toolbox registry version.
@@ -76,7 +76,7 @@ self = tbToolboxRecord( ...
     'toolboxRoot', fileparts(tbLocateSelf()), ...
     'name', 'ToolboxToolbox', ...
     'type', 'git');
-strategy = TbGitStrategy(varargin{:});
+strategy = tbChooseStrategy(self, varargin{:});
 flavor = strategy.detectFlavor(self, varargin{:});
 url = strategy.detectOriginUrl(self, varargin{:});
 selfInfo = tbToolboxRecord(self, 'flavor', flavor, 'url', url);
