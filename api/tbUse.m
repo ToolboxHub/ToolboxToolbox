@@ -6,22 +6,22 @@ function results = tbUse(registered, varargin)
 % automate several steps that we usually do by hand, which is good for
 % consistency and convenience.
 %
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
+%
 % results = tbUse('foo') fetches one toolbox named 'foo' from ToolboxHub
 % and adds it to the Matlab path.
 %
 % results = tbUse({'foo', 'bar', ...}) fetches toolboxes named
 % 'foo', 'bar', etc. from ToolboxHub and adds them to the matlab path.
 %
-% tbUse(... 'name', value) specify additional name-value pairs to specify
-% how toolboxes should be deployed.  See tbDeployToolboxes() which shares
-% parameters with this function.
-%
 % 2016 benjamin.heasly@gmail.com
 
+prefs = tbParsePrefs(varargin{:});
+
 parser = inputParser();
-parser.KeepUnmatched = true;
 parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
-parser.parse(registered, varargin{:});
+parser.parse(registered);
 registered = parser.Results.registered;
 
 % convert convenient string form to general list form
@@ -29,6 +29,4 @@ if ischar(registered)
     registered = {registered};
 end
 
-results = tbDeployToolboxes( ...
-    varargin{:}, ...
-    'registered', registered);
+results = tbDeployToolboxes(prefs, 'registered', registered);

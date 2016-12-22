@@ -8,35 +8,34 @@ function [toolboxPath, displayName] = tbLocateToolbox(toolbox, varargin)
 % toolboxPath = tbLocateToolbox(record) locates the toolbox from the given
 % record struct, instead of the given string name.
 %
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
+%
 % 2016 benjamin.heasly@gmail.com
 
+[prefs, others] = tbParsePrefs(varargin{:});
+
 parser = inputParser();
-parser.KeepUnmatched = true;
-parser.PartialMatching = false;
 parser.addRequired('toolbox', @(val) ischar(val) || isstruct(val));
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
-parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.parse(toolbox, varargin{:});
+parser.parse(toolbox);
 toolbox = parser.Results.toolbox;
-toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
-toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
 
 % convert convenient string to general toolbox record
 if ischar(toolbox)
-    record = tbToolboxRecord(varargin{:}, 'name', toolbox);
+    record = tbToolboxRecord(others, 'name', toolbox);
 else
     record = toolbox;
 end
-strategy = tbChooseStrategy(record, varargin{:});
+strategy = tbChooseStrategy(record, prefs);
 
 % first, look for a shared toolbox
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxCommonRoot, record);
+[toolboxPath, displayName] = strategy.toolboxPath(prefs.toolboxCommonRoot, record);
 if 7 == exist(toolboxPath, 'dir')
     return;
 end
 
 % then look for a regular toolbox
-[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record);
+[toolboxPath, displayName] = strategy.toolboxPath(prefs.toolboxRoot, record);
 if 7 == exist(toolboxPath, 'dir')
     return;
 end

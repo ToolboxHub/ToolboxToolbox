@@ -15,6 +15,9 @@ function [newPath, oldPath] = tbResetMatlabPath(reset, varargin)
 %   - 'as-is' -- Don't alter the current value of the path.  This would be
 %   useful when specifying specific folders to 'add' or 'remove', below.
 %
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
+%
 % tbResetMatlabPath( ... 'remove', remove) specifies folders to remove from
 % to the Matlab path, after setting the path to the given reset.  Valid
 % values for remove are:
@@ -27,26 +30,22 @@ function [newPath, oldPath] = tbResetMatlabPath(reset, varargin)
 %   - 'self' -- Append the ToolboxToolbox itself to the path.
 %   - 'matlab' -- Append all installed Matlab toolboxes to the path.
 %
-%
 % 2016 benjamin.heasly@gmail.com
 
+prefs = tbParsePrefs(varargin{:});
+
 parser = inputParser();
-parser.KeepUnmatched = true;
 parser.addRequired('reset', @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
-parser.addParameter('add', '', @ischar);
-parser.addParameter('remove', '', @ischar);
-parser.parse(reset, varargin{:});
+parser.parse(reset);
 reset = parser.Results.reset;
-add = parser.Results.add;
-remove = parser.Results.remove;
 
 oldPath = path();
 
 % convert arguments to some to-do items.
 factoryReset = ~strcmp(reset, 'as-is');
-removeSelf = strcmp(reset, 'no-self') || strcmp(reset, 'bare') || strcmp(remove, 'self');
-removeMatlab = strcmp(reset, 'no-matlab') || strcmp(reset, 'bare') || strcmp(remove, 'matlab');
-addMatlab = strcmp(add, 'matlab');
+removeSelf = strcmp(reset, 'no-self') || strcmp(reset, 'bare') || strcmp(prefs.remove, 'self');
+removeMatlab = strcmp(reset, 'no-matlab') || strcmp(reset, 'bare') || strcmp(prefs.remove, 'matlab');
+addMatlab = strcmp(prefs.add, 'matlab');
 
 
 %% Start with Matlab's consistent "factory" path.

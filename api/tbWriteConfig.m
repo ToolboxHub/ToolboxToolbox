@@ -9,20 +9,17 @@ function configPath = tbWriteConfig(config, varargin)
 % at the default location, and returns the full, absolute path to the
 % written file.
 %
-% tbWriteConfig( ... 'configPath', configPath) specify where to
-% write the config file.  The default location is getpref('ToolboxToolbox',
-% 'configPath'), or 'toolbox_config.json' in the userpath() folder.
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
 %
 % 2016 benjamin.heasly@gmail.com
 
+prefs = tbParsePrefs(varargin{:});
+
 parser = inputParser();
-parser.KeepUnmatched = true;
-parser.PartialMatching = false;
 parser.addRequired('config', @isstruct);
-parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
-parser.parse(config, varargin{:});
+parser.parse(config);
 config = parser.Results.config;
-configPath = parser.Results.configPath;
 
 %% Massage the given config into well-formed records.
 nToolboxes = numel(config);
@@ -34,4 +31,4 @@ end
 records = [wellFormedRecords{:}];
 
 %% Write out to disk.
-savejson('', records, configPath);
+savejson('', records, prefs.configPath);

@@ -77,7 +77,7 @@ classdef TbSvnStrategy < TbToolboxStrategy
             cd(originalFolder);
         end
         
-        function flavor = detectFlavor(obj, record, varargin)
+        function flavor = detectFlavor(obj, record)
             % preserve declared flavor, if any
             if ~isempty(record.flavor)
                 flavor = record.flavor;
@@ -85,10 +85,9 @@ classdef TbSvnStrategy < TbToolboxStrategy
             end
             
             % detect flavor with svn command.
-            toolboxPath = tbLocateToolbox(record, varargin{:});
+            toolboxPath = tbLocateToolbox(record, obj.prefs);
             command = 'svn info';
             [status, result] = obj.systemInFolder(command, toolboxPath, ...
-                varargin{:}, ...
                 'echo', false);
             if 0 == status
                 % scrape out just the revision number
