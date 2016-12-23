@@ -1,4 +1,4 @@
-function [projectPath, displayName, projectParent] = tbLocateProject(project, varargin)
+function [projectPath, configPath, projectParent] = tbLocateProject(project, varargin)
 % Locate the folder that contains the given project.
 %
 % projectPath = tbLocateProject(name) locates the project with the given
@@ -28,7 +28,6 @@ else
 end
 
 projectPath = '';
-displayName = record.name;
 projectParent = '';
 
 fprintf('Locating project "%s" within "%s".\n', record.name, prefs.projectRoot);
