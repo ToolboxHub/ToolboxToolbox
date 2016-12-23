@@ -69,6 +69,10 @@ rmpref('ToolboxToolbox');
 % toolboxCommonRoot = '/srv/toolboxes';
 % setpref('ToolboxToolbox', 'toolboxCommonRoot', toolboxCommonRoot);
 
+% % default folder to contain non-toolbox projects
+% projectRoot = fullfile(tbUserFolder(), 'projects');
+% setpref('ToolboxToolbox', 'projectRoot', projectRoot);
+
 % % default folder for hooks that set up local config for each toolbox
 % localHookFolder = fullfile(tbUserFolder(), 'localToolboxHooks');
 % setpref('ToolboxToolbox', 'localHookFolder', localHookFolder);
