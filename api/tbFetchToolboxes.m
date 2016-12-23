@@ -52,46 +52,34 @@ for tt = 1:nToolboxes
     % make sure the toolbox destination exists
     if isempty(record.toolboxRoot)
         % put this toolbox with all the other toolboxes
-        fetchRoot = prefs.toolboxRoot;
+        obtainRoot = prefs.toolboxRoot;
     else
         % put this toolbox in its own special place
-        fetchRoot = tbHomePathToAbsolute(record.toolboxRoot);
+        obtainRoot = tbHomePathToAbsolute(record.toolboxRoot);
     end
-    if 7 ~= exist(fetchRoot, 'dir')
-        mkdir(fetchRoot);
+    if 7 ~= exist(obtainRoot, 'dir')
+        mkdir(obtainRoot);
     end
     
-    % is the toolbox pre-installed in the common location?
-    [toolboxCommonFolder, displayName] = strategy.toolboxPath(prefs.toolboxCommonRoot, record);
-    if strategy.checkIfPresent(record, prefs.toolboxCommonRoot, toolboxCommonFolder);
-        if strcmp(record.update, 'never')
-            continue;
-        end
-        
-        fprintf('Updating "%s".\n', displayName);
-        results(tt).operation = 'update';
+    % look for the toolbox
+    [updatePath, displayName, updateRoot] = tbLocateToolbox(record, prefs);
+    if isempty(updatePath)
+        % obtain the toolbox
+        fprintf('Obtaining "%s".\n', displayName);
+        results(tt).operation = 'obtain';
+        obtainPath = strategy.toolboxPath(obtainRoot, record);
         [results(tt).command, results(tt).status, results(tt).message] = ...
-            strategy.update(record, prefs.toolboxCommonRoot, toolboxCommonFolder);
-        continue;
-    end
-    
-    % is the toolbox alredy in the regular location?
-    [toolboxFolder, displayName] = strategy.toolboxPath(fetchRoot, record);
-    if strategy.checkIfPresent(record, fetchRoot, toolboxFolder);
-        if strcmp(record.update, 'never')
-            continue;
-        end
+            strategy.obtain(record, obtainRoot, obtainPath);
         
-        fprintf('Updating "%s".\n', displayName);
-        results(tt).operation = 'update';
-        [results(tt).command, results(tt).status, results(tt).message] = ...
-            strategy.update(record, fetchRoot, toolboxFolder);
-        continue;
+    else
+        % toolbox is there already -- update it?
+        if strcmp(record.update, 'never')
+            fprintf('Found "%s" and skipping update.\n', displayName);
+        else
+            fprintf('Updating "%s".\n', displayName);
+            results(tt).operation = 'update';
+            [results(tt).command, results(tt).status, results(tt).message] = ...
+                strategy.update(record, updateRoot, updatePath);
+        end
     end
-    
-    % obtain the toolbox
-    fprintf('Obtaining "%s".\n', displayName);
-    results(tt).operation = 'obtain';
-    [results(tt).command, results(tt).status, results(tt).message] = ...
-        strategy.obtain(record, fetchRoot, toolboxFolder);
 end

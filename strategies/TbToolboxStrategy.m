@@ -24,8 +24,8 @@ classdef TbToolboxStrategy < handle
     
     methods
         function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record)
-            % default: standard folder inside toolboxRoot
-            [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, obj.prefs);
+            % default: standard folder inside given toolboxRoot
+            [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record);
         end
         
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)

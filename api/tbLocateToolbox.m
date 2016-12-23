@@ -1,9 +1,9 @@
-function [toolboxPath, displayName] = tbLocateToolbox(toolbox, varargin)
+function [toolboxPath, displayName, toolboxRoot] = tbLocateToolbox(toolbox, varargin)
 % Locate the folder that contains the given toolbox.
 %
 % toolboxPath = tbLocateToolbox(name) locates the toolbox with the given
 % string name and returns the path to that toolbox.  This may be a path
-% within the configured toolboxRoot, or toolboxCommonRoot.
+% within the prefs toolboxRoot, or toolboxCommonRoot.
 %
 % toolboxPath = tbLocateToolbox(record) locates the toolbox from the given
 % record struct, instead of the given string name.
@@ -28,20 +28,23 @@ else
 end
 strategy = tbChooseStrategy(record, prefs);
 
-% first, look for a shared toolbox
-[toolboxPath, displayName] = strategy.toolboxPath(prefs.toolboxCommonRoot, record);
-if 7 == exist(toolboxPath, 'dir')
+% first, look for a pre-installed toolbox
+toolboxRoot = prefs.toolboxCommonRoot;
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record);
+if strategy.checkIfPresent(record, toolboxRoot, toolboxPath)
     return;
 end
 
 % then look for a regular toolbox
-[toolboxPath, displayName] = strategy.toolboxPath(prefs.toolboxRoot, record);
-if 7 == exist(toolboxPath, 'dir')
+toolboxRoot = prefs.toolboxRoot;
+[toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record);
+if strategy.checkIfPresent(record, toolboxRoot, toolboxPath)
     return;
 end
 
-% din't find the toolbox
+% didn't find the toolbox
 toolboxPath = '';
 displayName = record.name;
+toolboxRoot = '';
 
 

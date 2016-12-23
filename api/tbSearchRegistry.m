@@ -18,10 +18,9 @@ parser.parse(name);
 name = parser.Results.name;
 
 %% Locate the folder that contains the registry.
-strategy = tbChooseStrategy(prefs.registry, prefs);
-registryBasePath = strategy.toolboxPath(prefs.toolboxRoot, prefs.registry);
+registryBasePath = tbLocateToolbox(prefs.registry);
 
-% use one registry subfolder, if any
+% only use first registry subfolder, if any
 if ischar(prefs.registry.subfolder)
     registryPath = fullfile(registryBasePath, prefs.registry.subfolder);
 elseif iscellstr(prefs.registry.subfolder)

@@ -357,7 +357,7 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                     sprintf('command "%s" -> message "%s"', result.command, result.message));
                 
                 % toolbox with optional subfolder
-                toolboxPath = tbToolboxPath(obj.toolboxRoot, result, 'withSubfolder', true);
+                toolboxPath = tbToolboxPath(obj.toolboxRoot, result);
                 if ~isempty(result.subfolder) && ischar(result.subfolder)
                     toolboxPath = fullfile(toolboxPath, result.subfolder);
                 end
