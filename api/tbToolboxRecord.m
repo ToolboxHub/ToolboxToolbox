@@ -25,10 +25,13 @@ function record = tbToolboxRecord(varargin)
 %   - 'update' optional update control, if "never", won't attempt to update the toolbox
 %   - 'importance' optional error control, if "optional", errors with this
 %   toolbox won't cause the whole deployment to fail.
-%   - 'hook' Matlab command to run after the toolbox is deployed and added
+%   - 'hook' Matlab command to eval() after the toolbox added
 %   to the path
-%   - 'localHookTemplate' template for script with local config file to
-%   copy to the local hook folder and run at reploy time
+%   - 'requirementHook' name of a function to feval() that checks for
+%   system requirements that ToolboxToolbox can't install.  Must have the
+%   function signature: [status, result, advice] = foo()
+%   - 'localHookTemplate' relative path to config script template to be
+%   copied to the localHookFolder and run() at the end of deployment
 %   - 'toolboxRoot' where to deploy the toolbox, overrides toolboxRoot
 %   Matlab preference and toolboxRoot passed to tbDeployToolboxes().
 %   - 'pathPlacement' whether to 'append' or 'prepend' to the Matlab path.
@@ -47,6 +50,7 @@ parser.addParameter('flavor', '', @ischar);
 parser.addParameter('subfolder', '', @(val) ischar(val) || iscellstr(val));
 parser.addParameter('update', '', @ischar);
 parser.addParameter('hook', '', @ischar);
+parser.addParameter('requirementHook', '', @ischar);
 parser.addParameter('localHookTemplate', '', @ischar);
 parser.addParameter('toolboxRoot', '', @ischar);
 parser.addParameter('pathPlacement', 'append', @ischar);
