@@ -41,7 +41,7 @@ for tt = 1:nToolboxes
         continue;
     end
     
-    flavor = strategy.detectFlavor(record, prefs);
+    flavor = strategy.detectFlavor(record);
     pinnedRecord = tbToolboxRecord(record, ...
         'update', 'never', ...
         'flavor', flavor);
@@ -71,7 +71,7 @@ snapshot = [snapshotCell{:} systemRecord];
 %% Try to detect the toolbox registry version.
 function registryInfo = getRegistryInfo(prefs)
 registry = tbFetchRegistry(prefs, 'doUpdate', false);
-flavor = registry.strategy.detectFlavor(registry, prefs);
+flavor = registry.strategy.detectFlavor(registry);
 registryInfo = tbToolboxRecord(registry, 'flavor', flavor);
 
 
@@ -82,7 +82,7 @@ self = tbToolboxRecord( ...
     'name', 'ToolboxToolbox', ...
     'type', 'git');
 strategy = tbChooseStrategy(self, prefs);
-flavor = strategy.detectFlavor(self, prefs);
-url = strategy.detectOriginUrl(self, prefs);
+flavor = strategy.detectFlavor(self);
+url = strategy.detectOriginUrl(self);
 selfInfo = tbToolboxRecord(self, 'flavor', flavor, 'url', url);
 

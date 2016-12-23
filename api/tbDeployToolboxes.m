@@ -99,7 +99,7 @@ included = tbDealField(included, 'message', '');
 
 if isempty(resolved)
     fprintf('Unable to resolve any configurations.\n');
-    fprintf('  configPath to try loading was: %s\n', configPath);
+    fprintf('  configPath to try loading was: %s\n', prefs.configPath);
     fprintf('  explicit config struct contained %d records.\n', numel(config));
     fprintf('  registered toolboxes had names: %s.\n', sprintf('"%s", ', registered{:}));
     fprintf('Proceeding in case there''s a hook or localHook to be run.\n');
