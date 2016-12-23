@@ -1,9 +1,9 @@
 classdef TbSnapshotTest < matlab.unittest.TestCase
     % Test the ToolboxToolbox deployment snapshots
     %
-    % The Toolbox Toolbox should be able to detect versions/flavors for the
-    % system and deployed toolboxes, and write new configurations that
-    % includes the versions/flavors.
+    % The ToolboxToolbox should be able to detect versions/flavors for
+    % deployed toolboxes and the overall system, and write new
+    % configurations that include the versions/flavors.
     %
     % 2016 benjamin.heasly@gmail.com
     
@@ -16,7 +16,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('full');
+            tbResetMatlabPath('reset', 'full');
         end
         
         function cleanUpTempFiles(obj)
@@ -82,7 +82,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             obj.deployAndCheckFlavors(config);
         end
         
-        function testGitCommit(obj)
+        function testGitCommitId(obj)
             % use repository head revision
             config = tbToolboxRecord( ...
                 'name', 'simple', ...
@@ -117,15 +117,15 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
     methods
         function deployAndCheckFlavors(obj, config)
             % deploy normally
+            prefs = tbParsePrefs('toolboxRoot', obj.toolboxRoot);
             originalResult = tbDeployToolboxes( ...
                 'config', config, ...
-                'toolboxRoot', obj.toolboxRoot);
+                prefs);
             obj.assertEqual(originalResult.status, 0);
             
             % detect deployed version
-            strategy = tbChooseStrategy(config);
-            deployedFlavor = strategy.detectFlavor(originalResult, ...
-                'toolboxRoot', obj.toolboxRoot);
+            strategy = tbChooseStrategy(config, prefs);
+            deployedFlavor = strategy.detectFlavor(originalResult);
             
             % if given, declared flavor should match detected flavor
             if ~isempty(config.flavor)
@@ -133,8 +133,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             end
             
             % make a "snapshot" config
-            snapshot = tbDeploymentSnapshot(originalResult, ...
-                'toolboxRoot', obj.toolboxRoot);
+            snapshot = tbDeploymentSnapshot(originalResult, prefs);
             
             % snapshot version should match deployed version
             obj.assertEqual(snapshot(1).flavor, deployedFlavor);
@@ -142,13 +141,12 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             % redeploy from the snapshot
             snapshotResult = tbDeployToolboxes( ...
                 'config', snapshot, ...
-                'toolboxRoot', obj.toolboxRoot, ...
-                'reset', 'full');
+                'reset', 'full', ...
+                prefs);
             obj.assertEqual(snapshotResult.status, 0);
             
             % detect redeployed version directly
-            redeployedFlavor = strategy.detectFlavor(snapshotResult, ...
-                'toolboxRoot', obj.toolboxRoot);
+            redeployedFlavor = strategy.detectFlavor(snapshotResult);
             
             % redeployed version should matchsnapshot version
             obj.assertEqual(redeployedFlavor, snapshot(1).flavor);

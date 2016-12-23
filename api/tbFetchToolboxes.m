@@ -9,29 +9,17 @@ function results = tbFetchToolboxes(config, varargin)
 % toolbox will be located in a subfolder of the configured toolboxRoot or
 % toolboxCommonRoot folder.
 %
-% tbFetchToolboxes( ... 'toolboxRoot', toolboxRoot) specify where to put
-% toolboxes.  The default location is
-% getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in the
-% userpath() folder.
-%
-% As an optimization for shared systems, toolboxes may be pre-deployed
-% (by an admin) to a common toolbox root folder.  Toolboxes found here will
-% be updated, instead of being installed to the given toolboxRoot.
-%
-% tbFetchToolboxes( ... 'toolboxCommonRoot', toolboxCommonRoot) specify
-% where to look for shared toolboxes.  The default location is
-% getpref('ToolboxToolbox', 'toolboxCommonRoot'), or '/srv/toolboxes'.
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
 %
 % 2016 benjamin.heasly@gmail.com
 
+prefs = tbParsePrefs(varargin{:});
+
 parser = inputParser();
-parser.KeepUnmatched = true;
 parser.addRequired('config', @isstruct);
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
-parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.parse(config, varargin{:});
-toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
-toolboxCommonRoot = tbHomePathToAbsolute(parser.Results.toolboxCommonRoot);
+parser.parse(config);
+config = parser.Results.config;
 
 results = config;
 results = tbDealField(results, 'operation', 'skipped');
@@ -52,7 +40,7 @@ for tt = 1:nToolboxes
     end
     
     % what kind of toolbox is this?
-    strategy = tbChooseStrategy(record, varargin{:});
+    strategy = tbChooseStrategy(record, prefs);
     if isempty(strategy)
         results(tt).status = -1;
         results(tt).command = 'tbChooseStrategy';
@@ -64,46 +52,34 @@ for tt = 1:nToolboxes
     % make sure the toolbox destination exists
     if isempty(record.toolboxRoot)
         % put this toolbox with all the other toolboxes
-        fetchRoot = toolboxRoot;
+        obtainRoot = prefs.toolboxRoot;
     else
         % put this toolbox in its own special place
-        fetchRoot = tbHomePathToAbsolute(record.toolboxRoot);
+        obtainRoot = tbHomePathToAbsolute(record.toolboxRoot);
     end
-    if 7 ~= exist(fetchRoot, 'dir')
-        mkdir(fetchRoot);
+    if 7 ~= exist(obtainRoot, 'dir')
+        mkdir(obtainRoot);
     end
     
-    % is the toolbox pre-installed in the common location?
-    [toolboxCommonFolder, displayName] = strategy.toolboxPath(toolboxCommonRoot, record);
-    if strategy.checkIfPresent(record, toolboxCommonRoot, toolboxCommonFolder);
-        if strcmp(record.update, 'never')
-            continue;
-        end
-        
-        fprintf('Updating "%s".\n', displayName);
-        results(tt).operation = 'update';
+    % look for the toolbox
+    [updatePath, displayName, updateRoot] = tbLocateToolbox(record, prefs);
+    if isempty(updatePath)
+        % obtain the toolbox
+        fprintf('Obtaining "%s".\n', displayName);
+        results(tt).operation = 'obtain';
+        obtainPath = strategy.toolboxPath(obtainRoot, record);
         [results(tt).command, results(tt).status, results(tt).message] = ...
-            strategy.update(record, toolboxCommonRoot, toolboxCommonFolder);
-        continue;
-    end
-    
-    % is the toolbox alredy in the regular location?
-    [toolboxFolder, displayName] = strategy.toolboxPath(fetchRoot, record);
-    if strategy.checkIfPresent(record, fetchRoot, toolboxFolder);
-        if strcmp(record.update, 'never')
-            continue;
-        end
+            strategy.obtain(record, obtainRoot, obtainPath);
         
-        fprintf('Updating "%s".\n', displayName);
-        results(tt).operation = 'update';
-        [results(tt).command, results(tt).status, results(tt).message] = ...
-            strategy.update(record, fetchRoot, toolboxFolder);
-        continue;
+    else
+        % toolbox is there already -- update it?
+        if strcmp(record.update, 'never')
+            fprintf('Found "%s" and skipping update.\n', displayName);
+        else
+            fprintf('Updating "%s".\n', displayName);
+            results(tt).operation = 'update';
+            [results(tt).command, results(tt).status, results(tt).message] = ...
+                strategy.update(record, updateRoot, updatePath);
+        end
     end
-    
-    % obtain the toolbox
-    fprintf('Obtaining "%s".\n', displayName);
-    results(tt).operation = 'obtain';
-    [results(tt).command, results(tt).status, results(tt).message] = ...
-        strategy.obtain(record, fetchRoot, toolboxFolder);
 end

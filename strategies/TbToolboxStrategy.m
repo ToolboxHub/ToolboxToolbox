@@ -14,7 +14,7 @@ classdef TbToolboxStrategy < handle
     % 2016 benjamin.heasly@gmail.com
     
     properties
-        checkInternetCommand = '';
+        prefs = tbParsePrefs();
     end
     
     methods (Abstract)
@@ -23,9 +23,9 @@ classdef TbToolboxStrategy < handle
     end
     
     methods
-        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record, varargin)
-            % default: standard folder inside toolboxRoot
-            [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, varargin{:});
+        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record)
+            % default: standard folder inside given toolboxRoot
+            [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record);
         end
         
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
@@ -34,18 +34,14 @@ classdef TbToolboxStrategy < handle
         end
         
         function toolboxPath = addToPath(obj, record, toolboxPath)
-            tbAddToolboxPath( ...
-                'toolboxPath', toolboxPath, ...
-                'pathPlacement', record.pathPlacement);
+            tbAddToPath(toolboxPath, 'pathPlacement', record.pathPlacement);
         end
         
         function [isOnline, result] = checkInternet(obj, varargin)
-            [isOnline, result] = tbCheckInternet( ...
-                'checkInternetCommand', obj.checkInternetCommand, ...
-                varargin{:});
+            [isOnline, result] = tbCheckInternet(obj.prefs, varargin{:});
         end
         
-        function flavor = detectFlavor(obj, record, varargin)
+        function flavor = detectFlavor(obj, record)
             % default: just report the original declared flavor
             flavor = record.flavor;
         end

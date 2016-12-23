@@ -74,7 +74,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             cd(originalFolder);
         end
         
-        function flavor = detectFlavor(obj, record, varargin)
+        function flavor = detectFlavor(obj, record)
             % preserve declared flavor, if any
             if ~isempty(record.flavor)
                 flavor = record.flavor;
@@ -82,10 +82,9 @@ classdef TbGitStrategy < TbToolboxStrategy
             end
             
             % detect flavor with git command.
-            toolboxPath = tbLocateToolbox(record, varargin{:});
+            toolboxPath = tbLocateToolbox(record, obj.prefs);
             command = 'git rev-parse HEAD';
             [status, result] = obj.systemInFolder(command, toolboxPath, ...
-                varargin{:}, ...
                 'echo', false);
             if 0 == status
                 flavor = strtrim(result);
@@ -94,12 +93,11 @@ classdef TbGitStrategy < TbToolboxStrategy
             end
         end
         
-        function url = detectOriginUrl(obj, record, varargin)            
+        function url = detectOriginUrl(obj, record)
             % try to detect the url from where this was cloned
-            toolboxPath = tbLocateToolbox(record, varargin{:});
+            toolboxPath = tbLocateToolbox(record, obj.prefs);
             command = 'git config --get remote.origin.url';
             [status, result] = obj.systemInFolder(command, toolboxPath, ...
-                varargin{:}, ...
                 'echo', false);
             if 0 == status
                 url = strtrim(result);

@@ -20,7 +20,7 @@ classdef TbLocalStrategy < TbToolboxStrategy
             [command, status, message] = obj.obtain(record, toolboxRoot, toolboxPath);
         end
         
-        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record, varargin)
+        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record)
             % take local path from url, not toolboxRoot
             
             if 1 == strfind(record.url, 'file://')

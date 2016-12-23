@@ -5,37 +5,26 @@ function configPath = tbSearchRegistry(name, varargin)
 % registry for a configuration file with the given name.  If found, returns
 % the full path to the configuration file.  Otherwise returns ''.
 %
-% tbFetchRegistry( ... 'registry', registry) specify an explicit toolbox
-% record which indicates where and how to access the registry.  The default
-% is getpref('ToolboxToolbox', 'registry'), or the public registry at
-% Toolbox Hub.
-%
-% tbDeployToolboxes(... 'toolboxRoot', toolboxRoot) specifies the
-% toolboxRoot folder where the registry should be located.  The default
-% location is getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in
-% the userpath() folder.
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
 %
 % 2016 benjamin.heasly@gmail.com
 
+prefs = tbParsePrefs(varargin{:});
+
 parser = inputParser();
-parser.KeepUnmatched = true;
 parser.addRequired('name', @ischar);
-parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
-parser.parse(name, varargin{:});
+parser.parse(name);
 name = parser.Results.name;
-registry = parser.Results.registry;
-toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 
 %% Locate the folder that contains the registry.
-strategy = tbChooseStrategy(registry, varargin{:});
-registryBasePath = strategy.toolboxPath(toolboxRoot, registry);
+registryBasePath = tbLocateToolbox(prefs.registry);
 
-% use one registry subfolder, if any
-if ischar(registry.subfolder)
-    registryPath = fullfile(registryBasePath, registry.subfolder);
-elseif iscellstr(registry.subfolder)
-    registryPath = fullfile(registryBasePath, registry.subfolder{1});
+% only use first registry subfolder, if any
+if ischar(prefs.registry.subfolder)
+    registryPath = fullfile(registryBasePath, prefs.registry.subfolder);
+elseif iscellstr(prefs.registry.subfolder)
+    registryPath = fullfile(registryBasePath, prefs.registry.subfolder{1});
 else
     registryPath = registryBasePath;
 end

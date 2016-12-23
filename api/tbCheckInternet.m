@@ -10,29 +10,15 @@ function [isOnline, result] = tbCheckInternet(varargin)
 % if the Internet was reachable.  Also returns the string result of the
 % system() command that was used to check for connectivity.
 %
-% tbCheckInternet( ... 'checkInternetCommand', checkInternetCommand)
-% specify the command to pass to system() which will check for Internet
-% connectivity.  The default command is the empty '', which means to skip
-% the check and assume connectivity.
-%
-% tbCheckInternet( ... 'asAssertion', asAssertion) specify whether to treat
-% the call to tbCheckInternet() as an assertion.  If asAssertion is true
-% and the Internet is not reachable, throws an error with the system()
-% command result. Otherwise returns normally.  The default is false, don't
-% treat tbCheckInternet() as an assertion.
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
 %
 % 2016 benjamin.heasly@gmail.com
 
-parser = inputParser();
-parser.KeepUnmatched = true;
-parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
-parser.addParameter('asAssertion', false, @islogical);
-parser.parse(varargin{:});
-checkInternetCommand = parser.Results.checkInternetCommand;
-asAssertion = parser.Results.asAssertion;
+[prefs, others] = tbParsePrefs(varargin{:});
 
 % caller wants to skip the check?
-if isempty(checkInternetCommand)
+if isempty(prefs.checkInternetCommand)
     fprintf('Skipping internet check.\n');
     isOnline = true;
     result = 'skipping internet check';
@@ -40,7 +26,7 @@ if isempty(checkInternetCommand)
 end
 
 % are we online?
-[status, result, fullCommand] = tbSystem(checkInternetCommand, 'echo', false);
+[status, result, fullCommand] = tbSystem(prefs.checkInternetCommand, others);
 strtrim(result);
 isOnline = status == 0;
 
@@ -56,4 +42,4 @@ if ~isOnline
 end
 
 % if not, do we throw an error?
-assert(~asAssertion || isOnline, 'tbCheckInternet:internetUnreachable', result);
+assert(~prefs.asAssertion || isOnline, 'tbCheckInternet:internetUnreachable', result);

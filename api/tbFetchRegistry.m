@@ -8,15 +8,8 @@ function results = tbFetchRegistry(varargin)
 % results = tbFetchRegistry() fetches or updates the default registry,
 % which is the public registry at Toolbox Hub.
 %
-% tbFetchRegistry( ... 'registry', registry) specify an explicit toolbox
-% record which indicates where and how to access the registry.  The default
-% is getpref('ToolboxToolbox', 'registry'), or the public registry at
-% Toolbox Hub.
-%
-% tbDeployToolboxes(... 'toolboxRoot', toolboxRoot) specifies the
-% toolboxRoot folder where the registry should be saved.  The default
-% location is getpref('ToolboxToolbox', 'toolboxRoot'), or 'toolboxes' in
-% the userpath() folder.
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
 %
 % tbDeployToolboxes(... 'doUpdate', doUpdate) specifies whether to
 % update the registry if it already exists (true), or to leave an existing
@@ -25,20 +18,18 @@ function results = tbFetchRegistry(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
+[prefs, others] = tbParsePrefs(varargin{:});
 
 parser = inputParser();
-parser.KeepUnmatched = true;
-parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
 parser.addParameter('doUpdate', true, @islogical);
-parser.parse(varargin{:});
-registry = parser.Results.registry;
+parser.parse(others);
 doUpdate = parser.Results.doUpdate;
 
 %% Force no update?
 if ~doUpdate
-    registry.update = 'never';
+    prefs.registry.update = 'never';
 end
 
 %% Obtain or update just like a toolbox.
-results = tbFetchToolboxes(registry, varargin{:});
+results = tbFetchToolboxes(prefs.registry, prefs);
 

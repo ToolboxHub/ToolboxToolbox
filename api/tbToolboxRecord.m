@@ -25,8 +25,7 @@ function record = tbToolboxRecord(varargin)
 %   - 'update' optional update control, if "never", won't attempt to update the toolbox
 %   - 'importance' optional error control, if "optional", errors with this
 %   toolbox won't cause the whole deployment to fail.
-%   - 'hook' Matlab command to eval() after the toolbox added
-%   to the path
+%   - 'hook' Matlab command to eval() after the toolbox is added to the path
 %   - 'requirementHook' name of a function to feval() that checks for
 %   system requirements that ToolboxToolbox can't install.  Must have the
 %   function signature: [status, result, advice] = foo()

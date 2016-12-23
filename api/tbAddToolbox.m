@@ -5,25 +5,26 @@ function results = tbAddToolbox(varargin)
 % working configuration.  So this is just a utility wrapper on other
 % toolbox functions.
 %
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
+%
 % results = tbAddToolbox( ... name, value) creates a new toolbox record
 % based on the given name-value pairs and adds it to the toolbox
 % configuration.  See tbToolboxRecord() for recognized names.
 %
-% You can also specify additional name-value pairs to specify
-% how toolboxes should be deployed.  See tbDeployToolboxes() which also
-% shares parameters with this function.
-%
-% If a toolbox with the same 'name" already exists in the configuration, it
+% If a toolbox with the same name already exists in the configuration, it
 % will be replaced with the new one.
 %
 % 2016 benjamin.heasly@gmail.com
 
+[prefs, others] = tbParsePrefs(varargin{:});
+
 %% Make a new toolbox record.
-newRecord = tbToolboxRecord(varargin{:});
+newRecord = tbToolboxRecord(others);
 
 %% Deploy just the new toolbox.
 results = tbDeployToolboxes( ...
-    varargin{:}, ...
+    prefs, ...
     'config', newRecord, ...
     'reset', 'as-is');
 
@@ -33,7 +34,7 @@ if 0 ~= results.status
 end
 
 %% Add new toolbox to the existing config.
-config = tbReadConfig(varargin{:});
+config = tbReadConfig(prefs);
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = newRecord;
 else
@@ -47,5 +48,5 @@ else
 end
 
 %% Write back the new config. after success.
-tbWriteConfig(config, varargin{:});
+tbWriteConfig(config, prefs);
 

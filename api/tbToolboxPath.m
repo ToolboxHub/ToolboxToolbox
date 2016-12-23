@@ -1,4 +1,4 @@
-function [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, varargin)
+function [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record)
 % Build a consistent toolbox path based on the root and a toolbox record.
 %
 % toolboxPath = tbToolboxPath(toolboxRoot, record) builds a
@@ -6,7 +6,7 @@ function [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record, varargi
 % toolboxRoot folder and the name and flavor of the given toolbox record.
 %
 % Returns an absolute path where the toolbox is located.  Also returns a
-% part of the path, that would make for a handy as a display name.
+% part of the path which would make for a handy display name.
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -14,7 +14,7 @@ parser = inputParser();
 parser.KeepUnmatched = true;
 parser.addRequired('toolboxRoot', @ischar);
 parser.addRequired('record', @isstruct);
-parser.parse(toolboxRoot, record, varargin{:});
+parser.parse(toolboxRoot, record);
 toolboxRoot = tbHomePathToAbsolute(parser.Results.toolboxRoot);
 record = parser.Results.record;
 

@@ -9,19 +9,13 @@ function [config, configPath] = tbReadConfig(varargin)
 % the default location.  Returns the config struct as well as the full,
 % absolute path to the file that was read.
 %
-% tbReadConfig( ... 'configPath', configPath) specify where to look for the
-% config file.  The default location is getpref('ToolboxToolbox',
-% 'configPath'), or 'toolbox_config.json' in the userpath() folder.
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
 %
 % 2016 benjamin.heasly@gmail.com
 
-parser = inputParser();
-parser.KeepUnmatched = true;
-parser.PartialMatching = false;
-parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
-parser.parse(varargin{:});
-configPath = parser.Results.configPath;
-
+prefs = tbParsePrefs(varargin{:});
+configPath = prefs.configPath;
 config = [];
 
 %% Read from Web?
