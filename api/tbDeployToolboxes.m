@@ -113,7 +113,7 @@ end
 
 %% Add each toolbox to the path.
 if prefs.addToPath
-    tbResetMatlabPath(prefs.reset, prefs);
+    tbResetMatlabPath(prefs);
     
     nToolboxes = numel(resolved);
     for tt = 1:nToolboxes

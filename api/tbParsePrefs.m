@@ -46,7 +46,7 @@ parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(
 parser.addParameter('asAssertion', false, @islogical);
 parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('addToPath', true, @islogical);
-parser.addParameter('reset', 'as-is', @ischar);
+parser.addParameter('reset', 'as-is', @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.parse(varargin{:});

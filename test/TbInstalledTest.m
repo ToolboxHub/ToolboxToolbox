@@ -13,7 +13,7 @@ classdef TbInstalledTest  < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('full');
+            tbResetMatlabPath('reset', 'full');
         end
     end
     
@@ -31,7 +31,7 @@ classdef TbInstalledTest  < matlab.unittest.TestCase
             obj.assertEqual(exist(whichImageinfo, 'file'), 2);
             
             % exclude it from the path
-            tbResetMatlabPath('no-matlab');
+            tbResetMatlabPath('reset', 'no-matlab');
             whichImageinfo = which('imageinfo');
             obj.assertEqual(exist(whichImageinfo, 'file'), 0);
             

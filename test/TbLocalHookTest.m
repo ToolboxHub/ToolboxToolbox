@@ -17,7 +17,7 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('full');
+            tbResetMatlabPath('reset', 'full');
         end
         
         function copyFixture(obj)

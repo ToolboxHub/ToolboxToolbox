@@ -21,7 +21,7 @@ classdef TbRequirementHookTest < matlab.unittest.TestCase
         
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
-            tbResetMatlabPath('full');
+            tbResetMatlabPath('reset', 'full');
         end
         
         function cleanUpTempFiles(obj)

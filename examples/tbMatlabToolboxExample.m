@@ -30,7 +30,7 @@ fprintf('\n');
 
 
 %% Show that we can kick installed toolboxes off the path.
-tbResetMatlabPath('no-matlab');
+tbResetMatlabPath('reset', 'no-matlab');
 
 functionPath = which(functionName);
 fprintf('Looked for "%s" function, got path "%s".\n', functionName, functionPath);

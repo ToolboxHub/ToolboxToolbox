@@ -1,9 +1,17 @@
-function [newPath, oldPath] = tbResetMatlabPath(reset, varargin)
+function [newPath, oldPath] = tbResetMatlabPath(varargin)
 % Set the Matlab path to a consistent state.
 %
-% [newPath, oldPath] = tbResetMatlabPath(reset) sets the Matlab path to
-% a consistent state, as specified by the given reset string.  The value of
-% the reset string must be one of the following:
+% [newPath, oldPath] = tbResetMatlabPath('name', value, ...) sets the
+% Matlab path to a consistent state as determined by the given name-value
+% pairs.
+%
+% This function uses ToolboxToolbox shared parameters and preferences.  See
+% tbParsePrefs().
+%
+% tbResetMatlabPath( ... 'reset', reset) specifies a destired state for the
+% Matlab path.  The valid values of reset are:
+%   - 'as-is' -- Don't alter the current value of the path.  This would be
+%   useful when specifying specific folders to 'add' or 'remove', below.
 %   - 'full' -- Include the userpath(), all installed Matlab toolboxes,
 %   the ToolboxToolbox itself, and no other folders.  This is the default.
 %   - 'no-matlab' -- Like 'full', but does not include any installed
@@ -12,39 +20,36 @@ function [newPath, oldPath] = tbResetMatlabPath(reset, varargin)
 %   itself.
 %   - 'bare' -- Include only the userpath() and bare essentials for Matlab
 %   to function.
-%   - 'as-is' -- Don't alter the current value of the path.  This would be
-%   useful when specifying specific folders to 'add' or 'remove', below.
-%
-% This function uses ToolboxToolbox shared parameters and preferences.  See
-% tbParsePrefs().
+% The default is 'as-is'.
 %
 % tbResetMatlabPath( ... 'remove', remove) specifies folders to remove from
 % to the Matlab path, after setting the path to the given reset.  Valid
 % values for remove are:
 %   - 'self' -- Remove the ToolboxToolbox itself from the path.
 %   - 'matlab' -- Remove all installed Matlab toolboxes from the path.
+% The default is '', don't remove any extra entries.
 %
 % tbResetMatlabPath( ... 'add', add) specifies folders to add to the Matlab
 % path, after setting the path to the given reset.  Valid values for add
 % are:
 %   - 'self' -- Append the ToolboxToolbox itself to the path.
 %   - 'matlab' -- Append all installed Matlab toolboxes to the path.
+% The default is '', don't add any extra entries.
 %
 % 2016 benjamin.heasly@gmail.com
 
 prefs = tbParsePrefs(varargin{:});
 
-parser = inputParser();
-parser.addRequired('reset', @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
-parser.parse(reset);
-reset = parser.Results.reset;
-
 oldPath = path();
 
 % convert arguments to some to-do items.
-factoryReset = ~strcmp(reset, 'as-is');
-removeSelf = strcmp(reset, 'no-self') || strcmp(reset, 'bare') || strcmp(prefs.remove, 'self');
-removeMatlab = strcmp(reset, 'no-matlab') || strcmp(reset, 'bare') || strcmp(prefs.remove, 'matlab');
+factoryReset = ~strcmp(prefs.reset, 'as-is');
+removeSelf = strcmp(prefs.reset, 'no-self') ...
+    || strcmp(prefs.reset, 'bare') ...
+    || strcmp(prefs.remove, 'self');
+removeMatlab = strcmp(prefs.reset, 'no-matlab') ...
+    || strcmp(prefs.reset, 'bare') ...
+    || strcmp(prefs.remove, 'matlab');
 addMatlab = strcmp(prefs.add, 'matlab');
 
 
