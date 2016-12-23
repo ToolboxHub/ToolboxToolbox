@@ -34,9 +34,7 @@ classdef TbToolboxStrategy < handle
         end
         
         function toolboxPath = addToPath(obj, record, toolboxPath)
-            tbAddToolboxPath( ...
-                'toolboxPath', toolboxPath, ...
-                'pathPlacement', record.pathPlacement);
+            tbAddToPath(toolboxPath, 'pathPlacement', record.pathPlacement);
         end
         
         function [isOnline, result] = checkInternet(obj, varargin)
