@@ -38,7 +38,13 @@ function [newPath, oldPath] = tbResetMatlabPath(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+if 1 == nargin
+    % support legacy syntax
+    prefs = tbParsePrefs('reset', varargin{:});
+else
+    prefs = tbParsePrefs(varargin{:});
+end
+
 
 oldPath = path();
 
