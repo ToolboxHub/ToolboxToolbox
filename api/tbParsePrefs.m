@@ -40,7 +40,7 @@ parser.KeepUnmatched = true;
 parser.PartialMatching = false;
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
-parser.addParameter('projectRoot', tbGetPref('projectRoot', fullfile(tbUserFolder(), 'projects'))), @ischar);
+parser.addParameter('projectRoot', tbGetPref('projectRoot', fullfile(tbUserFolder(), 'projects')), @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
 parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
 parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
