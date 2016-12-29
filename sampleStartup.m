@@ -53,7 +53,9 @@ end
 %% Matlab preferences that control ToolboxToolbox.
 
 % clear old preferences, so we get a predictable starting place.
-rmpref('ToolboxToolbox');
+if (ispref('ToolboxToolbox'))
+    rmpref('ToolboxToolbox');
+end
 
 % choose custom preferences below, or leave commented to accept defaults
 
