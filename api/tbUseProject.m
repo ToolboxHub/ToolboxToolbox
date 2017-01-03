@@ -45,19 +45,3 @@ if any(isProject)
 end
 
 results = tbDeployToolboxes('config', config, prefs);
-
-%% Run the projects's local hook, if it exists
-% 
-% This needs some tidying and bullet-proofing.
-if (prefs.runLocalHooks)
-    if (exist(fullfile(prefs.localHookFolder,[name 'LocalHook.m']),'file'))
-        fprintf('  Running local hook %s\n',fullfile(prefs.localHookFolder,[name 'LocalHook.m']));
-        eval(['run ' fullfile(prefs.localHookFolder,[name 'LocalHook.m'])]);
-    elseif (exist(fullfile(prefs.localHookFolder,[name '.m']),'file'))
-        fprintf('  Running local hook %s\n',fullfile(prefs.localHookFolder,[name '.m']));
-        eval(['run ' fullfile(prefs.localHookFolder,[name 'LocalHook.m'])]);
-    end
-end
-
-
-
