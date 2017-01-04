@@ -8,7 +8,7 @@ classdef TbGitStrategy < TbToolboxStrategy
         function assertGitWorks()
             gitCommand = 'git --version';
             [status, result] = tbSystem(gitCommand, 'echo', false);
-            strtrim(result);
+            result = strtrim(result);
             gitWorks = status == 0;
             assert(gitWorks, 'TbGitStrategy:gitNotWorking', ...
                 'Git seems not to be working.  Got error: <%s>.', result);

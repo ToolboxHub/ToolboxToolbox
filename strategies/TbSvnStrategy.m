@@ -11,7 +11,7 @@ classdef TbSvnStrategy < TbToolboxStrategy
         function assertSvnWorks()
             svnCommand = 'svn --version';
             [status, result] = tbSystem(svnCommand, 'echo', false);
-            strtrim(result);
+            result = strtrim(result);
             svnWorks = status == 0;
             assert(svnWorks, 'TbSvnStrategy:svnNotWorking', ...
                 'Svn seems not to be working.  Got error: <%s>.', result);
