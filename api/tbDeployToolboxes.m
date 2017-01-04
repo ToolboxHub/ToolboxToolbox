@@ -13,6 +13,9 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 % This function uses ToolboxToolbox shared parameters and preferences.  See
 % tbParsePrefs().
 %
+% tbDeployToolboxes(... 'config', config) deploy the given struct array of
+% toolbox records instead of the default toolbox configuration.
+%
 % tbDeployToolboxes(... 'name', name) specify the name of a single toolbox
 % to deploy if found.  Other toolboxes will be ignored.
 %
