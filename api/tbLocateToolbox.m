@@ -28,21 +28,30 @@ else
 end
 strategy = tbChooseStrategy(record, prefs);
 
-% first, look for a pre-installed toolbox
+% first, look for a toolbox or project in its own, explicit location
+if ~isempty(record.toolboxRoot)
+    toolboxRoot = record.toolboxRoot;
+    [toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record);
+    if strategy.checkIfPresent(record, toolboxRoot, toolboxPath)
+        return;
+    end
+end
+
+% second, look for a pre-installed toolbox
 toolboxRoot = prefs.toolboxCommonRoot;
 [toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record);
 if strategy.checkIfPresent(record, toolboxRoot, toolboxPath)
     return;
 end
 
-% then look for a regular toolbox
+% last, look for a regular toolbox
 toolboxRoot = prefs.toolboxRoot;
 [toolboxPath, displayName] = strategy.toolboxPath(toolboxRoot, record);
 if strategy.checkIfPresent(record, toolboxRoot, toolboxPath)
     return;
 end
 
-% didn't find the toolbox
+% alas, didn't find the toolbox
 toolboxPath = '';
 displayName = record.name;
 toolboxRoot = '';
