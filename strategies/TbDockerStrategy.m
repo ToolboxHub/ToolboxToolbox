@@ -11,7 +11,7 @@ classdef TbDockerStrategy < TbToolboxStrategy
             else
                 command = ['docker images ' record.url ' | grep ' record.flavor];
             end
-            [status, result] = tbSystem(command);
+            [status, result] = tbSystem(command, 'echo', false);
             isPresent = status == 0 && ~isempty(result);
         end
         
