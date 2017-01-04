@@ -8,7 +8,8 @@ function snapshot = tbDeploymentSnapshot(config, varargin)
 % configuration has already been deployed.  For example:
 %   results = tbUse('sample-repo');
 %   snapshot = tbDeploymentSnapshot(results);
-%   tbWriteConfig(snapshot, 'consfigPath', 'my-snapshot.json');
+%   tbWriteConfig(snapshot, 'configPath', 'my-snapshot.json');
+%   tbDeployToFolder('~/my-folder', 'configPath', 'my-snapshot.json');
 %
 % snapshot = tbDeploymentSnapshot(config) attempts to detect the toolbox
 % version for each toolbox record in the given config.  Returns a new,

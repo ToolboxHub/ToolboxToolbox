@@ -10,6 +10,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
     properties
         testRepoUrl = 'https://github.com/ToolboxHub/sample-repo.git';
         toolboxRoot = fullfile(tempdir(), 'toolboxes');
+        snapshotRoot = fullfile(tempdir(), 'toolbox-snapshots');
         originalMatlabPath;
     end
     
@@ -22,6 +23,10 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
         function cleanUpTempFiles(obj)
             if 7 == exist(obj.toolboxRoot, 'dir')
                 rmdir(obj.toolboxRoot, 's');
+            end
+            
+            if 7 == exist(obj.snapshotRoot, 'dir')
+                rmdir(obj.snapshotRoot, 's');
             end
         end
     end
@@ -57,14 +62,14 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             tbWriteConfig(snapshot, 'configPath', snapshotPath);
             snapshotAgain = tbReadConfig('configPath', snapshotPath);
             
-            % want to compare 
+            % want to compare
             %   obj.assertEqual(snapshotAgain, snapshot);
             % but get false negatives like
             %   Actual char:
             %     Empty matrix: 1-by-0
             %   Expected char:
             %     ''
-
+            
             % reasonable but weaker test than what I want above :-(
             obj.assertNumElements(snapshotAgain, 2);
             systemInfoAgain = snapshotAgain(2);
@@ -138,8 +143,9 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             % snapshot version should match deployed version
             obj.assertEqual(snapshot(1).flavor, deployedFlavor);
             
-            % redeploy from the snapshot
-            snapshotResult = tbDeployToolboxes( ...
+            % redeploy the snapshot into its own folder
+            snapshotResult = tbDeployToFolder( ...
+                obj.snapshotRoot, ...
                 'config', snapshot, ...
                 'reset', 'full', ...
                 prefs);
@@ -150,6 +156,10 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             
             % redeployed version should matchsnapshot version
             obj.assertEqual(redeployedFlavor, snapshot(1).flavor);
+            
+            % redeployed snapshot should go into its own folder
+            [~, ~, redeployedRoot] = tbLocateToolbox(snapshotResult);
+            obj.assertEqual(redeployedRoot, obj.snapshotRoot);
         end
     end
 end
