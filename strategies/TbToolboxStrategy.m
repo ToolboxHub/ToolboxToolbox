@@ -45,5 +45,12 @@ classdef TbToolboxStrategy < handle
             % default: just report the original declared flavor
             flavor = record.flavor;
         end
+        
+        function [command, status, message] = skipUpdate(obj)
+            status = 0;
+            command = 'checkInternet()';
+            message = 'Proceeding without update.';
+            fprintf('Proceeding without update.\n');
+        end
     end
 end

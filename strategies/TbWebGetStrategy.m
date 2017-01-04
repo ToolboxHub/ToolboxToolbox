@@ -8,7 +8,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
         
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
-            try                
+            try
                 command = 'mkdir';
                 if 7 ~= exist(toolboxPath, 'dir')
                     mkdir(toolboxPath);
@@ -17,7 +17,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 command = 'websave';
                 [~, resourceBase, resourceExt] = fileparts(record.url);
                 fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
-               
+                
                 obj.checkInternet('asAssertion', true);
                 fileName = websave(fileName, record.url);
                 
@@ -38,7 +38,12 @@ classdef TbWebGetStrategy < TbToolboxStrategy
         end
         
         function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
-            % just keep obtaining.  Use record.neverUpdate to prevent this.
+            if ~obj.checkInternet('echo', false)
+                % toolbox already exists, but offline prevents update
+                [command, status, message] = obj.skipUpdate();
+                return;
+            end
+            
             [command, status, message] = obj.obtain(record, toolboxRoot, toolboxPath);
         end
     end

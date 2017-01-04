@@ -42,7 +42,12 @@ classdef TbDockerStrategy < TbToolboxStrategy
         end
         
         function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
-            % just keep obtaining.  Use record.neverUpdate to prevent this.
+            if ~obj.checkInternet('echo', false)
+                % toolbox already exists, but offline prevents update
+                [command, status, message] = obj.skipUpdate();
+                return;
+            end
+            
             [command, status, message] = obj.obtain(record, toolboxRoot, toolboxPath);
         end
     end

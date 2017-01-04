@@ -19,7 +19,6 @@ function [isOnline, result] = tbCheckInternet(varargin)
 
 % caller wants to skip the check?
 if isempty(prefs.checkInternetCommand)
-    fprintf('Skipping internet check.\n');
     isOnline = true;
     result = 'skipping internet check';
     return;
