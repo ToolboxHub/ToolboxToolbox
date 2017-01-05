@@ -48,6 +48,12 @@ classdef TbGitStrategy < TbToolboxStrategy
         
         function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath)
             
+            if ~obj.checkInternet('echo', false)
+                % toolbox already exists, but offline prevents update
+                [fullCommand, status, message] = obj.skipUpdate();
+                return;
+            end
+            
             % fail fast if git is not working
             TbGitStrategy.assertGitWorks();
             

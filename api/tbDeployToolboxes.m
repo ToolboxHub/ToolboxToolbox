@@ -83,12 +83,17 @@ end
 %% Get or update the toolbox registry.
 registry = tbFetchRegistry(prefs, 'doUpdate', true);
 if 0 ~= registry.status
-    fprintf('Unable to fetch toolbox registry "%s".\n', registry.name);
-    fprintf('  command was: %s.\n', registry.command);
-    fprintf('  message was: %s\n', registry.message);
-    resolved = [];
-    included = [];
-    return;
+    registryPath = tbLocateToolbox(registry, prefs);
+    if isempty(registryPath)
+        fprintf('Unable to fetch toolbox registry "%s".\n', registry.name);
+        fprintf('  command was: %s.\n', registry.command);
+        fprintf('  message was: %s\n', registry.message);
+        resolved = [];
+        included = [];
+        return;
+    else
+        fprintf('Unable to update toolbox registry "%s", proceeding with current version.\n', registry.name);
+    end
 end
 
 
