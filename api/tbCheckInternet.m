@@ -25,7 +25,9 @@ if isempty(prefs.checkInternetCommand)
 end
 
 % are we online?
-[status, result, fullCommand] = tbSystem(prefs.checkInternetCommand, others);
+[status, result, fullCommand] = tbSystem(prefs.checkInternetCommand, ...
+    others, ...
+    'echo', false);
 strtrim(result);
 isOnline = status == 0;
 
