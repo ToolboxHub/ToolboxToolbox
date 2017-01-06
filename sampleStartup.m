@@ -24,8 +24,12 @@ if isempty(pathString)
     end
 else
     % take the first folder on the userpath
-    firstSeparator = find(pathString == pathsep());
-    userFolder = pathString(1:firstSeparator-1);
+    firstSeparator = find(pathString == pathsep(), 1, 'first');
+    if isempty(firstSeparator)
+        userFolder = pathString;
+    else
+        userFolder = pathString(1:firstSeparator-1);
+    end
 end
 toolboxToolboxDir = fullfile(userFolder, 'ToolboxToolbox');
 

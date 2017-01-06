@@ -6,17 +6,22 @@ function userFolder = tbUserFolder()
 %
 % 2016 benjamin.heasly@gmail.com
 
+% try to get Matlab's special "user" path entries
+%    or punt with system variables
 pathString = userpath();
-
 if isempty(pathString)
-    userFolder = '';
+    if ispc()
+        userFolder = fullfile(getenv('HOMEDRIVE'), getenv('HOMEPATH'));
+    else
+        userFolder = getenv('HOME');
+    end
     return;
 end
 
-firstSeparator = find(pathString == pathsep());
+% take the first path entry, without any delimiter like ":"
+firstSeparator = find(pathString == pathsep(), 1, 'first');
 if isempty(firstSeparator)
-    userFolder = '';
-    return;
+    userFolder = pathString;
+else
+    userFolder = pathString(1:firstSeparator-1);
 end
-
-userFolder = pathString(1:firstSeparator-1);
