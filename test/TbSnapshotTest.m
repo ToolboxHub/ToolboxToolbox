@@ -144,7 +144,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             obj.assertEqual(snapshot(1).flavor, deployedFlavor);
             
             % redeploy the snapshot into its own folder
-            snapshotResult = tbDeployToFolder( ...
+            [snapshotResult, snapshotPrefs] = tbDeployToFolder( ...
                 obj.snapshotRoot, ...
                 'config', snapshot, ...
                 'reset', 'full', ...
@@ -159,7 +159,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             
             % redeployed snapshot should go into its own folder
             [~, ~, redeployedRoot] = tbLocateToolbox(snapshotResult);
-            obj.assertEqual(redeployedRoot, obj.snapshotRoot);
+            obj.assertEqual(redeployedRoot, snapshotPrefs.toolboxRoot);
         end
     end
 end

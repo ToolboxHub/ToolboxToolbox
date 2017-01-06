@@ -1,4 +1,4 @@
-function results = tbDeployToFolder(rootFolder, varargin)
+function [results, prefs] = tbDeployToFolder(rootFolder, varargin)
 % Deploy toolboxes to a given rootFolder, instead of toolboxRoot.
 %
 % This is a convenience wrapper around tbDeployToolboxes().  It deployes
@@ -36,9 +36,17 @@ if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = tbReadConfig(prefs);
 end
 
-%% Put all toolboxes into the given root folder.
-config = tbDealField(config, 'toolboxRoot', rootFolder);
-prefs.toolboxCommonRoot = rootFolder;
+
+%% Deploy everything into the given folder -- like it's a new machine.
+prefs.configPath = fullfile(rootFolder, 'toolbox_config.json');
+prefs.localHookFolder = fullfile(rootFolder, 'localToolboxHooks');
+prefs.projectRoot = fullfile(rootFolder, 'projects');
+prefs.toolboxCommonRoot = fullfile(rootFolder, 'toolboxes');
+prefs.toolboxRoot = fullfile(rootFolder, 'toolboxes');
+
+% explicitly point each toolbox record into the toolboxRoot
+%   to make them easier to find later
+config = tbDealField(config, 'toolboxRoot', prefs.toolboxRoot);
 
 
 %% The rest of the deployment is the same as usual.
