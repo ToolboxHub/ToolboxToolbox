@@ -42,7 +42,7 @@ classdef TbSvnStrategy < TbToolboxStrategy
                     toolboxPath);
             end
             
-            [status, message, fullCommand] = obj.systemInFolder(command, toolboxRoot);
+            [status, message, fullCommand] = tbSystem(command, 'echo', true);
         end
         
         function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath)
@@ -66,21 +66,7 @@ classdef TbSvnStrategy < TbToolboxStrategy
                     toolboxPath);
             end
             
-            [status, message, fullCommand] = obj.systemInFolder(command, toolboxPath);
-        end
-        
-        function [status, result, fullCommand] = systemInFolder(obj, command, folder, varargin)
-            originalFolder = pwd();
-            try
-                obj.checkInternet('asAssertion', true);
-                cd(folder);
-                [status, result, fullCommand] = tbSystem(command, varargin{:});
-            catch err
-                status = -1;
-                result = err.message;
-                fullCommand = command;
-            end
-            cd(originalFolder);
+            [status, message, fullCommand] = tbSystem(command, 'echo', true);
         end
         
         function flavor = detectFlavor(obj, record)
@@ -92,9 +78,8 @@ classdef TbSvnStrategy < TbToolboxStrategy
             
             % detect flavor with svn command.
             toolboxPath = tbLocateToolbox(record, obj.prefs);
-            command = 'svn info';
-            [status, result] = obj.systemInFolder(command, toolboxPath, ...
-                'echo', false);
+            command = sprintf('svn info "%s"', toolboxPath);
+            [status, result] = tbSystem(command, 'echo', false);
             if 0 == status
                 % scrape out just the revision number
                 tokens = regexp(result, '^Revision: (\d+)$', ...

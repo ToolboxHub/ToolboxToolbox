@@ -15,16 +15,21 @@ function [status, result, fullCommand] = tbSystem(command, varargin)
 % variables to preserve in the clean shell environment.  The default is {},
 % don't preserve any existing variables.
 %
+% tbSystem( ... 'dir', dir) specifies a directory dir to cd to, before
+% executing the given command.
+%
 % 2016 benjamin.heasly@gmail.com
 
 parser = inputParser();
 parser.addRequired('command', @ischar);
 parser.addParameter('keep', {}, @iscellstr);
 parser.addParameter('echo', true, @islogical);
+parser.addParameter('dir', '', @ischar);
 parser.parse(command, varargin{:});
 command = parser.Results.command;
 keep = parser.Results.keep;
 echo = parser.Results.echo;
+dir = parser.Results.dir;
 
 fullCommand = command;
 
@@ -65,6 +70,12 @@ keepString = sprintf('%s=%s ', keepVals{:});
 
 % run the command with a clean environment
 fullCommand = ['env -i ' keepString whichExecutable args];
+
+% run the command in the given dir, if any
+if ~isempty(dir)
+    fullCommand = ['cd "' dir '" && ' fullCommand];
+end
+
 if echo
     [status, result] = system(fullCommand, '-echo');
 else
