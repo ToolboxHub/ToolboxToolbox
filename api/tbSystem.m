@@ -39,6 +39,7 @@ if ispc()
     else
         [status, result] = system(command);
     end
+    result = strtrim(result);
     return;
 end
 
@@ -54,10 +55,11 @@ end
 
 % locate the executable so we can call it with its full path
 [status, result] = system(['which ' executable]);
+result = strtrim(result);
 if 0 ~= status
     return;
 end
-whichExecutable = strtrim(result);
+whichExecutable = result;
 
 % keep some of the environment
 nKeep = numel(keep);
@@ -81,3 +83,4 @@ if echo
 else
     [status, result] = system(fullCommand);
 end
+result = strtrim(result);
