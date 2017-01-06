@@ -37,6 +37,10 @@ registered = parser.Results.registered;
 config = parser.Results.config;
 
 
+%% Share the current prefs with user-defined hooks invoked below.
+tbCurrentPrefs(prefs);
+
+
 %% Choose explicit config, or load from file.
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = tbReadConfig(prefs);

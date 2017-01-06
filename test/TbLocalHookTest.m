@@ -221,5 +221,34 @@ classdef TbLocalHookTest  < matlab.unittest.TestCase
             obj.assertEqual(results.status, 0);
         end
         
+        function testPrefsInHook(obj)
+            % make the "prefs" hook exist in the local hooks folder
+            pathHere = fileparts(mfilename('fullpath'));
+            prefsHook = fullfile(pathHere, 'fixture', 'prefsHook.m');
+            localHook = fullfile(obj.localHookFolder, 'local_toolbox.m');
+            mkdir(obj.localHookFolder);
+            copyfile(prefsHook, localHook);
+            
+            % deplpoy should detect and run the prefs hook
+            record = tbToolboxRecord( ...
+                'type', 'local', ...
+                'name', 'local_toolbox', ...
+                'url', obj.localFolder);
+            
+            % choose a custom preference value for the hook to find
+            projectRoot = 'this is an error from preferences';
+            results = tbDeployToolboxes( ...
+                'config', record, ...
+                'reset', 'full', ...
+                'localHookFolder', obj.localHookFolder, ...
+                'projectRoot', projectRoot);
+            
+            % bad hook should throw an error
+            %   with message taken from prefs.projectFolder
+            obj.assertNotEqual(results.status, 0);
+            obj.assertEqual(results.message, projectRoot);
+            
+        end
+        
     end
 end
