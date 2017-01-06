@@ -89,7 +89,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             
             % detect flavor with git command.
             toolboxPath = tbLocateToolbox(record, obj.prefs);
-            command = 'git rev-parse HEAD';
+            command = 'git rev-parse --short HEAD';
             [status, result] = obj.systemInFolder(command, toolboxPath, ...
                 'echo', false);
             if 0 == status
