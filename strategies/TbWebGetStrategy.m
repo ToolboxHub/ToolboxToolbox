@@ -18,7 +18,6 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 [~, resourceBase, resourceExt] = fileparts(record.url);
                 fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
                 
-                obj.checkInternet('asAssertion', true);
                 fileName = websave(fileName, record.url);
                 
                 if strcmp(resourceExt, '.zip')
@@ -38,7 +37,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
         end
         
         function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
-            if ~obj.checkInternet('echo', false)
+            if ~obj.prefs.online
                 % toolbox already exists, but offline prevents update
                 [command, status, message] = obj.skipUpdate();
                 return;

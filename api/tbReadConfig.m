@@ -31,10 +31,13 @@ if ~isempty(strfind(lower(configPath), 'http://')) ...
     [~, resourceBase, resourceExt] = fileparts(configUrl);
     configPath = fullfile(tempFolder, [resourceBase, resourceExt]);
     
-    try
-        tbCheckInternet(varargin{:}, 'asAssertion', true);
-        configPath = websave(configPath, configUrl);
-    catch
+    if prefs.online
+        try
+            configPath = websave(configPath, configUrl);
+        catch
+            configPath = '';
+        end
+    else
         configPath = '';
     end
 end

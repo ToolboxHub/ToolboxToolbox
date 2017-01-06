@@ -37,10 +37,6 @@ classdef TbToolboxStrategy < handle
             tbAddToPath(toolboxPath, 'pathPlacement', record.pathPlacement);
         end
         
-        function [isOnline, result] = checkInternet(obj, varargin)
-            [isOnline, result] = tbCheckInternet(obj.prefs, varargin{:});
-        end
-        
         function flavor = detectFlavor(obj, record)
             % default: just report the original declared flavor
             flavor = record.flavor;
@@ -48,7 +44,7 @@ classdef TbToolboxStrategy < handle
         
         function [command, status, message] = skipUpdate(obj)
             status = 0;
-            command = 'checkInternet()';
+            command = 'skipUpdate()';
             message = 'Proceeding without update.';
             fprintf('Proceeding without update.\n');
         end

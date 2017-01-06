@@ -24,7 +24,6 @@ classdef TbDockerStrategy < TbToolboxStrategy
                     command = ['docker pull ' record.url ':' record.flavor];
                 end
                 
-                obj.checkInternet('asAssertion', true);
                 [status, result] = tbSystem(command);
                 if 0 ~= status
                     error('Docker pull failed: %s', result);
@@ -42,7 +41,7 @@ classdef TbDockerStrategy < TbToolboxStrategy
         end
         
         function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
-            if ~obj.checkInternet('echo', false)
+            if ~obj.prefs.online
                 % toolbox already exists, but offline prevents update
                 [command, status, message] = obj.skipUpdate();
                 return;

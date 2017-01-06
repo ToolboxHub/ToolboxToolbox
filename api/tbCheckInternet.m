@@ -15,7 +15,8 @@ function [isOnline, result] = tbCheckInternet(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-[prefs, others] = tbParsePrefs(varargin{:});
+% supply a value for "online" to prevent infinite recusive check
+[prefs, others] = tbParsePrefs(varargin{:}, 'online', false);
 
 % caller wants to skip the check?
 if isempty(prefs.checkInternetCommand)
@@ -35,11 +36,11 @@ if ~isOnline
     fprintf('Could not reach the internet.\n');
     fprintf('  command: %s\n', fullCommand);
     fprintf('  message: %s\n', result);
-    fprintf('You can skip this internet check if you want.  Either:\n');
-    fprintf(' - choose an empty ''checkInternetCommand'' in your startup.m, and re-run startup\n');
-    fprintf(' - call functions with the ''checkInternetCommand'' parameter set to empty.  For example:\n');
-    fprintf('     tbUse( ... ''checkInternetCommand'', '''')\n');
-    fprintf('     tbDeployToolboxes( ... ''checkInternetCommand'', '''')\n');
+    fprintf('You can skip this internet check if you want.  For example:\n');
+    fprintf('  tbUse( ... ''online'', false)\n');
+    fprintf('  tbUse( ... ''online'', true)\n');
+    fprintf('  tbDeployToolboxes( ... ''online'', false)\n');
+    fprintf('  tbDeployToolboxes( ... ''online'', true)\n');
 end
 
 % if not, do we throw an error?

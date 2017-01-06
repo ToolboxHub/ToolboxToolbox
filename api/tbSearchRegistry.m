@@ -18,7 +18,7 @@ parser.parse(name);
 name = parser.Results.name;
 
 %% Locate the folder that contains the registry.
-registryBasePath = tbLocateToolbox(prefs.registry);
+registryBasePath = tbLocateToolbox(prefs.registry, prefs);
 
 % only use first registry subfolder, if any
 if ischar(prefs.registry.subfolder)
