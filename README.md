@@ -83,7 +83,7 @@ Looks good: all toolboxes deployed OK.
 ```
 
 ## Config in JSON
-You can also save your struct configuraiton in a JSON file to use later or share with others.
+You can also save your struct configuration in a JSON file to use later or share with others.
 ```
 record = tbToolboxRecord('name', 'sample-repo', 'type', 'git', 'url', 'https://github.com/ToolboxHub/sample-repo.git');
 configPath = fullfile(tempdir(), 'sample-config.json');
