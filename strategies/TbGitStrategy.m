@@ -28,10 +28,8 @@ classdef TbGitStrategy < TbToolboxStrategy
             TbGitStrategy.assertGitWorks();
             
             % clone
-            command = sprintf('git clone "%s" "%s"', ...
-                record.url, ...
-                toolboxPath);
-            [status, message, fullCommand] = obj.systemInFolder(command, toolboxRoot);
+            command = sprintf('git clone "%s" "%s"', record.url, toolboxPath);
+            [status, message, fullCommand] = tbSystem(command, 'echo', true);
             if 0 ~= status
                 return;
             end
@@ -39,7 +37,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             if ~isempty(record.flavor)
                 % git checkout sampleBranch
                 command = sprintf('git checkout %s', record.flavor);
-                [status, message, fullCommand] = obj.systemInFolder(command, toolboxPath);
+                [status, message, fullCommand] = tbSystem(command, 'echo', true, 'dir', toolboxPath);
                 if 0 ~= status
                     return;
                 end
@@ -59,25 +57,11 @@ classdef TbGitStrategy < TbToolboxStrategy
             
             % pull
             if isempty(record.flavor)
-                command = sprintf('git pull');
+                command = 'git pull';
             else
                 command = sprintf('git pull origin %s', record.flavor);
             end
-            [status, message, fullCommand] = obj.systemInFolder(command, toolboxPath);
-        end
-        
-        function [status, result, fullCommand] = systemInFolder(obj, command, folder, varargin)
-            originalFolder = pwd();
-            try
-                obj.checkInternet('asAssertion', true);
-                cd(folder);
-                [status, result, fullCommand] = tbSystem(command, varargin{:});
-            catch err
-                status = -1;
-                result = err.message;
-                fullCommand = command;
-            end
-            cd(originalFolder);
+            [status, message, fullCommand] = tbSystem(command, 'echo', true, 'dir', toolboxPath);
         end
         
         function flavor = detectFlavor(obj, record)
@@ -90,8 +74,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             % detect flavor with git command.
             toolboxPath = tbLocateToolbox(record, obj.prefs);
             command = 'git rev-parse --short HEAD';
-            [status, result] = obj.systemInFolder(command, toolboxPath, ...
-                'echo', false);
+            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
             if 0 == status
                 flavor = strtrim(result);
             else
@@ -103,8 +86,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             % try to detect the url from where this was cloned
             toolboxPath = tbLocateToolbox(record, obj.prefs);
             command = 'git config --get remote.origin.url';
-            [status, result] = obj.systemInFolder(command, toolboxPath, ...
-                'echo', false);
+            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
             if 0 == status
                 url = strtrim(result);
             else
