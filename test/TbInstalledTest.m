@@ -1,8 +1,8 @@
 classdef TbInstalledTest  < matlab.unittest.TestCase
-    % Test the Toolbox Toolbox against installed Matlab toolboxes.
+    % Test ToolboxToolbox against installed Matlab toolboxes.
     %
-    % The Toolbox Toolbox should be able to manage the matlab path built-in
-    % matlab toolboxes
+    % ToolboxToolbox should be able to manage the matlab path for installed
+    % Matlab toolboxes.
     %
     % 2016 benjamin.heasly@gmail.com
     
@@ -24,16 +24,16 @@ classdef TbInstalledTest  < matlab.unittest.TestCase
     end
     
     methods (Test)
-        function testCoreBuiltins(obj)
+        function testExcludeAndRestore(obj)
             % find an installed function
             %   so we need imageprocessing installed do this test
-            whichImageinfo = which('imageinfo');
-            obj.assertEqual(exist(whichImageinfo, 'file'), 2);
+            originalImageInfo = which('imageinfo');
+            obj.assertEqual(exist(originalImageInfo, 'file'), 2);
             
             % exclude it from the path
             tbResetMatlabPath('reset', 'no-matlab');
-            whichImageinfo = which('imageinfo');
-            obj.assertEqual(exist(whichImageinfo, 'file'), 0);
+            whichImageInfo = which('imageinfo');
+            obj.assertEmpty(whichImageInfo);
             
             % return it to the path
             record = tbToolboxRecord( ...
@@ -43,8 +43,32 @@ classdef TbInstalledTest  < matlab.unittest.TestCase
                 'config', record, ...
                 'reset', 'no-matlab');
             obj.assertEqual(results.status, 0);
-            whichImageinfo = which('imageinfo');
-            obj.assertEqual(exist(whichImageinfo, 'file'), 2);
+            whichImageInfo = which('imageinfo');
+            obj.assertEqual(whichImageInfo, originalImageInfo);
+        end
+        
+        function testExcludeNoRestore(obj)
+            % find an installed function
+            %   so we need imageprocessing installed do this test
+            originalImageInfo = which('imageinfo');
+            obj.assertEqual(exist(originalImageInfo, 'file'), 2);
+            
+            % exclude it from the path
+            tbResetMatlabPath('reset', 'no-matlab');
+            whichImageInfo = which('imageinfo');
+            obj.assertEmpty(whichImageInfo);
+            
+            % deploy but don't add to the path!
+            record = tbToolboxRecord( ...
+                'type', 'installed', ...
+                'name', 'images', ...
+                'pathPlacement', 'none');
+            results = tbDeployToolboxes( ...
+                'config', record, ...
+                'reset', 'no-matlab');
+            obj.assertEqual(results.status, 0);
+            whichImageInfo = which('imageinfo');
+            obj.assertEmpty(whichImageInfo);
         end
     end
 end
