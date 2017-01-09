@@ -231,9 +231,21 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
                 'reset', 'full');
             obj.assertTrue(all(0 == [results.status]));
             
-            % should not have altered the path
+            % should not have any of these toolboxes to the path
             deployedPath = path();
-            obj.assertEqual(deployedPath, obj.originalMatlabPath);
+            nToolboxes = numel(config);
+            for tt = 1:nToolboxes
+                toolboxDir = tbLocateToolbox(results(tt), ...
+                    'toolboxRoot', obj.toolboxRoot);
+                
+                % toolbox was deployed, so toolboxDir should exist
+                obj.assertEqual(exist(toolboxDir, 'dir'), 7);
+                
+                % but toolboxDir should not be on the Matlab path
+                pathIndex = strfind(deployedPath, toolboxDir);
+                obj.assertEmpty(pathIndex);
+            end
+            
         end
         
         function testOptionalToolbox(obj)
