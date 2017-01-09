@@ -222,6 +222,20 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
             end
         end
         
+        function testPathNone(obj)
+            config = obj.createConfig();
+            [config.pathPlacement] = deal('none');
+            results = tbDeployToolboxes( ...
+                'config', config, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'full');
+            obj.assertTrue(all(0 == [results.status]));
+            
+            % should not have altered the path
+            deployedPath = path();
+            obj.assertEqual(deployedPath, obj.originalMatlabPath);
+        end
+        
         function testOptionalToolbox(obj)
             % make the first record fail
             config = obj.createConfig();
