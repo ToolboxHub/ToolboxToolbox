@@ -33,8 +33,9 @@ function record = tbToolboxRecord(varargin)
 %   copied to the localHookFolder and run() at the end of deployment
 %   - 'toolboxRoot' where to deploy the toolbox, overrides toolboxRoot
 %   Matlab preference and toolboxRoot passed to tbDeployToolboxes().
-%   - 'pathPlacement' whether to 'append' or 'prepend' to the Matlab path.
-%   The default is to 'append'.
+%   - 'pathPlacement' whether to 'append' or 'prepend' to the Matlab path,
+%   or skip adding to the path altogether with 'none'.  The default is to
+%   'append'.
 %   - 'extra' a free-form field for notes, comments, etc., ignored during
 %   deployment
 %

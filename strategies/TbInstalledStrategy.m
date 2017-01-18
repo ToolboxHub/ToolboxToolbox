@@ -34,14 +34,23 @@ classdef TbInstalledStrategy < TbToolboxStrategy
         end
         
         function toolboxPath = addToPath(obj, record, toolboxPath)
+            if strcmp('none', record.pathPlacement)
+                % skip path construction and adding
+                return;
+            end
+            
             % start with folders that come from Matlab's own default path
-            % filter to those that match the name of this toolbox
+            % filter to get the ones that match the name of this toolbox
             toolboxPath = toolboxdir(record.name);
             toolboxPathEntries = TbInstalledStrategy.factoryPathMatches(toolboxPath);
-            if strcmp(record.pathPlacement, 'prepend')
-                addpath(toolboxPathEntries, '-begin');
-            else
-                addpath(toolboxPathEntries, '-end');
+            switch record.pathPlacement
+                case 'prepend'
+                    addpath(toolboxPathEntries, '-begin');
+                case 'append'
+                    addpath(toolboxPathEntries, '-end');
+                otherwise
+                    % default is append
+                    addpath(toolboxPathEntries, '-end');
             end
         end
     end

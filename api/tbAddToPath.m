@@ -20,13 +20,23 @@ parser.parse(rootFolder, varargin{:});
 rootFolder = tbHomePathToAbsolute(parser.Results.rootFolder);
 pathPlacement = parser.Results.pathPlacement;
 
+if strcmp('none', pathPlacement)
+    % skip path generation, report current path
+    oldPath = path();
+    return;
+end
+
 % all subfolders of given toolboxPath, except cruft like .git
 allFolders = genpath(rootFolder);
 cleanFolders = tbCleanPath(allFolders);
 
-% prepend or append to existing Matlab path
-if strcmp(pathPlacement, 'prepend')
-    oldPath = addpath(cleanFolders, '-begin');
-else
-    oldPath = addpath(cleanFolders, '-end');
+% prepend or append to existing Matlab path?
+switch pathPlacement
+    case 'prepend'
+        oldPath = addpath(cleanFolders, '-begin');
+    case 'append'
+        oldPath = addpath(cleanFolders, '-end');
+    otherwise
+        % default is append
+        oldPath = addpath(cleanFolders, '-end');
 end

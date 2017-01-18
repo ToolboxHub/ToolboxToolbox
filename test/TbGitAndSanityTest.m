@@ -222,6 +222,32 @@ classdef TbGitAndSanityTest < matlab.unittest.TestCase
             end
         end
         
+        function testPathNone(obj)
+            config = obj.createConfig();
+            [config.pathPlacement] = deal('none');
+            results = tbDeployToolboxes( ...
+                'config', config, ...
+                'toolboxRoot', obj.toolboxRoot, ...
+                'reset', 'full');
+            obj.assertTrue(all(0 == [results.status]));
+            
+            % should not have any of these toolboxes to the path
+            deployedPath = path();
+            nToolboxes = numel(config);
+            for tt = 1:nToolboxes
+                toolboxDir = tbLocateToolbox(results(tt), ...
+                    'toolboxRoot', obj.toolboxRoot);
+                
+                % toolbox was deployed, so toolboxDir should exist
+                obj.assertEqual(exist(toolboxDir, 'dir'), 7);
+                
+                % but toolboxDir should not be on the Matlab path
+                pathIndex = strfind(deployedPath, toolboxDir);
+                obj.assertEmpty(pathIndex);
+            end
+            
+        end
+        
         function testOptionalToolbox(obj)
             % make the first record fail
             config = obj.createConfig();

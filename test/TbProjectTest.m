@@ -35,7 +35,7 @@ classdef TbProjectTest  < matlab.unittest.TestCase
     end
     
     methods
-        function config = createProject(obj, projectName, configName, subfolder)
+        function config = createProject(obj, projectName, configName, subfolder, varargin)
             % a file we should find on path
             pathHere = fileparts(mfilename('fullpath'));
             fixtureFile = fullfile(pathHere, 'fixture', 'project-file.txt');
@@ -49,7 +49,7 @@ classdef TbProjectTest  < matlab.unittest.TestCase
             
             % the project itself, and a regular toolbox dependency
             config = [ ...
-                tbToolboxRecord('name', projectName, 'type', 'local', 'url', projectFolder), ...
+                tbToolboxRecord('name', projectName, 'type', 'local', 'url', projectFolder, varargin{:}), ...
                 tbToolboxRecord('name', 'sample-repo', 'type', 'include'), ...
                 ];
             
@@ -107,6 +107,27 @@ classdef TbProjectTest  < matlab.unittest.TestCase
             obj.assertEqual(whichToolboxFile, expectedToolboxFile);
         end
         
+        function noPathSuccessTest(obj)
+            % don't add Foo to the path, but do add its dependencies
+            config = obj.createProject('Foo', 'Foo.json', 'Foo', 'pathPlacement', 'none');
+            nRecords = numel(config);
+            
+            prefs = tbParsePrefs( ...
+                'projectRoot', obj.projectRoot, ...
+                'toolboxRoot', obj.toolboxRoot);
+            results = tbUseProject('Foo', prefs);
+            obj.assertNumElements(results, nRecords);
+            obj.assertEqual([results.status], zeros(1, nRecords));
+            
+            % should *not* find a project file on the path
+            whichProjectFile = which(obj.localProjectFile);
+            obj.assertEmpty(whichProjectFile);
+            
+            % should find a toolbox file on the path
+            whichToolboxFile = which('master.txt');
+            expectedToolboxFile = fullfile(obj.toolboxRoot, 'sample-repo', 'master.txt');
+            obj.assertEqual(whichToolboxFile, expectedToolboxFile);
+        end
         
         function bogusTest(obj)
             obj.createProject('Foo', 'Foo.json', 'Foo');
