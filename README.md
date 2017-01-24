@@ -1,4 +1,4 @@
-[![Build Status](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/buildStatus/icon?job=toolbox-toolbox-github-test)](http://ec2-35-164-119-122.us-west-2.compute.amazonaws.com/job/toolbox-toolbox-github-test)
+[![Build Status](http://50.112.42.141/buildStatus/icon?job=ToolboxToolbox)](http://50.112.42.141/job/ToolboxToolbox/)
 
 # ToolboxToolbox
 Declarative dependency management for Matlab.
