@@ -33,16 +33,6 @@ dir = parser.Results.dir;
 
 fullCommand = command;
 
-if ispc()
-    if echo
-        [status, result] = system(command, '-echo');
-    else
-        [status, result] = system(command);
-    end
-    result = strtrim(result);
-    return;
-end
-
 % split the command into an executable and its args
 firstSpace = find(command == ' ', 1, 'first');
 if isempty(firstSpace)
@@ -70,8 +60,10 @@ for kk = 1:nKeep
 end
 keepString = sprintf('%s=%s ', keepVals{:});
 
-% run the command with a clean environment
-fullCommand = ['env -i ' keepString whichExecutable args];
+if ~ispc()
+    % run the command with a clean environment
+    fullCommand = ['env -i ' keepString whichExecutable args];
+end
 
 % run the command in the given dir, if any
 if ~isempty(dir)
