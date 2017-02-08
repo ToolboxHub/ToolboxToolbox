@@ -20,7 +20,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 
                 fileName = websave(fileName, record.url);
                 
-                if strcmp(resourceExt, '.zip')
+                if strcmp(resourceExt, '.zip') || strcmp(record.flavor, 'zip')
                     command = 'unzip';
                     unzip(fileName, toolboxPath);
                 end
