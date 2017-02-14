@@ -11,12 +11,15 @@ classdef TbProjectTest  < matlab.unittest.TestCase
         projectRoot = fullfile(tempdir(), 'projects');
         localProjectFile = 'local-project-file.txt';
         originalMatlabPath;
+        originalDirectory;
     end
     
     methods (TestMethodSetup)
         function saveOriginalMatlabState(obj)
             obj.originalMatlabPath = path();
             tbResetMatlabPath('reset', 'full');
+            
+            obj.originalDirectory = pwd();
         end
         
         function cleanProjectFolder(obj)
@@ -31,6 +34,7 @@ classdef TbProjectTest  < matlab.unittest.TestCase
     methods (TestMethodTeardown)
         function restoreOriginalMatlabState(obj)
             path(obj.originalMatlabPath);
+            cd(obj.originalDirectory);
         end
     end
     
@@ -115,7 +119,9 @@ classdef TbProjectTest  < matlab.unittest.TestCase
             prefs = tbParsePrefs( ...
                 'projectRoot', obj.projectRoot, ...
                 'toolboxRoot', obj.toolboxRoot);
-            results = tbUseProject('Foo', prefs);
+            results = tbUseProject('Foo', ...
+                'cdToProject', false, ...
+                prefs);
             obj.assertNumElements(results, nRecords);
             obj.assertEqual([results.status], zeros(1, nRecords));
             
@@ -127,6 +133,50 @@ classdef TbProjectTest  < matlab.unittest.TestCase
             whichToolboxFile = which('master.txt');
             expectedToolboxFile = fullfile(obj.toolboxRoot, 'sample-repo', 'master.txt');
             obj.assertEqual(whichToolboxFile, expectedToolboxFile);
+        end
+        
+        function cdToProjectTest(obj)
+            config = obj.createProject('Foo', 'Foo.json', 'Foo');
+            nRecords = numel(config);
+            
+            % start in an arbitrary directory
+            cd(tempdir());
+            
+            prefs = tbParsePrefs( ...
+                'projectRoot', obj.projectRoot, ...
+                'toolboxRoot', obj.toolboxRoot);
+            results = tbUseProject('Foo', ...
+                'cdToProject', true, ...
+                prefs);
+            obj.assertNumElements(results, nRecords);
+            obj.assertEqual([results.status], zeros(1, nRecords));
+            
+            % should have changed to project directory
+            projectDir = tbLocateProject(results(1), prefs);
+            currentDir = pwd();
+            obj.assertEqual(currentDir, projectDir);
+        end
+        
+        function noCdToProjectTest(obj)
+            config = obj.createProject('Foo', 'Foo.json', 'Foo');
+            nRecords = numel(config);
+            
+            % start in an arbitrary directory
+            cd(tempdir());
+            startDir = pwd();
+                        
+            prefs = tbParsePrefs( ...
+                'projectRoot', obj.projectRoot, ...
+                'toolboxRoot', obj.toolboxRoot);
+            results = tbUseProject('Foo', ...
+                'cdToProject', false, ...
+                prefs);
+            obj.assertNumElements(results, nRecords);
+            obj.assertEqual([results.status], zeros(1, nRecords));
+            
+            % should not have changed to project directory
+            currentDir = pwd();
+            obj.assertEqual(currentDir, startDir);
         end
         
         function bogusTest(obj)

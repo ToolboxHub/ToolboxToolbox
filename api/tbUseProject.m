@@ -15,12 +15,14 @@ function results = tbUseProject(name, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+[prefs, others] = tbParsePrefs(varargin{:});
 
 parser = inputParser();
 parser.addRequired('name', @ischar);
-parser.parse(name);
+parser.addParameter('cdToProject', true, @islogical);
+parser.parse(name, others);
 name = parser.Results.name;
+cdToProject = parser.Results.cdToProject;
 
 results = [];
 
@@ -28,6 +30,10 @@ results = [];
 [projectPath, configPath, projectParent] = tbLocateProject(name, prefs);
 if isempty(projectPath)
     return;
+end
+
+if cdToProject
+    cd(projectPath);
 end
 
 
