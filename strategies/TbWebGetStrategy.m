@@ -15,9 +15,18 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 end
                 
                 command = 'websave';
-                [~, resourceBase, resourceExt] = fileparts(record.url);
-                fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
+                [resourceUrl, resourceBase, resourceExt] = fileparts(record.url);
                 
+                % Matlab central has URLs that don't end in the zip
+                % filename, but that none-the-less download a zip file.  Do
+                % a little magic to deal with this case.
+                if (~isempty(findstr(resourceUrl,'matlabcentral')) & strcmp(resourceBase,'zip'))
+                    resourceBase = [record.name '.zip'];
+                    resourceExt = '.zip';
+                end
+                fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
+ 
+                % Download
                 fileName = websave(fileName, record.url);
                 
                 if strcmp(resourceExt, '.zip') || strcmp(record.flavor, 'zip')
