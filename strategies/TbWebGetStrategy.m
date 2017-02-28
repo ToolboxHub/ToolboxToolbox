@@ -8,12 +8,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
         
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             
-            try
-                command = 'mkdir';
-                if 7 ~= exist(toolboxPath, 'dir')
-                    mkdir(toolboxPath);
-                end
-                
+            try 
                 command = 'websave';
                 [resourceUrl, resourceBase, resourceExt] = fileparts(record.url);
                 
@@ -21,10 +16,18 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 % filename, but that none-the-less download a zip file.  Do
                 % a little magic to deal with this case.
                 if (~isempty(findstr(resourceUrl,'matlabcentral')) & strcmp(resourceBase,'zip'))
-                    resourceBase = [record.name '.zip'];
-                    resourceExt = '.zip';
+                    % Make the zip filename right
+                    resourceBase = record.name;
+                    resourceExt = '.zip';   
+                    fileName = fullfile(toolboxPath,[resourceBase, resourceExt]);
+                else
+                    fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
                 end
-                fileName = fullfile(toolboxPath, [resourceBase, resourceExt]);
+                
+                command = 'mkdir';
+                if 7 ~= exist(toolboxPath, 'dir')
+                    mkdir(toolboxPath);
+                end
  
                 % Download
                 fileName = websave(fileName, record.url);
@@ -53,6 +56,21 @@ classdef TbWebGetStrategy < TbToolboxStrategy
             end
             
             [command, status, message] = obj.obtain(record, toolboxRoot, toolboxPath);
+        end
+        
+        function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record)
+  
+            % Default: standard folder inside given toolboxRoot
+            [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record);
+             
+            % Let's put matlabcentral files into their own directory
+            [resourceUrl, resourceBase, resourceExt] = fileparts(record.url);
+            if (~isempty(findstr(resourceUrl,'matlabcentral')) & strcmp(resourceBase,'zip'))
+                % Put these toolboxes in a dir called matlabcentral
+                [basePath,toolboxDir] = fileparts(toolboxPath);
+                toolboxPath = fullfile(basePath,'matlabcentral',toolboxDir);
+            end
+            
         end
     end
 end
