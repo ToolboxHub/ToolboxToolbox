@@ -64,7 +64,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             [status, message, fullCommand] = tbSystem(command, 'echo', true, 'dir', toolboxPath);
         end
         
-        function [flavor,originflavor] = detectFlavor(obj, record)
+        function [flavor,flavorlong,originflavorlong] = detectFlavor(obj, record)
             % preserve declared flavor, if any
             if ~isempty(record.flavor)
                 flavor = record.flavor;
@@ -81,12 +81,21 @@ classdef TbGitStrategy < TbToolboxStrategy
                 flavor = '';
             end
             
-            command = 'git rev-parse --short origin/master';
+            command = 'git rev-parse HEAD';
             [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
             if 0 == status
-                originflavor = strtrim(result);
+                flavorlong = strtrim(result);
             else
-                originflavor = '';
+                flavorlong = '';
+            end
+            
+            url = obj.detectOriginUrl(record);
+            command = ['git ls-remote ' url ' HEAD'];
+            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
+            if 0 == status
+                originflavorlong = sscanf(result,'%s',1);
+            else
+                originflavorlong = '';
             end
         end
         
