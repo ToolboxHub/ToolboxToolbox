@@ -13,7 +13,7 @@ You can also share your JSON configuration files on the ToolboxHub's [ToolboxReg
 Here's some more about [what motivated the ToolboxToolbox](https://github.com/ToolboxHub/ToolboxToolbox/wiki/Motivation).
 
 # Installation
-To install the ToolboxToolbox itself, you have to get the code and do a little bit of setup.  The following should work on OS X or Linux:
+To install the ToolboxToolbox itself, you have to obtain the code and do a little bit of setup.  The following should work on OS X or Linux:
 
 Use [Git](https://git-scm.com/) to get the ToolboxToolbox code:
 ```
