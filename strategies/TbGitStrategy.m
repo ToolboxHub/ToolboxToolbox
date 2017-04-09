@@ -81,7 +81,7 @@ classdef TbGitStrategy < TbToolboxStrategy
                 flavor = '';
             end
             
-            command = 'git rev-parse --short --remotes/origin HEAD';
+            command = 'git rev-parse --short origin/master';
             [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
             if 0 == status
                 originflavor = strtrim(result);
