@@ -46,6 +46,22 @@ if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = tbReadConfig(prefs);
 end
 
+%% Check whether TbTb itself is up-to-date, and report status
+self = tbToolboxRecord( ...
+    'toolboxRoot', fileparts(tbLocateSelf()), ...
+    'name', 'ToolboxToolbox', ...
+    'type', 'git');
+strategy = tbChooseStrategy(self, prefs);
+[flavor,originflavor] = strategy.detectFlavor(self)
+if (isempty(flavor))
+    fprintf('<strong>Cannot detect local ToolboxToolbox version and thus cannot tell if it is up to date\n');
+elseif (isempty(originflavor))
+    fprintf('<strong>Cannot detect ToolboxToolbox version on gitHub and thus cannot tell if local copy is up to date\n');
+elseif (strcmp(flavor,originflavor))
+    fprintf('Local copy of ToolboxToolbox is up to date.\n');
+else
+    fprintf('<strong>Local copy of ToolboxTooblox out of date.  Consider updating with git pull.\n');
+end
 
 %% Convert registered toolbox names to "include" records.
 if ~isempty(registered)
