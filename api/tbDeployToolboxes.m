@@ -79,7 +79,6 @@ if ~isempty(registered)
     end
 end
 
-
 %% Ignore records without names -- they're just comments.
 if ~isempty(config)
     isComment = cellfun(@isempty, {config.name});
