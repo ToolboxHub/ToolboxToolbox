@@ -54,13 +54,14 @@ self = tbToolboxRecord( ...
 strategy = tbChooseStrategy(self, prefs);
 [flavor,flavorlong,originflavorlong] = strategy.detectFlavor(self);
 if (isempty(flavorlong))
-    fprintf('Cannot detect local ToolboxToolbox revision and thus cannot tell if it is up to date\n\n');
+    fprintf(2,'Cannot detect local ToolboxToolbox revision number and thus cannot tell if it is up to date\n\n');
 elseif (isempty(originflavorlong))
-    fprintf('Cannot detect ToolboxToolbox revision on gitHub and thus cannot tell if local copy is up to date\n\n');
+    fprintf(2,'Cannot detect ToolboxToolbox revision number on gitHub and thus cannot tell if local copy is up to date\n\n');
 elseif (strcmp(flavorlong,originflavorlong))
     fprintf('Local copy of ToolboxToolbox is up to date.\n');
 else
-    fprintf('Local copy of ToolboxTooblox out of date.  Consider updating with git pull.\n\n');
+    fprintf(2,'Local copy of ToolboxTooblox out of date (or you made local modifications).\n');
+    fprintf(2,'Consider updating with git pull or otherwise synchronizing.\n\n');
 end
 
 %% Convert registered toolbox names to "include" records.
