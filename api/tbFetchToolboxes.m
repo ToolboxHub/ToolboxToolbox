@@ -14,6 +14,13 @@ function results = tbFetchToolboxes(config, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
+% 6/24/17  dhb  If the record.toolboxRoot is a relative path, interpret it
+%               relative to the directory one level up from
+%               prefs.toolboxRoot.  This allows us to point at where the
+%               projects folder lives.  This might be a pretty brittle
+%               change, but I think the specification of toolboxRoot should
+%               be used sparingly and carefully in any case.
+
 prefs = tbParsePrefs(varargin{:});
 
 parser = inputParser();
@@ -53,10 +60,21 @@ for tt = 1:nToolboxes
     if isempty(record.toolboxRoot)
         % put this toolbox with all the other toolboxes
         obtainRoot = prefs.toolboxRoot;
-    else
-        % put this toolbox in its own special place
+    elseif (record.toolboxRoot(1) == filesep)
+        % an absolute path is specified, put the toolbox in that specified
+        % special place.
         obtainRoot = tbHomePathToAbsolute(record.toolboxRoot);
+    else
+        % put this toolbox in its own special place within the directory 
+        % one leve up from prefs.toolboxRoot.  Usually this will be where
+        % the projects folder is, and sometimes we want to put something
+        % in there.  Need to rewrite the record to get this to do the thing
+        % we want.  Dangerous, brittle.  This is a kluge, but it solves a
+        % problem I'm having right now (DHB).
+        obtainRoot = fullfile(prefs.toolboxRoot,'..',record.toolboxRoot);
+        record.toolboxRoot = obtainRoot;
     end
+        
     if 7 ~= exist(obtainRoot, 'dir')
         mkdir(obtainRoot);
     end
