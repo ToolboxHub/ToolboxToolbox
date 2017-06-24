@@ -25,7 +25,7 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-% 6/24/17  dhb  Handle special sharp syntax for toolboxRoot.
+% 6/24/17  dhb  Handle special # syntax for toolboxRoot.
 
 [prefs, others] = tbParsePrefs(varargin{:});
 

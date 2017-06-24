@@ -14,12 +14,8 @@ function results = tbFetchToolboxes(config, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-% 6/24/17  dhb  If the record.toolboxRoot is a relative path, interpret it
-%               relative to the directory one level up from
-%               prefs.toolboxRoot.  This allows us to point at where the
-%               projects folder lives.  This might be a pretty brittle
-%               change, but I think the specification of toolboxRoot should
-%               be used sparingly and carefully in any case.
+% 6/24/17  dhb  Add # syntax for dealing with projects that we want to
+%               treat as toolboxes, while also treating them as independent projects.
 
 prefs = tbParsePrefs(varargin{:});
 
@@ -66,7 +62,11 @@ for tt = 1:nToolboxes
         % Otherwise get it and put it in the specified place under the projects directory.
         obtainRoot = tbLocateProject(record.name);
         if (isempty(obtainRoot))
-            obtainRoot = fullfile(prefs.toolboxRoot,'..','projects',record.toolboxRoot(2:end));
+            if length(record.toolboxRoot == 1)
+                obtainRoot = fullfile(prefs.toolboxRoot,'..','projects');
+            else
+                obtainRoot = fullfile(prefs.toolboxRoot,'..','projects',record.toolboxRoot(2:end));
+            end
         else
             obtainRoot = fileparts(obtainRoot);
         end
