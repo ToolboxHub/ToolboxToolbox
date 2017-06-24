@@ -60,7 +60,7 @@ for tt = 1:nToolboxes
     if isempty(record.toolboxRoot)
         % put this toolbox with all the other toolboxes
         obtainRoot = prefs.toolboxRoot;
-    elseif (record.toolboxRoot(1) == filesep)
+    elseif (record.toolboxRoot(1) == filesep | record.toolboxRoot(1) == '/' | record.toolboxRoot(1) == '\')
         % an absolute path is specified, put the toolbox in that specified
         % special place.
         obtainRoot = tbHomePathToAbsolute(record.toolboxRoot);
