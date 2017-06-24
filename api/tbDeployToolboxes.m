@@ -25,6 +25,8 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
+% 6/24/17  dhb  Handle special sharp syntax for toolboxRoot.
+
 [prefs, others] = tbParsePrefs(varargin{:});
 
 parser = inputParser();
@@ -146,6 +148,15 @@ if prefs.addToPath
     nToolboxes = numel(resolved);
     for tt = 1:nToolboxes
         record = resolved(tt);
+        
+        % Kluge up and handle case where we have a project as toolbox.
+        if (record.toolboxRoot(1) == '#')
+            toolboxRoot = tbLocateProject(record.name);
+            if (isempty(toolboxRoot))
+                error('We think the project should have been fetched by now');
+            end
+            record.toolboxRoot = fileparts(toolboxRoot);
+        end
         
         % base folder for the toolbox
         [toolboxPath, displayName] = tbLocateToolbox(record, prefs);

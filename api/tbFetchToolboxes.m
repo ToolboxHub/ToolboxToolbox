@@ -40,7 +40,8 @@ nToolboxes = numel(results);
 for tt = 1:nToolboxes
     record = tbToolboxRecord(config(tt));
     if isempty(record.name)
-        results(tt).status = -1;
+        re
+        tbsults(tt).status = -1;
         results(tt).command = '';
         results(tt).message = 'no toolbox name given';
         continue;
@@ -60,19 +61,19 @@ for tt = 1:nToolboxes
     if isempty(record.toolboxRoot)
         % put this toolbox with all the other toolboxes
         obtainRoot = prefs.toolboxRoot;
-    elseif (record.toolboxRoot(1) == filesep | record.toolboxRoot(1) == '/' | record.toolboxRoot(1) == '\')
-        % an absolute path is specified, put the toolbox in that specified
-        % special place.
-        obtainRoot = tbHomePathToAbsolute(record.toolboxRoot);
-    else
-        % put this toolbox in its own special place within the directory 
-        % one leve up from prefs.toolboxRoot.  Usually this will be where
-        % the projects folder is, and sometimes we want to put something
-        % in there.  Need to rewrite the record to get this to do the thing
-        % we want.  Dangerous, brittle.  This is a kluge, but it solves a
-        % problem I'm having right now (DHB).
-        obtainRoot = fullfile(prefs.toolboxRoot,'..',record.toolboxRoot);
+    elseif (record.toolboxRoot(1) == '#')
+        % If there is a toolbox with this name under projects, use its location.
+        % Otherwise get it and put it in the specified place under the projects directory.
+        obtainRoot = tbLocateProject(record.name);
+        if (isempty(obtainRoot))
+            obtainRoot = fullfile(prefs.toolboxRoot,'..','projects',record.toolboxRoot(2:end));
+        else
+            obtainRoot = fileparts(obtainRoot);
+        end
         record.toolboxRoot = obtainRoot;
+    else
+        % put the toolbox in the specified special place.
+        obtainRoot = tbHomePathToAbsolute(record.toolboxRoot);  
     end
         
     if 7 ~= exist(obtainRoot, 'dir')
