@@ -150,7 +150,7 @@ if prefs.addToPath
         record = resolved(tt);
         
         % Kluge up and handle case where we have a project as toolbox.
-        if (record.toolboxRoot(1) == '#')
+        if (~isempty(record.toolboxRoot) & record.toolboxRoot(1) == '#')
             toolboxRoot = tbLocateProject(record.name);
             if (isempty(toolboxRoot))
                 error('We think the project should have been fetched by now');
