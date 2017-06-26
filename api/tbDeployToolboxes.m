@@ -262,7 +262,7 @@ end
 
 
 %% How did it go?
-resolved = reviewRecords(resolved);
+resolved = reviewRecords(resolved,prefs);
 if ~isempty(resolved)
     if all(tbCollectField(resolved, 'isOk', 'template', []))
         if (prefs.verbose) fprintf('Looks good: %d resolved toolboxes deployed OK.\n', numel(resolved)); end
@@ -272,7 +272,7 @@ if ~isempty(resolved)
 end
 
 if ~isempty(included)
-    included = reviewRecords(included);
+    included = reviewRecords(included,prefs);
     if ~all(tbCollectField(included, 'isOk', 'template', []))
         if (prefs.verbose) fprintf('Something went wrong with included toolboxes, please see above.\n'); end
     end
@@ -344,7 +344,7 @@ end
 
 
 %% Display errors and warnings for each record.
-function records = reviewRecords(records)
+function records = reviewRecords(records,prefs)
 isSuccess = 0 == tbCollectField(records, 'status', 'template', []);
 isOptional = strcmp(tbCollectField(records, 'importance', 'template', {}), 'optional');
 
@@ -361,8 +361,10 @@ isError = ~isSuccess & ~isOptional;
 records = tbDealField(records, 'isOk', true);
 for tt = find(isError)
     record = records(tt);
-    fprintf('Error: "%s" had status %d, message "%s"\n', ...
-        record.name, record.status, strtrim(record.message));
+    if (prefs.verbose)
+        fprintf('Error: "%s" had status %d, message "%s"\n', ...
+            record.name, record.status, strtrim(record.message));
+    end
     records(tt).isOk = false;
 end
 
