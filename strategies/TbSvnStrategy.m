@@ -42,7 +42,7 @@ classdef TbSvnStrategy < TbToolboxStrategy
                     toolboxPath);
             end
             
-            [status, message, fullCommand] = tbSystem(command, 'echo', true);
+            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose);
         end
         
         function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath)
@@ -66,7 +66,7 @@ classdef TbSvnStrategy < TbToolboxStrategy
                     toolboxPath);
             end
             
-            [status, message, fullCommand] = tbSystem(command, 'echo', true);
+            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose);
         end
         
         function flavor = detectFlavor(obj, record)
