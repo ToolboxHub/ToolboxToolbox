@@ -84,7 +84,7 @@ for tt = 1:nToolboxes
     [updatePath, displayName, updateRoot] = tbLocateToolbox(record, prefs);
     if isempty(updatePath)
         % obtain the toolbox
-        fprintf('Obtaining "%s".\n', displayName);
+        if (prefs.verbose) fprintf('Obtaining "%s".\n', displayName); end
         results(tt).operation = 'obtain';
         obtainPath = strategy.toolboxPath(obtainRoot, record);
         [results(tt).command, results(tt).status, results(tt).message] = ...
@@ -93,9 +93,9 @@ for tt = 1:nToolboxes
     else
         % toolbox is there already -- update it?
         if strcmp(record.update, 'never')
-            fprintf('Found "%s" and skipping update.\n', displayName);
+            if (prefs.verbose) fprintf('Found "%s" and skipping update.\n', displayName); end
         else
-            fprintf('Updating "%s".\n', displayName);
+            if (prefs.verbose) fprintf('Updating "%s".\n', displayName); end
             results(tt).operation = 'update';
             [results(tt).command, results(tt).status, results(tt).message] = ...
                 strategy.update(record, updateRoot, updatePath);

@@ -65,7 +65,7 @@ if factoryReset
     oldWarningState = warning('query', wid);
     warning('off', wid);
     
-    fprintf('Resetting path to factory state.\n');
+    if (prefs.verbose) fprintf('Resetting path to factory state.\n'); end
     restoredefaultpath();
     
     warning(oldWarningState.state, wid);
@@ -76,7 +76,7 @@ end
 pathHere = fileparts(mfilename('fullpath'));
 selfRoot = fileparts(pathHere);
 selfPath = genpath(selfRoot);
-appendPath('ToolboxToolbox', selfRoot, selfPath);
+appendPath('ToolboxToolbox', selfRoot, selfPath, prefs);
 path(tbCleanPath(path()));
 
 %% Add or remobe installed Toolboxes.
@@ -88,7 +88,7 @@ if removeMatlab
         name = installedNames{ii};
         toolboxRoot = toolboxdir(name);
         toolboxPath = TbInstalledStrategy.factoryPathMatches(toolboxRoot);
-        removePath(name, toolboxRoot, toolboxPath);
+        removePath(name, toolboxRoot, toolboxPath, pref);
     end
 end
 
@@ -98,7 +98,7 @@ if addMatlab
         name = installedNames{ii};
         toolboxRoot = toolboxdir(name);
         toolboxPath = TbInstalledStrategy.factoryPathMatches(toolboxRoot);
-        appendPath(name, toolboxRoot, toolboxPath);
+        appendPath(name, toolboxRoot, toolboxPath, prefs);
     end
 end
 
@@ -107,31 +107,31 @@ if removeSelf
     pathHere = fileparts(mfilename('fullpath'));
     selfRoot = fileparts(pathHere);
     selfPath = genpath(selfRoot);
-    removePath('ToolboxToolbox', selfRoot, selfPath);
+    removePath('ToolboxToolbox', selfRoot, selfPath, pref);
 end
 
 newPath = path();
 
 
 %% Append to the Matlab path.
-function appendPath(name, pathRoot, pathToAdd)
+function appendPath(name, pathRoot, pathToAdd, prefs)
 wid = 'MATLAB:dispatcher:pathWarning';
 oldWarningState = warning('query', wid);
 warning('off', wid);
 
-fprintf('Adding "%s" to path at "%s".\n', name, pathRoot);
+if (prefs.verbose) fprintf('Adding "%s" to path at "%s".\n', name, pathRoot); end
 addpath(pathToAdd, '-end');
 
 warning(oldWarningState.state, wid);
 
 
 %% Remove from the Matlab path.
-function removePath(name, pathRoot, pathToRemove)
+function removePath(name, pathRoot, pathToRemove,prefs)
 wid = 'MATLAB:rmpath:DirNotFound';
 oldWarningState = warning('query', wid);
 warning('off', wid);
 
-fprintf('Removing "%s" from path at "%s".\n', name, pathRoot);
+if (prefs.verbose) fprintf('Removing "%s" from path at "%s".\n', name, pathRoot); end
 rmpath(pathToRemove);
 
 warning(oldWarningState.state, wid);
