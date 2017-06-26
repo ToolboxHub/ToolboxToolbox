@@ -24,7 +24,7 @@ classdef TbDockerStrategy < TbToolboxStrategy
                     command = ['docker pull ' record.url ':' record.flavor];
                 end
                 
-                [status, result] = tbSystem(command);
+                [status, result] = tbSystem(command, 'echo', obj.prefs.verbose);
                 if 0 ~= status
                     error('Docker pull failed: %s', result);
                 end
