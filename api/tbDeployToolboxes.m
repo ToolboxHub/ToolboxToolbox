@@ -25,6 +25,8 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
+% 6/24/17  dhb  Handle special # syntax for toolboxRoot.
+
 [prefs, others] = tbParsePrefs(varargin{:});
 
 parser = inputParser();
@@ -46,6 +48,23 @@ if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = tbReadConfig(prefs);
 end
 
+%% Check whether TbTb itself is up-to-date, and report status
+self = tbToolboxRecord( ...
+    'toolboxRoot', fileparts(tbLocateSelf()), ...
+    'name', 'ToolboxToolbox', ...
+    'type', 'git');
+strategy = tbChooseStrategy(self, prefs);
+[flavor,flavorlong,originflavorlong] = strategy.detectFlavor(self);
+if (isempty(flavorlong))
+    fprintf(2,'Cannot detect local ToolboxToolbox revision number and thus cannot tell if it is up to date\n\n');
+elseif (isempty(originflavorlong))
+    fprintf(2,'Cannot detect ToolboxToolbox revision number on gitHub and thus cannot tell if local copy is up to date\n\n');
+elseif (strcmp(flavorlong,originflavorlong))
+    fprintf('Local copy of ToolboxToolbox is up to date.\n');
+else
+    fprintf(2,'Local copy of ToolboxTooblox out of date (or you made local modifications).\n');
+    fprintf(2,'Consider updating with git pull or otherwise synchronizing.\n\n');
+end
 
 %% Convert registered toolbox names to "include" records.
 if ~isempty(registered)
@@ -62,7 +81,6 @@ if ~isempty(registered)
         config = cat(2, config, registeredConfig);
     end
 end
-
 
 %% Ignore records without names -- they're just comments.
 if ~isempty(config)
@@ -130,6 +148,15 @@ if prefs.addToPath
     nToolboxes = numel(resolved);
     for tt = 1:nToolboxes
         record = resolved(tt);
+        
+        % Kluge up and handle case where we have a project as toolbox.
+        if (~isempty(record.toolboxRoot) & record.toolboxRoot(1) == '#')
+            toolboxRoot = tbLocateProject(record.name);
+            if (isempty(toolboxRoot))
+                error('We think the project should have been fetched by now');
+            end
+            record.toolboxRoot = fileparts(toolboxRoot);
+        end
         
         % base folder for the toolbox
         [toolboxPath, displayName] = tbLocateToolbox(record, prefs);
