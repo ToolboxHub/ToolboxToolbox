@@ -56,7 +56,7 @@ Looks good: all toolboxes deployed OK.
 ```
 
 
-# Simpe Usages
+# Simple Usages
 Here are some simple usage examples for ToolboxToolbox.  There are more examples in the [ToolboxToolbox code](https://github.com/ToolboxHub/ToolboxToolbox/tree/master/examples).
 
 ## Config in Matlab Struct
