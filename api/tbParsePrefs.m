@@ -33,6 +33,7 @@ function [prefs, others] = tbParsePrefs(varargin)
 %   - 'add' -- how to tbResetMatlabPath() before deployment
 %   - 'remove' -- how to tbResetMatlabPath() before deployment
 %   - 'online' -- whether or not the Internet is reachable
+%   - 'verbose' -- print out or shut up?
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
@@ -53,6 +54,7 @@ parser.addParameter('reset', 'as-is', @(f) any(strcmp(f, {'full', 'no-matlab', '
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.addParameter('online', logical([]), @islogical);
+parser.addParameter('verbose', true, @islogical);
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;
