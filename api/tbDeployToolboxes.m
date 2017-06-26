@@ -92,8 +92,10 @@ end
 if ~isempty(name)
     isName = strcmp(name, {config.name});
     if ~any(isName)
-        fprintf('Have configurations with names: %s.\n', sprintf('"%s", ', config.name));
-        fprintf('  but none with name "%s".\n', name);
+        if (prefs.verbose)
+            fprintf('Have configurations with names: %s.\n', sprintf('"%s", ', config.name));
+            fprintf('  but none with name "%s".\n', name);
+        end
         resolved = [];
         included = [];
         return;
@@ -107,14 +109,16 @@ registry = tbFetchRegistry(prefs, 'doUpdate', true);
 if 0 ~= registry.status
     registryPath = tbLocateToolbox(registry, prefs);
     if isempty(registryPath)
-        fprintf('Unable to fetch toolbox registry "%s".\n', registry.name);
-        fprintf('  command was: %s.\n', registry.command);
-        fprintf('  message was: %s\n', registry.message);
+        if (prefs.verbose)   
+            fprintf('Unable to fetch toolbox registry "%s".\n', registry.name);
+            fprintf('  command was: %s.\n', registry.command);
+            fprintf('  message was: %s\n', registry.message);
+        end
         resolved = [];
         included = [];
         return;
     else
-        fprintf('Unable to update toolbox registry "%s", proceeding with current version.\n', registry.name);
+        if (prefs.verbose) fprintf('Unable to update toolbox registry "%s", proceeding with current version.\n', registry.name); end
     end
 end
 
@@ -128,11 +132,13 @@ included = tbDealField(included, 'status', 0);
 included = tbDealField(included, 'message', '');
 
 if isempty(resolved)
-    fprintf('Unable to resolve any configurations.\n');
-    fprintf('  configPath to try loading was: %s\n', prefs.configPath);
-    fprintf('  explicit config struct contained %d records.\n', numel(config));
-    fprintf('  registered toolboxes had names: %s.\n', sprintf('"%s", ', registered{:}));
-    fprintf('Proceeding in case there''s a hook or localHook to be run.\n');
+    if (prefs.verbose)
+        fprintf('Unable to resolve any configurations.\n');
+        fprintf('  configPath to try loading was: %s\n', prefs.configPath);
+        fprintf('  explicit config struct contained %d records.\n', numel(config));
+        fprintf('  registered toolboxes had names: %s.\n', sprintf('"%s", ', registered{:}));
+        fprintf('Proceeding in case there''s a hook or localHook to be run.\n');
+    end
 end
 
 
