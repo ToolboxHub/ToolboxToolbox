@@ -46,7 +46,7 @@ classdef TbToolboxStrategy < handle
             status = 0;
             command = 'skipUpdate()';
             message = 'Proceeding without update.';
-            fprintf('Proceeding without update.\n');
+            if (obj.prefs.verbose) fprintf('Proceeding without update.\n'); end
         end
     end
 end
