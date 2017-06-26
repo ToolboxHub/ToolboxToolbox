@@ -29,7 +29,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             
             % clone
             command = sprintf('git clone "%s" "%s"', record.url, toolboxPath);
-            [status, message, fullCommand] = tbSystem(command, 'echo', true);
+            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose);
             if 0 ~= status
                 return;
             end
@@ -37,7 +37,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             if ~isempty(record.flavor)
                 % git checkout sampleBranch
                 command = sprintf('git checkout %s', record.flavor);
-                [status, message, fullCommand] = tbSystem(command, 'echo', true, 'dir', toolboxPath);
+                [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose, 'dir', toolboxPath);
                 if 0 ~= status
                     return;
                 end
@@ -61,7 +61,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             else
                 command = sprintf('git pull origin %s', record.flavor);
             end
-            [status, message, fullCommand] = tbSystem(command, 'echo', true, 'dir', toolboxPath);
+            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose, 'dir', toolboxPath);
         end
         
         function [flavor,flavorlong,originflavorlong] = detectFlavor(obj, record)

@@ -30,13 +30,13 @@ end
 projectPath = '';
 projectParent = '';
 
-fprintf('Locating project "%s" within "%s".\n', record.name, prefs.projectRoot);
+if (prefs.verbose) fprintf('Locating project "%s" within "%s".\n', record.name, prefs.projectRoot); end
 
 %% Look for config file Foo.json anywhere in the projects folder.
 configName = [record.name '.json'];
 configPath = findFile(prefs.projectRoot, configName);
 if isempty(configPath)
-    fprintf('  Could not find config file named "%s".\n', configName);
+    if (prefs.verbose) fprintf('  Could not find config file named "%s".\n', configName); end
     return;
 end
 
@@ -50,10 +50,12 @@ end
 
 if strcmp(folderName, record.name)
     projectPath = fullfile(projectParent, folderName);
-    fprintf('  Found at "%s".\n', projectPath);
+    if (prefs.verbose) fprintf('  Found at "%s".\n', projectPath); end
 else
-    fprintf('  Could not find folder "%s" containing config "%s".\n', ...
-        record.name, configName);
+    if (prefs.verbose)
+        fprintf('  Could not find folder "%s" containing config "%s".\n', ...
+            record.name, configName);
+    end
 end
 
 
