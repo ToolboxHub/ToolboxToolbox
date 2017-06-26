@@ -88,7 +88,7 @@ if removeMatlab
         name = installedNames{ii};
         toolboxRoot = toolboxdir(name);
         toolboxPath = TbInstalledStrategy.factoryPathMatches(toolboxRoot);
-        removePath(name, toolboxRoot, toolboxPath, pref);
+        removePath(name, toolboxRoot, toolboxPath, prefs);
     end
 end
 
@@ -107,7 +107,7 @@ if removeSelf
     pathHere = fileparts(mfilename('fullpath'));
     selfRoot = fileparts(pathHere);
     selfPath = genpath(selfRoot);
-    removePath('ToolboxToolbox', selfRoot, selfPath, pref);
+    removePath('ToolboxToolbox', selfRoot, selfPath, prefs);
 end
 
 newPath = path();
