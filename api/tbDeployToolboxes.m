@@ -62,7 +62,7 @@ elseif (isempty(originflavorlong))
 elseif (strcmp(flavorlong,originflavorlong))
     if (prefs.verbose) fprintf('Local copy of ToolboxToolbox is up to date.\n'); end
 else
-    if (prefs.verbose) fprintf(2,'Local copy of ToolboxTooblox out of date (or you made local modifications).\n'); end
+    if (prefs.verbose) fprintf(2,'Local copy of ToolboxToolbox out of date (or you made local modifications).\n'); end
     if (prefs.verbose) fprintf(2,'Consider updating with git pull or otherwise synchronizing.\n\n'); end
 end
 
