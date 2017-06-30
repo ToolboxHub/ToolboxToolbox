@@ -47,7 +47,7 @@ parser.addParameter('name', '', @ischar);
 parser.addParameter('url', '', @ischar);
 parser.addParameter('type', '', @ischar);
 parser.addParameter('flavor', '', @ischar);
-parser.addParameter('subfolder', '', @(val) ischar(val) || iscellstr(val));
+parser.addParameter('subfolder', '', @(val) ischar(val) || iscellstr(val) || isstring(val));
 parser.addParameter('update', '', @ischar);
 parser.addParameter('hook', '', @ischar);
 parser.addParameter('requirementHook', '', @ischar);
