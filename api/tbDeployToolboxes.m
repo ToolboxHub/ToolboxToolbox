@@ -342,15 +342,18 @@ cd(originalDir);
 function [status, message] = evalPrivateWorkspace(expression)
 try
     parsedExpression = strsplit(expression, ' ');
+    
     % check if its not a function call 
     if numel(parsedExpression) > 1 && isempty(regexp(expression, '\w+\(.*\)', 'once'))
+        % To avoid err when arg has spaces
+
         cmd = parsedExpression{1};
-        arg = strcat('''', expression(length(cmd) + 1 : end), '''');
-        % to avoid err when arg has spaces
+        arg = strcat('''', expression(length(cmd) + 2 : end), '''');
         message = evalc([cmd ' ' arg]);
         status = 0;
     else
         message = evalc(expression);
+	    status = 0;
     end
 catch err
     status = -1;

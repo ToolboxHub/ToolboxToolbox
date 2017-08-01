@@ -4,10 +4,6 @@ function dirPath = tempdir()
 functions = which('tempdir', '-all');
 builtinTempDir = functions{end};
 run(builtinTempDir)
-dirPath = eval('ans');
-
-if ispc()
-    dirPath = fullfile(dirPath, 'White Space', filesep);
-end
+dirPath = fullfile(eval('ans'), 'White Space', filesep);
 end
 
