@@ -1,5 +1,6 @@
 function dirPath = tempdir()
-% overriden matlab temdir to genearted directory name with white space
+% Overriden matlab temdir only for tbtb tests. 
+% It geneartes a temp directory path with white space
 
 functions = which('tempdir', '-all');
 builtinTempDir = functions{end};
