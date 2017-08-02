@@ -43,24 +43,31 @@ else
     args = command(firstSpace:end);
 end
 
-% locate the executable so we can call it with its full path
-[status, result] = system(['which ' executable]);
+if ispc()
+    % For windows machine just check whether git exists
+    [status, result] = system([executable ' --version']);
+else
+    % locate the executable so we can call it with its full path
+    [status, result] = system(['which ' executable]);
+end
+
 result = strtrim(result);
 if 0 ~= status
     return;
 end
 whichExecutable = result;
 
-% keep some of the environment
-nKeep = numel(keep);
-keepVals = cell(1, 2*nKeep);
-for kk = 1:nKeep
-    keepVals(2*kk-1) = keep(kk);
-    keepVals{2*kk} = getenv(keep{kk});
-end
-keepString = sprintf('%s=%s ', keepVals{:});
-
 if ~ispc()
+    % keep some of the environment
+    nKeep = numel(keep);
+    keepVals = cell(1, 2*nKeep);
+    for kk = 1:nKeep
+        keepVals(2*kk-1) = keep(kk);
+        keepVals{2*kk} = getenv(keep{kk});
+    end
+    keepString = sprintf('%s=%s ', keepVals{:});
+    
+    
     % run the command with a clean environment
     fullCommand = ['env -i ' keepString whichExecutable args];
 end

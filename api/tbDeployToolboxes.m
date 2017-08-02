@@ -322,7 +322,7 @@ if ~isempty(hookPath);
     
     if 0 == record.status
         if (prefs.verbose) fprintf('  Hook success with status 0.\n'); end
-    else
+        else
         if (prefs.verbose)
             fprintf('  Hook had an error with status %d and result "%s".\n', ...
             record.status, record.message);
@@ -341,8 +341,20 @@ cd(originalDir);
 %% Evaluate an expression, don't clear.
 function [status, message] = evalPrivateWorkspace(expression)
 try
-    message = evalc(expression);
-    status = 0;
+    parsedExpression = strsplit(expression, ' ');
+    
+    % check if its not a function call 
+    if numel(parsedExpression) > 1 && isempty(regexp(expression, '\w+\(.*\)', 'once'))
+        % To avoid err when arg has spaces
+
+        cmd = parsedExpression{1};
+        arg = strcat('''', expression(length(cmd) + 2 : end), '''');
+        message = evalc([cmd ' ' arg]);
+        status = 0;
+    else
+        message = evalc(expression);
+	    status = 0;
+    end
 catch err
     status = -1;
     message = err.message;
