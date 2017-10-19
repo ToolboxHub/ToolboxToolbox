@@ -1,7 +1,7 @@
 [![Build Status](http://50.112.42.141/buildStatus/icon?job=ToolboxToolbox)](http://50.112.42.141/job/ToolboxToolbox/)
 
 # ToolboxToolbox 
-Declarative dependency management for Matlab.ls
+Declarative dependency management for Matlab.
 
 # Intro 
 The ToolboxToolbox is a declarative dependency management tool for Matlab.
