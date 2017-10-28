@@ -1,4 +1,4 @@
-[![Build Status](http://50.112.42.141/buildStatus/icon?job=ToolboxToolbox)](http://50.112.42.141/job/ToolboxToolbox/)
+[![Build Status](http://brainard-jenkins.psych.upenn.edu/buildStatus/icon?job=ToolboxToolbox)](http://brainard-jenkins.psych.upenn.edu/job/ToolboxToolbox/)
 
 # ToolboxToolbox 
 Declarative dependency management for Matlab.
