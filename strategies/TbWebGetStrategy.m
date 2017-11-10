@@ -37,6 +37,11 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                     unzip(fileName, toolboxPath);
                 end
                 
+                if strcmp(resourceExt, '.tgz') || strcmp(record.flavor, 'tgz')
+                    command = 'untar';
+                    untar(fileName, toolboxPath);
+                end
+                
             catch err
                 status = -1;
                 message = err.message;
