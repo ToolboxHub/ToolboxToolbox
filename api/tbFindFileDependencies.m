@@ -51,10 +51,28 @@ unchecked = filepaths(~cellfun(@isempty,errors)); % only keep filepaths of files
 filename = setdiff(filename,unchecked); % keep filenames without errors
 
 %% Run dependency report
-% This matlab builtin finds all functions/scripts run by the input file. It
-% also lists all "products"/toolboxes, but that is likely incorrect
-% (because of naming conflicts).
-[fList,pList] = matlab.codetools.requiredFilesAndProducts(filename);
+% This matlab builtin finds all functions/scripts run by the input file(s).
+% It also lists all "products"/toolboxes (in pList), but that is likely
+% incorrect (because of naming conflicts).
+try
+    [fList,pList] = matlab.codetools.requiredFilesAndProducts(filename(:));
+catch e
+    switch e.identifier
+        case 'MATLAB:depfun:req:BadSyntax' 
+            % Some code error in a file
+            file = regexp(e.message,"\'.*\.m",'match');
+            file = file{1}(2:end);
+            err = regexp(e.message,":.*",'match');
+            err = err{1}(3:end);
+            exception = MException('ToolboxToolbox:FindFileDependencies:CodeError',...
+            'Dependencies for %s cannot be found, because it contains code errors:\n%s', file, err);
+            exception.addCause(e);
+            throw(exception);
+        otherwise
+            % Don't know, rethrow
+            rethrow(e);
+    end
+end
 fList = setdiff(fList, filename); % don't return files that were input
 
 %% Parse fList
