@@ -44,6 +44,12 @@ folders = unique(folders); % no duplicates
 folders = folders(~contains(folders,[filesep() '@']) & ~contains(folders,[filesep() '+'])); % no method folders or packages
 oldpath = addpath(folders{:});
 cleanupObj = onCleanup(@() path(oldpath));
+
+%% Check for code errors
+[errors, filepaths] = checkcode(filename,'-id',sprintf('-config=%s',fullfile(tbLocateSelf,'api','checkcodeSettings.txt')));
+unchecked = filepaths(~cellfun(@isempty,errors)); % only keep filepaths of files with errors
+filename = setdiff(filename,unchecked); % keep filenames without errors
+
 %% Run dependency report
 % This matlab builtin finds all functions/scripts run by the input file. It
 % also lists all "products"/toolboxes, but that is likely incorrect
