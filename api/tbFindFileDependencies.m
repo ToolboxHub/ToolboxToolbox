@@ -58,6 +58,13 @@ try
     [fList,pList] = matlab.codetools.requiredFilesAndProducts(filename(:));
 catch e
     switch e.identifier
+        case 'MATLAB:depfun:req:InternalNoClassForMethod' 
+            % Some class not on path; add and retry
+            file = regexp(e.message,'\".*\.m','match');
+            file = file{1}(2:end);
+            filepath = fileparts(file);
+            addpath(filepath);
+            [fList,pList] = matlab.codetools.requiredFilesAndProducts(filename(:));
         case 'MATLAB:depfun:req:BadSyntax' 
             % Some code error in a file
             file = regexp(e.message,"\'.*\.m",'match');
