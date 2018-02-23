@@ -49,6 +49,7 @@ cleanupObj = onCleanup(@() path(oldpath));
 % also lists all "products"/toolboxes, but that is likely incorrect
 % (because of naming conflicts).
 [fList,pList] = matlab.codetools.requiredFilesAndProducts(filename);
+fList = setdiff(fList, filename); % don't return files that were input
 
 %% Parse fList
 % We want to parse this list to find toolboxes installed using TbTb.
