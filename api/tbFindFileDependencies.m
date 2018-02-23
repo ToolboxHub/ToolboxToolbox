@@ -38,6 +38,12 @@ parser.addRequired('filename',@(x) ischar(x) || isstring(x) || iscellstr(x))
 parser.parse(filename)
 filename = cellstr(filename);
 
+%% Add to path
+folders = cellfun(@fileparts,filename,'UniformOutput',false);
+folders = unique(folders); % no duplicates
+folders = folders(~contains(folders,[filesep() '@']) & ~contains(folders,[filesep() '+'])); % no method folders or packages
+oldpath = addpath(folders{:});
+cleanupObj = onCleanup(@() path(oldpath));
 %% Run dependency report
 % This matlab builtin finds all functions/scripts run by the input file. It
 % also lists all "products"/toolboxes, but that is likely incorrect
