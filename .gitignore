@@ -1,2 +1,3 @@
 *.m~
 *.tap
+.DS_Store
