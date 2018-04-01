@@ -168,13 +168,7 @@ if prefs.addToPath
         [toolboxPath, displayName] = tbLocateToolbox(record, prefs);
         
         % any subfolders to use instead of base folder?
-        if ischar(record.subfolder)
-            subfolders = {record.subfolder};
-        elseif iscellstr(record.subfolder)
-            subfolders = record.subfolder;
-        else
-            subfolders = {''};
-        end
+        subfolders = cellstr(record.subfolder);
         
         % add each toolbox folder to the path
         nSubfolders = numel(subfolders);

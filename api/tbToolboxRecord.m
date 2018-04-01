@@ -15,7 +15,8 @@ function record = tbToolboxRecord(varargin)
 %   - 'name' unique name to identify the toolbox and the folder that
 %   contains it.
 %   - 'url' the url where the toolbox can be obtained, like a web url or
-%   local file url.
+%   local file url.  This can be a multi-OS URL.  See
+%   tbProcessMultiOSUrl for the format of those.
 %   - 'type' the type of repository that contains the toolbox, or class
 %   name of a custom TbToolboxStrategy subclass.
 %   - 'flavor' optional flavor of toolbox, for example a Git
@@ -44,7 +45,11 @@ function record = tbToolboxRecord(varargin)
 parser = inputParser();
 parser.KeepUnmatched = true;
 parser.addParameter('name', '', @ischar);
-parser.addParameter('url', '', @ischar);
+if (exist('isstring','builtin'))
+    parser.addParameter('url', '', @(x) ischar(x) | isstring(x));
+else
+    parser.addParameter('url', '', @(x) ischar(x));
+end
 parser.addParameter('type', '', @ischar);
 parser.addParameter('flavor', '', @ischar);
 parser.addParameter('subfolder', '', @(val) ischar(val) || iscellstr(val) || isstring(val));
@@ -58,5 +63,8 @@ parser.addParameter('importance', '', @ischar);
 parser.addParameter('extra', '');
 parser.parse(varargin{:});
 
-% let the parser do all the work
+% Let the parser do all the work
 record = parser.Results;
+
+% Handle multi-computer URLs
+record.url = tbProcessMultiOSUrl(record.url);
