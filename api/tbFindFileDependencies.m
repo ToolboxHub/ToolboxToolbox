@@ -51,10 +51,10 @@ unchecked = filepaths(~cellfun(@isempty,errors)); % only keep filepaths of files
 filename = setdiff(filename,unchecked); % keep filenames without errors
 
 %% Run dependency report
-% This matlab builtin finds all functions/scripts run by the input file. It
-% also lists all "products"/toolboxes, but that is likely incorrect
-% (because of naming conflicts).
-[fList,pList] = matlab.codetools.requiredFilesAndProducts(filename);
+% This matlab builtin finds all functions/scripts run by the input file(s).
+% It also lists all "products"/toolboxes (in pList), but that is likely
+% incorrect (because of naming conflicts).
+[fList, pList] = tbRobustRequiredFilesAndProducts(filename);
 fList = setdiff(fList, filename); % don't return files that were input
 
 %% Parse fList
