@@ -42,6 +42,15 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                     untar(fileName, toolboxPath);
                 end
                 
+                % Handle mltbx files
+                if (strcmp(resourceExt, '.mltbx') || strcmp(record.flavor, 'mltbx'))
+                    installed = matlab.addons.toolbox.installToolbox(fileName,true);
+                    installedPath = fullfile(userpath,'Add-Ons','Toolboxes',installed.Name);
+                    unix(['cp -r ' installedPath ' ' toolboxPath]);
+                    matlab.addons.toolbox.uninstallToolbox(installed);
+                    % unix(['rm ' fileName]);
+                end
+                
             catch err
                 status = -1;
                 message = err.message;
