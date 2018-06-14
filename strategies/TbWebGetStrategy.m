@@ -28,7 +28,7 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 if 7 ~= exist(toolboxPath, 'dir')
                     mkdir(toolboxPath);
                 end
- 
+                    
                 % Download
                 fileName = websave(fileName, record.url);
                 
@@ -43,11 +43,11 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 end
                 
                 % Handle mltbx files
-                if (strcmp(resourceExt, '.mltbx') || strcmp(record.flavor, 'mltbx'))
-                    installed = matlab.addons.toolbox.installToolbox(fileName,true);
-                    installedPath = fullfile(userpath,'Add-Ons','Toolboxes',installed.Name);
-                    unix(['cp -r ' installedPath ' ' toolboxPath]);
-                    matlab.addons.toolbox.uninstallToolbox(installed);
+                if (strcmp(resourceExt, '.mltbx') || strcmp(record.pathPlacement, 'mltbx'))
+                    % installed = matlab.addons.toolbox.installToolbox(fileName,true);
+                    % installedPath = fullfile(userpath,'Add-Ons','Toolboxes',installed.Name);
+                    % unix(['cp -r ' installedPath ' ' toolboxPath]);
+                    % matlab.addons.toolbox.uninstallToolbox(installed);
                     % unix(['rm ' fileName]);
                 end
                 
