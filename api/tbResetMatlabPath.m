@@ -68,10 +68,13 @@ if factoryReset
     if (prefs.verbose) fprintf('Resetting path to factory state.\n'); end
     restoredefaultpath();
     
-    toolboxes = matlab.addons.toolbox.installedToolboxes;
-    for tt = 1:length(toolboxes)
-        matlab.addons.toolbox.uninstallToolbox(toolboxes(tt));
-    end
+    % This is an attempt to unstall add on toolboxes, but this does not
+    % play well with Matlab.
+    %
+    % toolboxes = matlab.addons.toolbox.installedToolboxes;
+    % for tt = 1:length(toolboxes)
+    %    matlab.addons.toolbox.uninstallToolbox(toolboxes(tt));
+    % end
     
     warning(oldWarningState.state, wid);
 end
