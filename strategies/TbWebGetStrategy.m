@@ -42,7 +42,10 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                     untar(fileName, toolboxPath);
                 end
                 
-                % Handle mltbx files
+                % Handle mltbx files.  At the moment, I am not doing any of
+                % the operations below, but are here as one thing I tried.
+                % Currently the call to the installToolbox routine happens
+                % in tbAddPath, which actually makes more sense.
                 if (strcmp(resourceExt, '.mltbx') || strcmp(record.pathPlacement, 'mltbx'))
                     % installed = matlab.addons.toolbox.installToolbox(fileName,true);
                     % installedPath = fullfile(userpath,'Add-Ons','Toolboxes',installed.Name);
