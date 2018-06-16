@@ -65,16 +65,26 @@ if factoryReset
     oldWarningState = warning('query', wid);
     warning('off', wid);
     
+    % This is an attempt to unstall added on toolboxes.
+    %
+    % This should come before the restoredefaultpath() call,
+    % to avoid an error that the toolbox being uninstalled is not on
+    % the path.
+    toolboxes = matlab.addons.toolbox.installedToolboxes;
+    for tt = 1:length(toolboxes)
+       if (prefs.verbose) fprintf('Uninstalling mltbx %s\n',toolboxes(tt).Name); end
+       matlab.addons.toolbox.uninstallToolbox(toolboxes(tt));
+    end
+    
     if (prefs.verbose) fprintf('Resetting path to factory state.\n'); end
     restoredefaultpath();
     
-    % This is an attempt to unstall add on toolboxes, but this does not
-    % play well with Matlab.
-    %
-    % toolboxes = matlab.addons.toolbox.installedToolboxes;
-    % for tt = 1:length(toolboxes)
-    %    matlab.addons.toolbox.uninstallToolbox(toolboxes(tt));
-    % end
+    % Clear dynamic java class path
+    p = javaclasspath;
+    for ii = 1:length(p)
+        if (prefs.verbose) fprintf('Removing %s from dynamic java path\n',p{ii}); end
+        javarmpath(p{ii});
+    end
     
     warning(oldWarningState.state, wid);
 end

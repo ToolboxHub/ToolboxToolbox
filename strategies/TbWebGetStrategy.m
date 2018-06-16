@@ -47,6 +47,14 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 % Currently the call to the installToolbox routine happens
                 % in tbAddPath, which actually makes more sense.
                 if (strcmp(resourceExt, '.mltbx') || strcmp(record.pathPlacement, 'mltbx'))
+                    installedTbxs = matlab.addons.toolbox.installedToolboxes;
+                    for tt = 1:length(installedTbxs)
+                        if (strcmp(installedTbxs(tt).Name,record.name))
+                            fprintf('In preparation for installing %s, uninstalling mltbx %s\n',...
+                                record.name,installedTbxs(tt).Name);
+                            matlab.addons.toolbox.uninstallToolbox(installedTbxs(tt));
+                        end
+                    end
                     % installed = matlab.addons.toolbox.installToolbox(fileName,true);
                     % installedPath = fullfile(userpath,'Add-Ons','Toolboxes',installed.Name);
                     % unix(['cp -r ' installedPath ' ' toolboxPath]);
