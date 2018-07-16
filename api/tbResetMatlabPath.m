@@ -69,8 +69,16 @@ if factoryReset
     %
     % This should come before the restoredefaultpath() call,
     % to avoid an error that the toolbox being uninstalled is not on
-    % the path.
-    toolboxes = matlab.addons.toolbox.installedToolboxes;
+    % the path. 
+    %
+    % This also seems to cause trouble under Windows if executed before
+    % Matlab has fully woken up, so I put a try/catch around it to see if
+    % that fixes the issue.
+    try
+        toolboxes = matlab.addons.toolbox.installedToolboxes;
+    catch
+        toolboxes = [];
+    end
     for tt = 1:length(toolboxes)
        if (prefs.verbose) fprintf('Uninstalling mltbx %s\n',toolboxes(tt).Name); end
        matlab.addons.toolbox.uninstallToolbox(toolboxes(tt));
