@@ -45,6 +45,10 @@ switch pathPlacement
         allFolders = genpath(rootFolder);
         cleanFolders = tbCleanPath(allFolders);       
         oldPath = addpath(cleanFolders, '-end');
+    case 'mltbx'
+        % use matlab's install for this.
+        installed = matlab.addons.toolbox.installToolbox(rootFolder,true);
+        oldPath = path();
     otherwise
         error('Illegal string provided for pathPlacement');
 end

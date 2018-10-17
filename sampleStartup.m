@@ -80,7 +80,7 @@ end
 % setpref('ToolboxToolbox', 'projectRoot', projectRoot);
 
 % % default folder for hooks that set up local config for each toolbox
-% localHookFolder = fullfile(tbUserFolder(), 'localToolboxHooks');
+% localHookFolder = fullfile(tbUserFolder(), 'localHookFolder');
 % setpref('ToolboxToolbox', 'localHookFolder', localHookFolder);
 
 % % location of ToolboxHub or other toolbox registry

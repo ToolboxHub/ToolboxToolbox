@@ -44,8 +44,17 @@ else
 end
 
 if ispc()
-    % For windows machine just check whether git exists
-    [status, result] = system([executable ' --version']);
+    % If command is git, we know how to check whether it exists on a PC,
+    % and we do so.
+    if (strcmp(executable,'git'))
+        [status, result] = system([executable ' --version']);
+        
+    % Otherwise, who knows how to do it. So we just assume it will work.
+    % It might not, but in that case we've got problems anyway. 
+    else
+        status = 0;
+        result = executable;
+    end      
 else
     % locate the executable so we can call it with its full path
     [status, result] = system(['which ' executable]);

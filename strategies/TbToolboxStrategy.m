@@ -34,6 +34,14 @@ classdef TbToolboxStrategy < handle
         end
         
         function toolboxPath = addToPath(obj, record, toolboxPath)
+            
+            % If it's an mltbx, we need to kluge up the toolboxPath
+            % to point at the mltbx file.  That then gets installed onto
+            % the path in a special way in tbAddToPath
+            if strcmp(record.pathPlacement,'mltbx')
+                [~,tbxFilename,tbxExt] = fileparts(record.url);
+                toolboxPath = fullfile(toolboxPath,[tbxFilename tbxExt]);
+            end
             tbAddToPath(toolboxPath, 'pathPlacement', record.pathPlacement);
         end
         
