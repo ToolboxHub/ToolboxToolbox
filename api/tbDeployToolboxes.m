@@ -179,6 +179,17 @@ if prefs.addToPath
                 record.strategy.addToPath(record, pathToAdd);
             end
         end
+        
+        % if there are java files specified, add them to the dynamic java
+        % class path
+        jarfiles = cellstr(record.java);
+        nJarfiles = numel(jarfiles);
+        for jj = 1:nJarfiles
+            if (~isempty(jarfiles{jj}))
+                if (prefs.verbose) fprintf('Adding "%s" to dynamic java class path.\n',jarfiles{jj}); end
+                javaaddpath(fullfile(toolboxPath,jarfiles{jj}));
+            end
+        end
     end
 end
 

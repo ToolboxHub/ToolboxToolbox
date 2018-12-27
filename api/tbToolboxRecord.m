@@ -39,6 +39,9 @@ function record = tbToolboxRecord(varargin)
 %   'append'.
 %   - 'extra' a free-form field for notes, comments, etc., ignored during
 %   deployment
+%   - 'java' relative path to jar files that should be added to the
+%   dynamic java class path. This can be a single string or an array of
+%   strings.
 %
 % 2016 benjamin.heasly@gmail.com
 
@@ -61,6 +64,7 @@ parser.addParameter('toolboxRoot', '', @ischar);
 parser.addParameter('pathPlacement', 'append', @ischar);
 parser.addParameter('importance', '', @ischar);
 parser.addParameter('extra', '');
+parser.addParameter('java','',@ischar);
 parser.parse(varargin{:});
 
 % Let the parser do all the work

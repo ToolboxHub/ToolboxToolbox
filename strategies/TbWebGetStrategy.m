@@ -43,9 +43,13 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 end
                 
                 % Handle mltbx files.  At the moment, I am not doing any of
-                % the operations below, but are here as one thing I tried.
-                % Currently the call to the installToolbox routine happens
-                % in tbAddPath, which actually makes more sense.
+                % the install operations below, but they are here commented
+                % out as one thing I tried. Currently the call to the
+                % installToolbox routine happens in tbAddPath, which
+                % actually makes more sense.
+                %
+                % What is here is a clearing out of a previously installed
+                % version of the mltbx that we will later try to install.
                 if (strcmp(resourceExt, '.mltbx') || strcmp(record.pathPlacement, 'mltbx'))
                     installedTbxs = matlab.addons.toolbox.installedToolboxes;
                     for tt = 1:length(installedTbxs)
