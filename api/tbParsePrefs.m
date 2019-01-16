@@ -36,6 +36,7 @@ function [prefs, others] = tbParsePrefs(varargin)
 %   - 'verbose' -- print out or shut up?
 %   - 'updateTbTb' -- whether to update TbTb from Github (logical)
 %   - 'updateRegistry' -- whether to update TbRegistry (logical)
+%   - 'update' -- whether to update all other toolboxes ('always'/'never')
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
@@ -59,6 +60,7 @@ parser.addParameter('online', logical([]), @islogical);
 parser.addParameter('verbose', true, @islogical);
 parser.addParameter('updateTbTb', tbGetPref('updateTbTb', true), @islogical);
 parser.addParameter('updateRegistry', tbGetPref('updateRegistry', true), @islogical);
+parser.addParameter('update', tbGetPref('update', 'always'), @(f) any(strcmp(f, {'always' 'never'})));
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;
