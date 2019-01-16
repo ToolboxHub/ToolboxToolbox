@@ -35,6 +35,7 @@ function [prefs, others] = tbParsePrefs(varargin)
 %   - 'online' -- whether or not the Internet is reachable
 %   - 'verbose' -- print out or shut up?
 %   - 'updateTbTb' -- whether to update TbTb from Github (logical)
+%   - 'updateRegistry' -- whether to update TbRegistry (logical)
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
@@ -57,6 +58,7 @@ parser.addParameter('remove', '', @ischar);
 parser.addParameter('online', logical([]), @islogical);
 parser.addParameter('verbose', true, @islogical);
 parser.addParameter('updateTbTb', tbGetPref('updateTbTb', true), @islogical);
+parser.addParameter('updateRegistry', tbGetPref('updateRegistry', true), @islogical);
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;

@@ -107,7 +107,7 @@ end
 
 
 %% Get or update the toolbox registry.
-registry = tbFetchRegistry(prefs, 'doUpdate', true);
+registry = tbFetchRegistry(prefs, 'doUpdate', prefs.updateRegistry);
 if 0 ~= registry.status
     registryPath = tbLocateToolbox(registry, prefs);
     if isempty(registryPath)
