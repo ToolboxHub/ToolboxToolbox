@@ -61,10 +61,13 @@ addMatlab = strcmp(prefs.add, 'matlab');
 
 %% Start with Matlab's consistent "factory" path.
 if factoryReset
-    % This is an attempt to prevent barfing because there
+    % This was an attempt to prevent barfing because there
     % are java objects hanging around somewhere.  Might not
-    % be sufficient.
-    clear functions
+    % be sufficient. But it also clears the preferences, becasue
+    % these are stored in a persistent variable in a function that
+    % gets cleared. This is dangerous territory.  There might be a way to
+    % do the clear and keep things working, but for now I am backing off.
+    % clear functions
     
     wid = 'MATLAB:dispatcher:pathWarning';
     oldWarningState = warning('query', wid);
