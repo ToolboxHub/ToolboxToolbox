@@ -1,7 +1,7 @@
 [![Build Status](http://brainard-jenkins.psych.upenn.edu/buildStatus/icon?job=ToolboxToolbox)](http://brainard-jenkins.psych.upenn.edu/job/ToolboxToolbox/)
 
 # ToolboxToolbox
-Declarative dependency management for Matlab.
+Declarative dependency management for Matlab. 
 
 # Intro 
 The ToolboxToolbox is a declarative dependency management tool for Matlab.
