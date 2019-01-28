@@ -92,7 +92,7 @@ for tt = 1:nToolboxes
         
     else
         % toolbox is there already -- update it?
-        if strcmp(record.update, 'never')
+        if strcmp(record.update, 'never') || strcmp(prefs.update, 'never')
             if (prefs.verbose) fprintf('Found "%s" and skipping update.\n', displayName); end
         else
             if (prefs.verbose) fprintf('Updating "%s".\n', displayName); end

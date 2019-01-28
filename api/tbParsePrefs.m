@@ -34,6 +34,9 @@ function [prefs, others] = tbParsePrefs(varargin)
 %   - 'remove' -- how to tbResetMatlabPath() before deployment
 %   - 'online' -- whether or not the Internet is reachable
 %   - 'verbose' -- print out or shut up?
+%   - 'updateTbTb' -- whether to update TbTb from Github (logical)
+%   - 'updateRegistry' -- whether to update TbRegistry (logical)
+%   - 'update' -- whether to update all other toolboxes ('always'/'never')
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
@@ -50,11 +53,14 @@ parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(
 parser.addParameter('asAssertion', false, @islogical);
 parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('addToPath', true, @islogical);
-parser.addParameter('reset', 'full', @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
+parser.addParameter('reset', tbGetPref('reset', 'full'), @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.addParameter('online', logical([]), @islogical);
 parser.addParameter('verbose', true, @islogical);
+parser.addParameter('updateTbTb', tbGetPref('updateTbTb', true), @islogical);
+parser.addParameter('updateRegistry', tbGetPref('updateRegistry', true), @islogical);
+parser.addParameter('update', tbGetPref('update', 'always'), @(f) any(strcmp(f, {'always' 'never'})));
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;
