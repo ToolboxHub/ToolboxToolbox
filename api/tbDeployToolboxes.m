@@ -326,7 +326,7 @@ end
 if (~isempty(hookPath) && templateExists)
     hookInfo = dir(hookPath);
     templateInfo = dir(templatePath);
-    if (templateInfo.datenum > hookInfo.datenum)
+    if (datenum(templateInfo.date) > datenum(hookInfo.date))
         fprintf(2,'  Local hook template more recent than local hook. Consider updating.\n');
     else
         % fprintf('  Local hook more recent than template, good.\n');
