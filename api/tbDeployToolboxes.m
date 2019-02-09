@@ -321,6 +321,18 @@ else
     hookPath = '';
 end
 
+% check whether template is newer than local hook, print a
+% red message if so.
+if (~isempty(hookPath) && templateExists)
+    hookInfo = dir(hookPath);
+    templateInfo = dir(templatePath);
+    if (templateInfo.datenum > hookInfo.datenum)
+        fprintf(2,'  Local hook template more recent than local hook. Consider updating.\n');
+    else
+        % fprintf('  Local hook more recent than template, good.\n');
+    end
+end
+
 % invoke the local hook if it exists
 if ~isempty(hookPath);
     if (prefs.verbose) fprintf('  Running local hook "%s".\n', hookPath); end
