@@ -334,7 +334,7 @@ if (~isempty(hookPath) && templateExists)
 end
 
 % invoke the local hook if it exists
-if ~isempty(hookPath);
+if ~isempty(hookPath)
     if (prefs.verbose) fprintf('  Running local hook "%s".\n', hookPath); end
     command = ['run ' hookPath];
     [record.status, record.message] = evalIsolated(command);
