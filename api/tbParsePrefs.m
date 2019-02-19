@@ -60,7 +60,7 @@ parser.addParameter('reset', tbGetPref('reset', 'full'), @(f) any(strcmp(f, {'fu
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.addParameter('online', logical([]), @islogical);
-parser.addParameter('verbose', true, @islogical);
+parser.addParameter('verbose', tbGetPref('verbose', true), @islogical);
 parser.addParameter('checkTbTb', tbGetPref('checkTbTb', true), @islogical);
 parser.addParameter('updateRegistry', tbGetPref('updateRegistry', true), @islogical);
 parser.addParameter('update', tbGetPref('update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
