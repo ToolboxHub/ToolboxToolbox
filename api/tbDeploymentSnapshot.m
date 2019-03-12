@@ -1,4 +1,4 @@
-function snapshot = tbDeploymentSnapshot(config, varargin)
+function snapshot = tbDeploymentSnapshot(config, persistentPrefs, varargin)
 % Make a new config based on the given config, plus explicit flavors.
 %
 % The idea is to take an existing toolbox configuration and create a new
@@ -36,7 +36,7 @@ nToolboxes = numel(config);
 snapshotCell = cell(1, nToolboxes);
 for tt = 1:nToolboxes
     record = config(tt);
-    strategy = tbChooseStrategy(record, prefs);
+    strategy = tbChooseStrategy(record, persistentPrefs, prefs);
     
     if isempty(strategy)
         continue;
@@ -56,7 +56,7 @@ systemInfo.matlab_ver = evalc('ver');
 systemInfo.java = version('-java');
 systemInfo.computer = computer();
 systemInfo.toolboxRegistry = getRegistryInfo(prefs);
-systemInfo.toolboxToolbox = getSelfInfo(prefs);
+systemInfo.toolboxToolbox = getSelfInfo(persistentPrefs, prefs);
 
 % store in an empty toolbox record, to be ignored during deployment
 systemRecord = tbToolboxRecord( ...
@@ -77,12 +77,12 @@ registryInfo = tbToolboxRecord(registry, 'flavor', flavor);
 
 
 %% Try to detect the ToolboxToolbox flavor, assuming it's with Git.
-function selfInfo = getSelfInfo(prefs)
+function selfInfo = getSelfInfo(persistentPrefs, prefs)
 self = tbToolboxRecord( ...
     'toolboxRoot', fileparts(tbLocateSelf()), ...
     'name', 'ToolboxToolbox', ...
     'type', 'git');
-strategy = tbChooseStrategy(self, prefs);
+strategy = tbChooseStrategy(self, persistentPrefs, prefs);
 flavor = strategy.detectFlavor(self);
 url = strategy.detectOriginUrl(self);
 selfInfo = tbToolboxRecord(self, 'flavor', flavor, 'url', url);

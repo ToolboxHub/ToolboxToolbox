@@ -1,4 +1,4 @@
-function [prefs, others] = tbParsePrefs(varargin)
+function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 % Parse out ToolboxToolbox shared parameters and preferences.
 %
 % The idea here is to have one place where we parse parameters and check
@@ -46,34 +46,36 @@ function [prefs, others] = tbParsePrefs(varargin)
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
+
+
 parser = inputParser();
 parser.KeepUnmatched = true;
 parser.PartialMatching = false;
-parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
-parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref(persistentPrefs, 'toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
+parser.addParameter('toolboxCommonRoot', tbGetPref(persistentPrefs, 'toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('toolboxSubfolder', '', @ischar);
-parser.addParameter('projectRoot', tbGetPref('projectRoot', fullfile(tbUserFolder(), 'projects')), @ischar);
-parser.addParameter('localHookFolder', tbGetPref('localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
-parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);
-parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
-parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
+parser.addParameter('projectRoot', tbGetPref(persistentPrefs, 'projectRoot', fullfile(tbUserFolder(), 'projects')), @ischar);
+parser.addParameter('localHookFolder', tbGetPref(persistentPrefs, 'localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
+parser.addParameter('checkInternetCommand', tbGetPref(persistentPrefs, 'checkInternetCommand', ''), @ischar);
+parser.addParameter('registry', tbGetPref(persistentPrefs, 'registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
+parser.addParameter('configPath', tbGetPref(persistentPrefs, 'configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
 parser.addParameter('runLocalHooks', true, @islogical);
-parser.addParameter('printLocalHookOutput', logical(tbGetPref('printLocalHookOutput', 0)), @(x) (islogical(x) || ischar(x)));
+parser.addParameter('printLocalHookOutput', logical(tbGetPref(persistentPrefs, 'printLocalHookOutput', 0)), @(x) (islogical(x) || ischar(x)));
 parser.addParameter('addToPath', true, @islogical);
-parser.addParameter('reset', tbGetPref('reset', 'full'), @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
+parser.addParameter('reset', tbGetPref(persistentPrefs, 'reset', 'full'), @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
 parser.addParameter('add', '', @ischar);
 parser.addParameter('remove', '', @ischar);
 parser.addParameter('online', logical([]), @islogical);
-parser.addParameter('verbose', tbGetPref('verbose', true), @islogical);
-parser.addParameter('checkTbTb', tbGetPref('checkTbTb', true), @islogical);
-parser.addParameter('updateRegistry', tbGetPref('updateRegistry', true), @islogical);
-parser.addParameter('update', tbGetPref('update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
+parser.addParameter('verbose', tbGetPref(persistentPrefs, 'verbose', true), @islogical);
+parser.addParameter('checkTbTb', tbGetPref(persistentPrefs, 'checkTbTb', true), @islogical);
+parser.addParameter('updateRegistry', tbGetPref(persistentPrefs, 'updateRegistry', true), @islogical);
+parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;
 
 % if "online" not give explicitly, check for the Internet
 if isempty(prefs.online)
-    prefs.online = tbCheckInternet(prefs);
+    prefs.online = tbCheckInternet(persistentPrefs, prefs);
 end

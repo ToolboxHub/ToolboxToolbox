@@ -1,4 +1,4 @@
-function value = tbGetPref(preferenceName, defaultValue)
+function value = tbGetPref(persistentPrefs, preferenceName, defaultValue)
 %% Get a preference if it exists, or use a default.
 %
 % value = tbGetPref(preferenceName, defaultValue) returns the
@@ -19,8 +19,8 @@ parser.parse(preferenceName, defaultValue);
 preferenceName = parser.Results.preferenceName;
 defaultValue = parser.Results.defaultValue;
 
-if ispref('ToolboxToolbox', preferenceName)
-    value = getpref('ToolboxToolbox', preferenceName);
+if isfield(persistentPrefs, preferenceName)
+    value = persistentPrefs.(preferenceName);
 else
     value = defaultValue;
 end

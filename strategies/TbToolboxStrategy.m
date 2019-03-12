@@ -14,7 +14,7 @@ classdef TbToolboxStrategy < handle
     % 2016 benjamin.heasly@gmail.com
     
     properties
-        prefs = tbParsePrefs();
+        prefs
     end
     
     methods (Abstract)
@@ -23,6 +23,10 @@ classdef TbToolboxStrategy < handle
     end
     
     methods
+        function obj = TbToolboxStrategy(persistentPrefs)
+            obj.prefs = tbParsePrefs(persistentPrefs);
+        end
+        
         function [toolboxPath, displayName] = toolboxPath(obj, toolboxRoot, record)
             % default: standard folder inside given toolboxRoot
             [toolboxPath, displayName] = tbToolboxPath(toolboxRoot, record);

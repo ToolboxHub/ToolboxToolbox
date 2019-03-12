@@ -1,4 +1,4 @@
-function [projectPath, configPath, projectParent] = tbLocateProject(project, varargin)
+function [projectPath, configPath, projectParent] = tbLocateProject(project, persistentPrefs, varargin)
 % Locate the folder that contains the given project.
 %
 % projectPath = tbLocateProject(name) locates the project with the given
@@ -13,7 +13,11 @@ function [projectPath, configPath, projectParent] = tbLocateProject(project, var
 %
 % 2016 benjamin.heasly@gmail.com
 
-[prefs, others] = tbParsePrefs(varargin{:});
+if nargin == 1
+    persistentPrefs = tbGetPersistentPrefs;
+end
+
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('project', @(val) ischar(val) || isstruct(val));

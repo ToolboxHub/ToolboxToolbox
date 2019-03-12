@@ -1,4 +1,4 @@
-function results = tbFetchToolboxes(config, varargin)
+function results = tbFetchToolboxes(config, persistentPrefs, varargin)
 % Read toolbox configuration from a file.
 %
 % The idea is to work through elements of the given toolbox configuration
@@ -17,7 +17,7 @@ function results = tbFetchToolboxes(config, varargin)
 % 6/24/17  dhb  Add # syntax for dealing with projects that we want to
 %               treat as toolboxes, while also treating them as independent projects.
 
-prefs = tbParsePrefs(varargin{:});
+prefs = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('config', @isstruct);
@@ -44,7 +44,7 @@ for tt = 1:nToolboxes
     end
     
     % what kind of toolbox is this?
-    strategy = tbChooseStrategy(record, prefs);
+    strategy = tbChooseStrategy(record, persistentPrefs, prefs);
     if isempty(strategy)
         results(tt).status = -1;
         results(tt).command = 'tbChooseStrategy';

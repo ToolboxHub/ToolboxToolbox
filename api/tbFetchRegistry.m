@@ -1,4 +1,4 @@
-function results = tbFetchRegistry(varargin)
+function results = tbFetchRegistry(persistentPrefs, varargin)
 % Obtain or update a registry of shared toolbox configurations.
 %
 % The goal here is to make it a one-liner to obtain or update a registry of
@@ -18,7 +18,7 @@ function results = tbFetchRegistry(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-[prefs, others] = tbParsePrefs(varargin{:});
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addParameter('doUpdate', true, @islogical);
@@ -31,5 +31,5 @@ if ~doUpdate
 end
 
 %% Obtain or update just like a toolbox.
-results = tbFetchToolboxes(prefs.registry, prefs);
+results = tbFetchToolboxes(prefs.registry, persistentPrefs, prefs);
 

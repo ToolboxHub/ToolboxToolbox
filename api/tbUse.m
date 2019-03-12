@@ -17,7 +17,8 @@ function results = tbUse(registered, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+persistentPrefs = tbGetPersistentPrefs;
+prefs = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
@@ -29,7 +30,7 @@ if ischar(registered)
     registered = {registered};
 end
 
-results = tbDeployToolboxes(prefs, 'registered', registered);
+results = tbDeployToolboxes(persistentPrefs, prefs, 'registered', registered);
 
 if ~isempty(results) && ~isempty(results(1).cdToFolder)
     fdr = fullfile(tbLocateToolbox(results(1).name), results(1).cdToFolder);

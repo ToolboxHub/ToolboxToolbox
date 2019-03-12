@@ -1,4 +1,4 @@
-function [toolboxPath, displayName, toolboxRoot] = tbLocateToolbox(toolbox, varargin)
+function [toolboxPath, displayName, toolboxRoot] = tbLocateToolbox(toolbox, persistentPrefs, varargin)
 % Locate the folder that contains the given toolbox.
 %
 % toolboxPath = tbLocateToolbox(name) locates the toolbox with the given
@@ -13,7 +13,11 @@ function [toolboxPath, displayName, toolboxRoot] = tbLocateToolbox(toolbox, vara
 %
 % 2016 benjamin.heasly@gmail.com
 
-[prefs, others] = tbParsePrefs(varargin{:});
+if nargin == 1
+    persistentPrefs = tbGetPersistentPrefs;
+end
+
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('toolbox', @(val) ischar(val) || isstruct(val));
@@ -26,7 +30,7 @@ if ischar(toolbox)
 else
     record = toolbox;
 end
-strategy = tbChooseStrategy(record, prefs);
+strategy = tbChooseStrategy(record, persistentPrefs, prefs);
 
 % first, look for a toolbox or project in its own, explicit location
 if ~isempty(record.toolboxRoot)
