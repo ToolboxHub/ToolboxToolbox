@@ -48,17 +48,22 @@ function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 
 
 
+persistent USERFOLDER
+if isempty(USERFOLDER)
+    USERFOLDER = tbUserFolder;
+end
+
 parser = inputParser();
 parser.KeepUnmatched = true;
 parser.PartialMatching = false;
-parser.addParameter('toolboxRoot', tbGetPref(persistentPrefs, 'toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
+parser.addParameter('toolboxRoot', tbGetPref(persistentPrefs, 'toolboxRoot', fullfile(USERFOLDER, 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref(persistentPrefs, 'toolboxCommonRoot', '/srv/toolboxes'), @ischar);
 parser.addParameter('toolboxSubfolder', '', @ischar);
-parser.addParameter('projectRoot', tbGetPref(persistentPrefs, 'projectRoot', fullfile(tbUserFolder(), 'projects')), @ischar);
-parser.addParameter('localHookFolder', tbGetPref(persistentPrefs, 'localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
+parser.addParameter('projectRoot', tbGetPref(persistentPrefs, 'projectRoot', fullfile(USERFOLDER, 'projects')), @ischar);
+parser.addParameter('localHookFolder', tbGetPref(persistentPrefs, 'localHookFolder', fullfile(USERFOLDER, 'localHookFolder')), @ischar);
 parser.addParameter('checkInternetCommand', tbGetPref(persistentPrefs, 'checkInternetCommand', ''), @ischar);
 parser.addParameter('registry', tbGetPref(persistentPrefs, 'registry', tbDefaultRegistry()), @(c) isempty(c) || isstruct(c));
-parser.addParameter('configPath', tbGetPref(persistentPrefs, 'configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
+parser.addParameter('configPath', tbGetPref(persistentPrefs, 'configPath', fullfile(USERFOLDER, 'toolbox_config.json')), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
 parser.addParameter('runLocalHooks', true, @islogical);
 parser.addParameter('printLocalHookOutput', logical(tbGetPref(persistentPrefs, 'printLocalHookOutput', 0)), @(x) (islogical(x) || ischar(x)));
