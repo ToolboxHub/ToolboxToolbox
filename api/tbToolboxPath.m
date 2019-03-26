@@ -41,4 +41,4 @@ else
 end
 
 % return a full path
-toolboxPath = fullfile(pathRoot, toolboxFolder);
+toolboxPath = fullfile(pathRoot, record.toolboxSubfolder, toolboxFolder);
