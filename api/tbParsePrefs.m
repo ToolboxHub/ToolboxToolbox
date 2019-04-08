@@ -21,6 +21,8 @@ function [prefs, others] = tbParsePrefs(varargin)
 %
 %   - 'toolboxRoot' -- where to put/look for normal toolboxes
 %   - 'toolboxCommonRoot' -- where to look for "pre-installed" toolboxes
+%   - 'toolboxSubfolder' -- which subfolder of <toolboxRoot> to put/look
+%                           for normal toolboxes
 %   - 'projectRoot' -- where to look for non-toolbox projects
 %   - 'localHookFolder' -- where to look for local hooks for each toolbox
 %   - 'checkInternetCommand' -- system() command to check for connectivity
@@ -48,6 +50,7 @@ parser.KeepUnmatched = true;
 parser.PartialMatching = false;
 parser.addParameter('toolboxRoot', tbGetPref('toolboxRoot', fullfile(tbUserFolder(), 'toolboxes')), @ischar);
 parser.addParameter('toolboxCommonRoot', tbGetPref('toolboxCommonRoot', '/srv/toolboxes'), @ischar);
+parser.addParameter('toolboxSubfolder', '', @ischar);
 parser.addParameter('projectRoot', tbGetPref('projectRoot', fullfile(tbUserFolder(), 'projects')), @ischar);
 parser.addParameter('localHookFolder', tbGetPref('localHookFolder', fullfile(tbUserFolder(), 'localHookFolder')), @ischar);
 parser.addParameter('checkInternetCommand', tbGetPref('checkInternetCommand', ''), @ischar);

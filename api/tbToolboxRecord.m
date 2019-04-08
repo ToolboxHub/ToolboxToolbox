@@ -61,6 +61,7 @@ parser.addParameter('hook', '', @ischar);
 parser.addParameter('requirementHook', '', @ischar);
 parser.addParameter('localHookTemplate', '', @ischar);
 parser.addParameter('toolboxRoot', '', @ischar);
+parser.addParameter('toolboxSubfolder', '', @ischar);
 parser.addParameter('pathPlacement', 'append', @ischar);
 parser.addParameter('importance', '', @ischar);
 parser.addParameter('extra', '');
