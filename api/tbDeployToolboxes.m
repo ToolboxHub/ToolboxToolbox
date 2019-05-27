@@ -303,6 +303,12 @@ simpleHookExists = 2 == exist(simpleHookPath, 'file');
 explicitHookPath = fullfile(prefs.localHookFolder, [hookName 'LocalHook.m']);
 explicitHookExists = 2 == exist(explicitHookPath, 'file');
 
+%hookName might consist of subfolders
+explicitHookFolder = fileparts(explicitHookPath);
+if exist(explicitHookFolder, 'dir') == 0
+    mkdir(explicitHookFolder);
+end
+
 % create a local hook if missing and a template exists
 templatePath = fullfile(toolboxPath, record.localHookTemplate);
 templateExists = 2 == exist(templatePath, 'file');
