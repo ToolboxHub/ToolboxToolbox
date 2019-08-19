@@ -30,6 +30,7 @@ function [prefs, others] = tbParsePrefs(varargin)
 %   - 'configPath' -- where to read/write JSON toolbox configuration
 %   - 'asAssertion' -- throw an error if the function fails?
 %   - 'runLocalHooks' -- invoke local hooks during deployment?
+%   - 'printLocalHookOutput' -- print anything local hook outputs to command window as it runs?
 %   - 'addToPath' -- add toolboxes to the Matlab path during deployment?
 %   - 'reset' -- how to tbResetMatlabPath() before deployment
 %   - 'add' -- how to tbResetMatlabPath() before deployment
@@ -58,6 +59,7 @@ parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c)
 parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
 parser.addParameter('runLocalHooks', true, @islogical);
+parser.addParameter('printLocalHookOutput', false, @islogical);
 parser.addParameter('addToPath', true, @islogical);
 parser.addParameter('reset', tbGetPref('reset', 'full'), @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
 parser.addParameter('add', '', @ischar);

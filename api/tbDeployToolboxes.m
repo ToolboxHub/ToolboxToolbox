@@ -343,7 +343,7 @@ end
 if ~isempty(hookPath)
     if (prefs.verbose) fprintf('  Running local hook "%s".\n', hookPath); end
     command = ['run ' hookPath];
-    [record.status, record.message] = evalIsolated(command);
+    [record.status, record.message] = evalIsolated(command,prefs);
     
     if 0 == record.status
         if (prefs.verbose) fprintf('  Hook success with status 0.\n'); end
@@ -357,16 +357,34 @@ end
 
 
 %% Evaluate an expression, don't cd or clear.
-function [status, message] = evalIsolated(expression)
+function [status, message] = evalIsolated(expression,prefs)
+
+if (nargin < 2)
+    prefs = [];
+end
+
 originalDir = pwd();
-[status, message] = evalPrivateWorkspace(expression);
+[status, message] = evalPrivateWorkspace(expression,prefs);
 cd(originalDir);
 
 
 %% Evaluate an expression, don't clear.
-function [status, message] = evalPrivateWorkspace(expression)
+function [status, message] = evalPrivateWorkspace(expression,prefs)
 try
     parsedExpression = strsplit(expression, ' ');
+    
+    % Decide whether to run local hook using evalc and save
+    % message, or whether to run using eval and let the output
+    % just come on out.
+    if (isempty(prefs))
+        USE_EVAL = false;
+    else
+        if (prefs.printLocalHookOutput)
+            USE_EVAL = true;
+        else
+            USE_EVAL = false;
+        end
+    end
     
     % check if its not a function call 
     if numel(parsedExpression) > 1 && isempty(regexp(expression, '\w+\(.*\)', 'once'))
@@ -374,10 +392,20 @@ try
 
         cmd = parsedExpression{1};
         arg = strcat('''', expression(length(cmd) + 2 : end), '''');
-        message = evalc([cmd ' ' arg]);
+        if (USE_EVAL)
+            eval([cmd ' ' arg]);
+            message = '';
+        else
+            message = evalc([cmd ' ' arg]);
+        end
         status = 0;
     else
-        message = evalc(expression);
+        if (USE_EVAL)
+            eval(expression);
+            message = '';
+        else
+            message = evalc(expression);
+        end
 	    status = 0;
     end
 catch err
