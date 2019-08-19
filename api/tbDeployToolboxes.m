@@ -359,6 +359,7 @@ end
 %% Evaluate an expression, don't cd or clear.
 function [status, message] = evalIsolated(expression,prefs)
 
+% Handle case where prefs isn't passed.
 if (nargin < 2)
     prefs = [];
 end
