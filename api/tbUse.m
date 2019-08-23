@@ -30,3 +30,9 @@ if ischar(registered)
 end
 
 results = tbDeployToolboxes(prefs, 'registered', registered);
+
+if ~isempty(results) && ~isempty(results(1).cdToFolder)
+    fdr = fullfile(tbLocateToolbox(results(1).name), results(1).cdToFolder);
+    fprintf('Changing to %s\n', fdr);
+    cd(fdr)
+end
