@@ -59,7 +59,7 @@ parser.addParameter('registry', tbGetPref('registry', tbDefaultRegistry()), @(c)
 parser.addParameter('configPath', tbGetPref('configPath', fullfile(tbUserFolder(), 'toolbox_config.json')), @ischar);
 parser.addParameter('asAssertion', false, @islogical);
 parser.addParameter('runLocalHooks', true, @islogical);
-parser.addParameter('printLocalHookOutput', false, @islogical);
+parser.addParameter('printLocalHookOutput', logical(tbGetPref('printLocalHookOutput', 0)), @(x) (islogical(x) || ischar(x)));
 parser.addParameter('addToPath', true, @islogical);
 parser.addParameter('reset', tbGetPref('reset', 'full'), @(f) any(strcmp(f, {'full', 'no-matlab', 'no-self', 'bare', 'as-is'})));
 parser.addParameter('add', '', @ischar);

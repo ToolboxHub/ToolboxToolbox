@@ -70,6 +70,7 @@ parser.addParameter('importance', '', @ischar);
 parser.addParameter('extra', '');
 parser.addParameter('java','',@ischar);
 parser.addParameter('cdToFolder', '', @ischar);
+parser.addParameter('printLocalHookOutput','', @ischar);
 parser.parse(varargin{:});
 
 % Let the parser do all the work

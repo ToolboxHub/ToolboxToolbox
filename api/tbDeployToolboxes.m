@@ -343,7 +343,13 @@ end
 if ~isempty(hookPath)
     if (prefs.verbose) fprintf('  Running local hook "%s".\n', hookPath); end
     command = ['run ' hookPath];
-    [record.status, record.message] = evalIsolated(command,prefs);
+    if (~isempty(record.printLocalHookOutput))
+        prefsTemp = prefs;
+        prefsTemp.printLocalHookOutput = logical(str2num(record.printLocalHookOutput));
+    else
+        prefsTemp = prefs;
+    end
+    [record.status, record.message] = evalIsolated(command,prefsTemp);
     
     if 0 == record.status
         if (prefs.verbose) fprintf('  Hook success with status 0.\n'); end
