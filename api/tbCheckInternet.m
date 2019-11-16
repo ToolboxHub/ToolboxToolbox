@@ -1,4 +1,4 @@
-function [isOnline, result] = tbCheckInternet(varargin)
+function [isOnline, result] = tbCheckInternet(persistentPrefs, varargin)
 % Check with the operating system whether the Intenet is reachable.
 %
 % The idea is to check for Internet connectivity with a simple command that
@@ -16,7 +16,7 @@ function [isOnline, result] = tbCheckInternet(varargin)
 % 2016 benjamin.heasly@gmail.com
 
 % supply a value for "online" to prevent infinite recusive check
-[prefs, others] = tbParsePrefs(varargin{:}, 'online', false);
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:}, 'online', false);
 
 % caller wants to skip the check?
 if isempty(prefs.checkInternetCommand)

@@ -1,4 +1,4 @@
-function [config, configPath] = tbReadConfig(varargin)
+function [config, configPath] = tbReadConfig(persistentPrefs, varargin)
 % Read toolbox configuration from a file.
 %
 % The idea is to locate a toolbox configuration file on disk, and load it
@@ -14,7 +14,7 @@ function [config, configPath] = tbReadConfig(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+prefs = tbParsePrefs(persistentPrefs, varargin{:});
 configPath = prefs.configPath;
 config = [];
 

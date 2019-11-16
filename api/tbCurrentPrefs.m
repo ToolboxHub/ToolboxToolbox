@@ -1,4 +1,4 @@
-function prefs = tbCurrentPrefs(varargin)
+function prefs = tbCurrentPrefs(persistentPrefs, varargin)
 % Set or get the current working ToolboxToolbox preferences.
 %
 % This function gives a way to share the current, working ToolboxToolbox
@@ -17,11 +17,11 @@ function prefs = tbCurrentPrefs(varargin)
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
-persistent persistentPrefs
+persistent PREFS
 
 if nargin > 0
     % store the given prefs
-    persistentPrefs = tbParsePrefs(varargin{:});
+    PREFS = tbParsePrefs(persistentPrefs, varargin{:});
 end
 
-prefs = persistentPrefs;
+prefs = PREFS;

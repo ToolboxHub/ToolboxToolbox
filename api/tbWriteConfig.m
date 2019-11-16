@@ -14,7 +14,8 @@ function configPath = tbWriteConfig(config, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+
+prefs = tbParsePrefs(tbGetPersistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('config', @isstruct);

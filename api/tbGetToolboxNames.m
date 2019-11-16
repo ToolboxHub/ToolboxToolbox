@@ -10,7 +10,7 @@ function s = tbGetToolboxNames
 %
 %  2019 Markus Leuthold (github@titlis.org)
 
-prefs = tbParsePrefs;
+prefs = tbParsePrefs(tbGetPersistentPrefs);
 registryRoot = tbLocateToolbox(prefs.registry);
 configRoot = fullfile(registryRoot, prefs.registry.subfolder);
 

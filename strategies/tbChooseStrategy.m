@@ -1,4 +1,4 @@
-function strategy = tbChooseStrategy(record, varargin)
+function strategy = tbChooseStrategy(record, persistentPrefs, varargin)
 % Choose a TbToolboxStrategy appropriate for the given toolbox record.
 %
 % strategy = tbChooseStrategy(record) chooses an implementaton of
@@ -16,7 +16,7 @@ function strategy = tbChooseStrategy(record, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+prefs = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('record', @isstruct);
@@ -33,22 +33,22 @@ end
 %% Check the short list of recognized types.
 switch record.type
     case 'git'
-        strategy = TbGitStrategy();
+        strategy = TbGitStrategy(persistentPrefs);
     case 'svn'
-        strategy = TbSvnStrategy();
+        strategy = TbSvnStrategy(persistentPrefs);
     case 'webget'
-        strategy = TbWebGetStrategy();
+        strategy = TbWebGetStrategy(persistentPrefs);
     case 'local'
-        strategy = TbLocalStrategy();
+        strategy = TbLocalStrategy(persistentPrefs);
     case 'installed'
-        strategy = TbInstalledStrategy();
+        strategy = TbInstalledStrategy(persistentPrefs);
     case 'docker'
-        strategy = TbDockerStrategy();
+        strategy = TbDockerStrategy(persistentPrefs);
     case 'include'
-        strategy = TbIncludeStrategy();
+        strategy = TbIncludeStrategy(persistentPrefs);
     otherwise
         % default to "include", for easy shorthand
-        strategy = TbIncludeStrategy();
+        strategy = TbIncludeStrategy(persistentPrefs);
 end
 
 

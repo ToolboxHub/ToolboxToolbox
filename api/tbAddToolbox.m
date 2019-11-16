@@ -1,4 +1,4 @@
-function results = tbAddToolbox(varargin)
+function results = tbAddToolbox(persistentPrefs, varargin)
 % Add a toolbox to the toolbox configuration, fetch it, add it to the path.
 %
 % The goal here is to make it a one-liner to add a new toolbox to the
@@ -17,7 +17,7 @@ function results = tbAddToolbox(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-[prefs, others] = tbParsePrefs(varargin{:});
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 %% Make a new toolbox record.
 newRecord = tbToolboxRecord(others);
@@ -34,7 +34,7 @@ if 0 ~= results.status
 end
 
 %% Add new toolbox to the existing config.
-config = tbReadConfig(prefs);
+config = tbReadConfig(persistentPrefs, prefs);
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
     config = newRecord;
 else
@@ -48,5 +48,5 @@ else
 end
 
 %% Write back the new config. after success.
-tbWriteConfig(config, prefs);
+tbWriteConfig(config, persistentPrefs, prefs);
 

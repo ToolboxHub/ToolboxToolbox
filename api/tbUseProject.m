@@ -15,7 +15,8 @@ function results = tbUseProject(name, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-[prefs, others] = tbParsePrefs(varargin{:});
+persistentPrefs = tbGetPersistentPrefs;
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('name', @ischar);
@@ -50,4 +51,4 @@ if any(isProject)
     [config(isProject).toolboxRoot] = deal(projectParent);
 end
 
-results = tbDeployToolboxes('config', config, prefs);
+results = tbDeployToolboxes(persistentPrefs, 'config', config, prefs);

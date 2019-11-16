@@ -1,4 +1,4 @@
-function configPath = tbSearchRegistry(name, varargin)
+function configPath = tbSearchRegistry(name, persistentPrefs, varargin)
 % Search a registry for a configuration with the givne name.
 %
 % configPath = tbFetchRegistry(name) searches the default ToolboxHub
@@ -10,7 +10,7 @@ function configPath = tbSearchRegistry(name, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+prefs = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('name', @ischar);
@@ -18,7 +18,7 @@ parser.parse(name);
 name = parser.Results.name;
 
 %% Locate the folder that contains the registry.
-registryBasePath = tbLocateToolbox(prefs.registry, prefs);
+registryBasePath = tbLocateToolbox(prefs.registry, persistentPrefs, prefs);
 
 % only use first registry subfolder, if any
 if ischar(prefs.registry.subfolder)

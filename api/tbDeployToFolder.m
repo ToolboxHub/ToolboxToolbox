@@ -50,4 +50,4 @@ config = tbDealField(config, 'toolboxRoot', prefs.toolboxRoot);
 
 
 %% The rest of the deployment is the same as usual.
-results = tbDeployToolboxes('config', config, prefs);
+results = tbDeployToolboxes(persistentPrefs, 'config', config, prefs);

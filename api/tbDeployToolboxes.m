@@ -1,4 +1,4 @@
-function [resolved, included] = tbDeployToolboxes(varargin)
+function [resolved, included] = tbDeployToolboxes(persistentPrefs, varargin)
 % Fetch toolboxes and add them to the Matlab path.
 %
 % results = tbDeployToolboxes() fetches each toolbox from the default
@@ -27,7 +27,7 @@ function [resolved, included] = tbDeployToolboxes(varargin)
 
 % 6/24/17  dhb  Handle special # syntax for toolboxRoot.
 
-[prefs, others] = tbParsePrefs(varargin{:});
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addParameter('config', [], @(c) isempty(c) || isstruct(c));
@@ -40,12 +40,12 @@ config = parser.Results.config;
 
 
 %% Share the current prefs with user-defined hooks invoked below.
-tbCurrentPrefs(prefs);
+tbCurrentPrefs(persistentPrefs, prefs);
 
 
 %% Choose explicit config, or load from file.
 if isempty(config) || ~isstruct(config) || ~isfield(config, 'name')
-    config = tbReadConfig(prefs);
+    config = tbReadConfig(persistentPrefs, prefs);
 end
 
 % Check whether TbTb itself is up-to-date, and report status
@@ -54,7 +54,7 @@ if prefs.checkTbTb
         'toolboxRoot', fileparts(tbLocateSelf()), ...
         'name', 'ToolboxToolbox', ...
         'type', 'git');
-    strategy = tbChooseStrategy(self, prefs);
+    strategy = tbChooseStrategy(self, persistentPrefs, prefs);
     [~, flavorlong,originflavorlong] = strategy.detectFlavor(self);
     if (isempty(flavorlong))
         if (prefs.verbose), fprintf(2,'Cannot detect local ToolboxToolbox revision number and thus cannot tell if it is up to date\n\n'); end
@@ -109,7 +109,7 @@ end
 %% Get or update the toolbox registry.
 registry = tbFetchRegistry(prefs, 'doUpdate', prefs.updateRegistry);
 if 0 ~= registry.status
-    registryPath = tbLocateToolbox(registry, prefs);
+    registryPath = tbLocateToolbox(registry, persistentPrefs, prefs);
     if isempty(registryPath)
         if (prefs.verbose)   
             fprintf('Unable to fetch toolbox registry "%s".\n', registry.name);
@@ -126,7 +126,7 @@ end
 
 
 %% Resolve "include" records into one big, flat config.
-[resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(config, prefs);
+[resolved, included] = TbIncludeStrategy.resolveIncludedConfigs(persistentPrefs, config, prefs);
 resolved = tbDealField(resolved, 'path', '');
 resolved = tbDealField(resolved, 'status', 0);
 resolved = tbDealField(resolved, 'message', '');
@@ -146,7 +146,7 @@ end
 
 %% Obtain or update the toolboxes.
 if ~isempty(resolved)
-    resolved = tbFetchToolboxes(resolved, prefs);
+    resolved = tbFetchToolboxes(resolved, persistentPrefs, prefs);
 end
 
 %% Add each toolbox to the path.
@@ -159,7 +159,7 @@ if prefs.addToPath
         
         % Kluge up and handle case where we have a project as toolbox.
         if (~isempty(record.toolboxRoot) & record.toolboxRoot(1) == '#')
-            toolboxRoot = tbLocateProject(record.name);
+            toolboxRoot = tbLocateProject(record.name, persistentPrefs);
             if (isempty(toolboxRoot))
                 error('We think the project should have been fetched by now');
             end
@@ -167,7 +167,7 @@ if prefs.addToPath
         end
         
         % base folder for the toolbox
-        [toolboxPath, displayName] = tbLocateToolbox(record, prefs);
+        [toolboxPath, displayName] = tbLocateToolbox(record, persistentPrefs, prefs);
         
         % any subfolders to use instead of base folder?
         subfolders = cellstr(record.subfolder);
@@ -205,13 +205,13 @@ if prefs.runLocalHooks
     % resolved toolboxes that were actually deployed
     nToolboxes = numel(resolved);
     for tt = 1:nToolboxes
-        resolved(tt) = invokeLocalHook(resolved(tt), prefs);
+        resolved(tt) = invokeLocalHook(resolved(tt), persistentPrefs, prefs);
     end
     
     % included toolboxes that were not deployed but might have local hooks anyway
     alreadyRun = ismember(tbCollectField(included, 'name', 'template', {}), tbCollectField(resolved, 'name', 'template', {}));
     for tt = find(~alreadyRun)
-        included(tt) = invokeLocalHook(included(tt), prefs);
+        included(tt) = invokeLocalHook(included(tt), persistentPrefs, prefs);
     end
 end
 
@@ -219,7 +219,7 @@ end
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
     record = resolved(tt);
-    [~, toolboxName] = tbLocateToolbox(record, prefs);
+    [~, toolboxName] = tbLocateToolbox(record, persistentPrefs, prefs);
     
     if isempty(record.requirementHook)
         continue;
@@ -253,7 +253,7 @@ end
 nToolboxes = numel(resolved);
 for tt = 1:nToolboxes
     record = resolved(tt);
-    [~, toolboxName] = tbLocateToolbox(record, prefs);
+    [~, toolboxName] = tbLocateToolbox(record, persistentPrefs, prefs);
     
     if isempty(record.hook)
         continue;
@@ -293,8 +293,8 @@ end
 
 
 %% Invoke a local hook, create if necessary.
-function record = invokeLocalHook(record, prefs)
-[toolboxPath, hookName] = tbLocateToolbox(record, prefs);
+function record = invokeLocalHook(record, persistentPrefs, prefs)
+[toolboxPath, hookName] = tbLocateToolbox(record, persistentPrefs, prefs);
 if (prefs.verbose) fprintf('Checking for "%s" local hook.\n', hookName); end
 
 % look for Foo.m or FooLocalHook.m

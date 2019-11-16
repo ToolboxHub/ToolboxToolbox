@@ -38,11 +38,13 @@ function [newPath, oldPath] = tbResetMatlabPath(varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
+persistentPrefs = tbGetPersistentPrefs;
+
 if 1 == nargin() && ischar(varargin{1})
     % support legacy syntax: tbParsePrefs(reset)
-    prefs = tbParsePrefs('reset', varargin{1});
+    prefs = tbParsePrefs(persistentPrefs, 'reset', varargin{1});
 else
-    prefs = tbParsePrefs(varargin{:});
+    prefs = tbParsePrefs(persistentPrefs, varargin{:});
 end
 
 
