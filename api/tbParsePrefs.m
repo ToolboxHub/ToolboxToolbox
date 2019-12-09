@@ -10,7 +10,7 @@ function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 % used as defaults, but can be overriden if new values are passed to this
 % function.
 %
-% [prefs, others] = tbParsePrefs('name', value, ...) parses the given
+% [prefs, others] = tbParsePrefs(persistentPrefs, 'name', value, ...) parses the given
 % name-value pairs and supplements them with ToolboxToolbox preferences
 % that were established in startup.m.  Returns a struct of shared
 % preferences that cab be used by several ToolboxToolbox functions.  Also

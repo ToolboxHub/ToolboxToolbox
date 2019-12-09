@@ -43,7 +43,7 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 tbToolboxRecord('name', 'simple-3', 'type', 'git'), ...
                 ];
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(tbGetPersistentPrefs, originalConfig, tbDefaultRegistry());
             obj.assertEqual(resolvedConfig, originalConfig);
         end
         
@@ -68,7 +68,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'url', includedConfigPath), ...
                 ];
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(...
+                tbGetPersistentPrefs, originalConfig, tbDefaultRegistry());
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'original-1', 'original-2', 'duplicate', 'included-1', 'included-2', 'included-3'};
             obj.assertEqual(resolvedNames, expectedNames);
@@ -100,7 +101,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'url', middleConfigPath), ...
                 ];
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(originalConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(...
+                tbGetPersistentPrefs, originalConfig, tbDefaultRegistry());
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'original-1', 'original-2', 'base-1', 'base-2', 'base-3'};
             obj.assertEqual(resolvedNames, expectedNames);
@@ -120,7 +122,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 ];
             tbWriteConfig(selfConfig, 'configPath', selfConfigPath);
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(selfConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(...
+                tbGetPersistentPrefs, selfConfig, tbDefaultRegistry());
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'self-1', 'self-2', 'self-3'};
             obj.assertEqual(resolvedNames, expectedNames);
@@ -152,7 +155,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 ];
             tbWriteConfig(blueConfig, 'configPath', blueConfigPath);
             
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(redConfig, tbDefaultRegistry());
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(...
+                tbGetPersistentPrefs, redConfig, tbDefaultRegistry());
             resolvedNames = {resolvedConfig.name};
             expectedNames = {'red-1', 'red-2', 'red-3', 'blue-1', 'blue-2', 'blue-3'};
             obj.assertEqual(resolvedNames, expectedNames);
@@ -165,13 +169,15 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'name', 'TestRegistry', ...
                 'type', 'local', ...
                 'url', fullfile(pathHere, 'fixture', 'registry'));
-            prefs = tbParsePrefs('registry', localRegistry);
+            prefs = tbParsePrefs(...
+                tbGetPersistentPrefs, 'registry', localRegistry);
             
             % deploy the "red" toolbox by name
             %   red includes "blue"
             %   blue includes "green"
             config = tbToolboxRecord('name', 'red');
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(config, prefs);
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(...
+                tbGetPersistentPrefs, config, prefs);
             resolvedNames = {resolvedConfig.name};
             expectedNames = { ...
                 'red-1', 'red-2', 'red-3', ...
@@ -187,7 +193,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
                 'name', 'TestRegistry', ...
                 'type', 'local', ...
                 'url', fullfile(pathHere, 'fixture', 'registry'));
-            prefs = tbParsePrefs('registry', localRegistry);
+            prefs = tbParsePrefs(...
+                tbGetPersistentPrefs, 'registry', localRegistry);
             
             % deploy "red", then "different".
             % "blue" and "green" should be inserted near "red",
@@ -195,7 +202,8 @@ classdef TbIncludeTest  < matlab.unittest.TestCase
             config = [ ...
                 tbToolboxRecord('name', 'red'), ...
                 tbToolboxRecord('name', 'different')];
-            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(config, prefs);
+            resolvedConfig = TbIncludeStrategy.resolveIncludedConfigs(...
+                tbGetPersistentPrefs, config, prefs);
             resolvedNames = {resolvedConfig.name};
             expectedNames = { ...
                 'red-1', 'red-2', 'red-3', ...
