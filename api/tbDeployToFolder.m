@@ -1,4 +1,4 @@
-function [results, prefs] = tbDeployToFolder(rootFolder, varargin)
+function [results, prefs] = tbDeployToFolder(rootFolder, persistentPrefs, varargin)
 % Deploy toolboxes to a given rootFolder, instead of toolboxRoot.
 %
 % This is a convenience wrapper around tbDeployToolboxes().  It deployes
@@ -21,7 +21,7 @@ function [results, prefs] = tbDeployToFolder(rootFolder, varargin)
 %
 % 2017 benjamin.heasly@gmail.com
 
-[prefs, others] = tbParsePrefs(varargin{:});
+[prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.addRequired('rootFolder', @ischar);
