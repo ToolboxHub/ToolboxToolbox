@@ -21,7 +21,7 @@ function snapshot = tbDeploymentSnapshot(config, persistentPrefs, varargin)
 %
 % 2016 benjamin.heasly@gmail.com
 
-prefs = tbParsePrefs(varargin{:});
+prefs = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
 parser.KeepUnmatched = true;
