@@ -41,4 +41,7 @@ else
 end
 
 % return a full path
+assert(~isequal(record.name, 'ToolboxRegistry') || isfield(record, 'toolboxSubfolder'), ...
+    'tbToolboxPath:OldToolboxRegistry', ...
+    'Your toolbox registry record (most likely from getpref(''ToolboxToolbox'', ''registry'') has an old format. Please re-run the setup')
 toolboxPath = fullfile(pathRoot, record.toolboxSubfolder, toolboxFolder);
