@@ -35,11 +35,11 @@ classdef TbDockerTest < matlab.unittest.TestCase
                 'name', 'alpine', ...
                 'url', obj.imageName);
             
-            strategy = tbChooseStrategy(record);
+            strategy = tbChooseStrategy(record, tbGetPersistentPrefs);
             isPresent = strategy.checkIfPresent(record, '', '');
             obj.assertFalse(isPresent);
             
-            results = tbDeployToolboxes('config', record);
+            results = tbDeployToolboxes(tbGetPersistentPrefs, 'config', record);
             obj.assertEqual(results.status, 0);
             
             isPresent = strategy.checkIfPresent(record, '', '');
@@ -53,11 +53,11 @@ classdef TbDockerTest < matlab.unittest.TestCase
                 'url', obj.imageName, ...
                 'falvor', obj.imageTag);
             
-            strategy = tbChooseStrategy(record);
+            strategy = tbChooseStrategy(record, tbGetPersistentPrefs);
             isPresent = strategy.checkIfPresent(record, '', '');
             obj.assertFalse(isPresent);
             
-            results = tbDeployToolboxes('config', record);
+            results = tbDeployToolboxes(tbGetPersistentPrefs, 'config', record);
             obj.assertEqual(results.status, 0);
             
             isPresent = strategy.checkIfPresent(record, '', '');

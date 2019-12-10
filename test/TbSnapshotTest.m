@@ -44,11 +44,12 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
                 'name', 'simple', ...
                 'url', obj.testRepoUrl, ...
                 'type', 'git');
-            originalResult = tbDeployToolboxes( ...
+            originalResult = tbDeployToolboxes(tbGetPersistentPrefs, ...
                 'config', config, ...
                 'toolboxRoot', obj.toolboxRoot);
             obj.assertEqual(originalResult.status, 0);
             snapshot = tbDeploymentSnapshot(originalResult, ...
+                tbGetPersistentPrefs, ...
                 'toolboxRoot', obj.toolboxRoot);
             
             % snapshot should contain some system info at the end
@@ -60,7 +61,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             % system info should survive a JSON read-write cycle
             snapshotPath = fullfile(obj.toolboxRoot, 'snapshot.json');
             tbWriteConfig(snapshot, 'configPath', snapshotPath);
-            snapshotAgain = tbReadConfig('configPath', snapshotPath);
+            snapshotAgain = tbReadConfig(tbGetPersistentPrefs, 'configPath', snapshotPath);
             
             % want to compare
             %   obj.assertEqual(snapshotAgain, snapshot);
@@ -122,14 +123,15 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
     methods
         function deployAndCheckFlavors(obj, config)
             % deploy normally
-            prefs = tbParsePrefs('toolboxRoot', obj.toolboxRoot);
-            originalResult = tbDeployToolboxes( ...
+            prefs = tbParsePrefs(tbGetPersistentPrefs, ...
+                'toolboxRoot', obj.toolboxRoot);
+            originalResult = tbDeployToolboxes(tbGetPersistentPrefs, ...
                 'config', config, ...
                 prefs);
             obj.assertEqual(originalResult.status, 0);
             
             % detect deployed version
-            strategy = tbChooseStrategy(config, prefs);
+            strategy = tbChooseStrategy(config, tbGetPersistentPrefs, prefs);
             deployedFlavor = strategy.detectFlavor(originalResult);
             
             % if given, declared flavor should match detected flavor
@@ -138,7 +140,8 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             end
             
             % make a "snapshot" config
-            snapshot = tbDeploymentSnapshot(originalResult, prefs);
+            snapshot = tbDeploymentSnapshot(...
+                originalResult, tbGetPersistentPrefs, prefs);
             
             % snapshot version should match deployed version
             obj.assertEqual(snapshot(1).flavor, deployedFlavor);
@@ -146,6 +149,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             % redeploy the snapshot into its own folder
             [snapshotResult, snapshotPrefs] = tbDeployToFolder( ...
                 obj.snapshotRoot, ...
+                tbGetPersistentPrefs, ...
                 'config', snapshot, ...
                 'reset', 'full', ...
                 prefs);
@@ -158,7 +162,7 @@ classdef TbSnapshotTest < matlab.unittest.TestCase
             obj.assertEqual(redeployedFlavor, snapshot(1).flavor);
             
             % redeployed snapshot should go into its own folder
-            [~, ~, redeployedRoot] = tbLocateToolbox(snapshotResult);
+            [~, ~, redeployedRoot] = tbLocateToolbox(snapshotResult, tbGetPersistentPrefs);
             obj.assertEqual(redeployedRoot, snapshotPrefs.toolboxRoot);
         end
     end
