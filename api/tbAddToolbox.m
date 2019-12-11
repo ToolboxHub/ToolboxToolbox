@@ -48,5 +48,5 @@ else
 end
 
 %% Write back the new config. after success.
-tbWriteConfig(config, persistentPrefs, prefs);
+tbWriteConfig(config, prefs);
 
