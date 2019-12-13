@@ -4,6 +4,10 @@ classdef TbDockerStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods
+        function obj = TbDockerStrategy(persistentPrefs)
+            obj@TbToolboxStrategy(persistentPrefs);
+        end
+        
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
             % ask the docker daemon if the image is present
             if isempty(record.flavor)

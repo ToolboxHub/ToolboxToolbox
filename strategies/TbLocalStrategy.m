@@ -4,6 +4,10 @@ classdef TbLocalStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods
+        function obj = TbLocalStrategy(persistentPrefs)
+            obj@TbToolboxStrategy(persistentPrefs);
+        end
+        
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             command = 'checkIfPresent';
             isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath);

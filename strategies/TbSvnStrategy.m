@@ -19,6 +19,10 @@ classdef TbSvnStrategy < TbToolboxStrategy
     end
     
     methods
+         function obj = TbSvnStrategy(persistentPrefs)
+            obj@TbToolboxStrategy(persistentPrefs);
+         end
+        
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
             % is there an ".svn" special folder?
             svnPath = fullfile(toolboxPath, '.svn');

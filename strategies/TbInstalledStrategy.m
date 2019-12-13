@@ -7,6 +7,10 @@ classdef TbInstalledStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods
+        function obj = TbInstalledStrategy(persistentPrefs)
+            obj@TbToolboxStrategy(persistentPrefs);
+        end
+        
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             try
                 command = 'toolboxdir()';

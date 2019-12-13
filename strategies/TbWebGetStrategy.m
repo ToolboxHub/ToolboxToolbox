@@ -5,6 +5,9 @@ classdef TbWebGetStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods
+        function obj = TbWebGetStrategy(persistentPrefs)
+            obj@TbToolboxStrategy(persistentPrefs);
+        end
         
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             

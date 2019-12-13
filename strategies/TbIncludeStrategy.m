@@ -24,6 +24,10 @@ classdef TbIncludeStrategy < TbToolboxStrategy
     % 2016 benjamin.heasly@gmail.com
     
     methods
+         function obj = TbIncludeStrategy(persistentPrefs)
+            obj@TbToolboxStrategy(persistentPrefs);
+         end
+        
         function [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath)
             error('"include" record should have been resolved to another type.');
         end
