@@ -3,7 +3,7 @@ classdef TbGitStrategy < TbToolboxStrategy
     %   https://git-scm.com/
     %
     % 2016 benjamin.heasly@gmail.com
-    
+            
     methods (Static)
         function assertGitWorks()
             gitCommand = 'git --version';
@@ -16,6 +16,10 @@ classdef TbGitStrategy < TbToolboxStrategy
     end
     
     methods
+        function obj = TbGitStrategy(persistentPrefs)
+            obj@TbToolboxStrategy(persistentPrefs);
+        end
+        
         function isPresent = checkIfPresent(obj, record, toolboxRoot, toolboxPath)
             % is there a ".git" special folder?
             gitPath = fullfile(toolboxPath, '.git');
