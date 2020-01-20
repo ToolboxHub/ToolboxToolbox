@@ -12,7 +12,7 @@ You can also share your JSON configuration files on the ToolboxHub's [ToolboxReg
 
 Here's some more about [what motivated the ToolboxToolbox](https://github.com/ToolboxHub/ToolboxToolbox/wiki/Motivation).
 
-A Matlab Live Script tutorial for the ToolboxToolbox written by Adrian Radillo is available [as html here](https://thegoldlab.github.io/SnowDotsDocumentation/TutorialsDocs/ToolboxToolbox/ToolboxToolboxTutorial.html), with source code (in this github repository).
+A Matlab Live Script tutorial for the ToolboxToolbox written by Adrian Radillo is available [as html here](https://thegoldlab.github.io/SnowDotsDocumentation/TutorialsDocs/ToolboxToolbox/ToolboxToolboxTutorial.html), with source code [in this github repository](https://github.com/TheGoldLab/Lab_Tutorials/tree/master/SnowDots/ToolboxToolbox).
 
 # Installation
 To install the ToolboxToolbox itself, you have to obtain the code and do a little bit of setup.  The following should work on OS X or Linux:
