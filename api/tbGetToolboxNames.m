@@ -21,7 +21,7 @@ dAll = dir(curPath);
 d = dAll(~startsWith({dAll.name}, '.'));
 
 for k = find([d.isdir])
-    curIdentifier = getNamesRecursively(s, fullfile(d(k).folder, d(k).name), configRoot);
+    curIdentifier = getNamesRecursively([], fullfile(d(k).folder, d(k).name), configRoot);
     s.(d(k).name) = curIdentifier;
 end
 
