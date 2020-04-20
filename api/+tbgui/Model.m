@@ -3,7 +3,7 @@ classdef Model < handle
     %
     %  SEE ALSO tbgui.View, tbgui.Controller
     %
-    %  2020 Markus Leuthold githubkusi@titlis.org
+    %  2020 Markus Leuthold markus.leuthold@sonova.com
     
     properties
         toolboxNames
