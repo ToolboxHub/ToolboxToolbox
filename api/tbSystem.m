@@ -84,6 +84,14 @@ end
 % run the command in the given dir, if any
 if ~isempty(dir)
     fullCommand = ['cd "' dir '" && ' fullCommand];
+    
+    % dos cd doesn't work if "dir" is on another drive than "pwd"
+    driveDir = upper(cell2mat(regexp(dir, '^.\:', 'match')));
+    drivePwd = upper(cell2mat(regexp(pwd, '^.\:', 'match')));
+    
+    if ~isempty(driveDir) && ~isequal(driveDir, drivePwd)
+        fullCommand = [driveDir ' && ' fullCommand];
+    end
 end
 
 if echo
