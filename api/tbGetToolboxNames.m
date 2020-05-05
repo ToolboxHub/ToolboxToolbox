@@ -27,7 +27,7 @@ d = dAll(~startsWith({dAll.name}, '.'));
 for k = find([d.isdir])
     [curIdentifier, identifiers] = getNamesRecursively(...
         [], fullfile(d(k).folder, d(k).name), configRoot, identifiers);
-    s.(d(k).name) = curIdentifier;
+    s.(matlab.lang.makeValidName(d(k).name)) = curIdentifier;
 end
 
 for k = find(~[d.isdir])
