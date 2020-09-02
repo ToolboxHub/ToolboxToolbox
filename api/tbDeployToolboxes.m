@@ -220,10 +220,12 @@ if prefs.runLocalHooks
         resolved(tt) = invokeLocalHook(resolved(tt), persistentPrefs, prefs);
     end
     
-    % included toolboxes that were not deployed but might have local hooks anyway
-    alreadyRun = ismember(tbCollectField(included, 'name', 'template', {}), tbCollectField(resolved, 'name', 'template', {}));
-    for tt = find(~alreadyRun)
-        included(tt) = invokeLocalHook(included(tt), persistentPrefs, prefs);
+    if ~(prefs.useOnce && isequal(prefs.reset, 'as-is'))
+        % included toolboxes that were not deployed but might have local hooks anyway
+        alreadyRun = ismember(tbCollectField(included, 'name', 'template', {}), tbCollectField(resolved, 'name', 'template', {}));
+        for tt = find(~alreadyRun)
+            included(tt) = invokeLocalHook(included(tt), persistentPrefs, prefs);
+        end
     end
 end
 
