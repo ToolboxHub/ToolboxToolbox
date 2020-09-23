@@ -143,6 +143,15 @@ if isempty(resolved)
     end
 end
 
+%% remove toolbox if already deployed
+if prefs.useOnce && isequal(prefs.reset, 'as-is')
+    isDeployed = ismember({resolved.name}, tbDeployedToolboxes);
+    if any(isDeployed)
+        disp('The following toolboxes have already been deployed')
+        disp({resolved(isDeployed).name}');
+        resolved = resolved(~isDeployed);
+    end
+end
 
 %% Obtain or update the toolboxes.
 if ~isempty(resolved)
@@ -192,6 +201,9 @@ if prefs.addToPath
                 javaaddpath(fullfile(toolboxPath,jarfiles{jj}));
             end
         end
+        
+        % Mark toolbox as deployed
+        tbDeployedToolboxes(record.name, 'append');
     end
 end
 
@@ -208,10 +220,12 @@ if prefs.runLocalHooks
         resolved(tt) = invokeLocalHook(resolved(tt), persistentPrefs, prefs);
     end
     
-    % included toolboxes that were not deployed but might have local hooks anyway
-    alreadyRun = ismember(tbCollectField(included, 'name', 'template', {}), tbCollectField(resolved, 'name', 'template', {}));
-    for tt = find(~alreadyRun)
-        included(tt) = invokeLocalHook(included(tt), persistentPrefs, prefs);
+    if ~(prefs.useOnce && isequal(prefs.reset, 'as-is'))
+        % included toolboxes that were not deployed but might have local hooks anyway
+        alreadyRun = ismember(tbCollectField(included, 'name', 'template', {}), tbCollectField(resolved, 'name', 'template', {}));
+        for tt = find(~alreadyRun)
+            included(tt) = invokeLocalHook(included(tt), persistentPrefs, prefs);
+        end
     end
 end
 

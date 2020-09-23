@@ -43,6 +43,9 @@ function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 %                 'asspecified' (default) follows what is specified in the
 %                 update field of the toolbox record. 'never' overrides
 %                 that field and does not update any of the toolboxes.
+%   - 'useOnce' -- whether to skip the deployment if the toolbox was
+%                  already deployed during the current Matlab session. This
+%                  only has an effect if 'reset' == 'as-is'
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
@@ -71,6 +74,7 @@ parser.addParameter('verbose', tbGetPref(persistentPrefs, 'verbose', true), @isl
 parser.addParameter('checkTbTb', tbGetPref(persistentPrefs, 'checkTbTb', true), @islogical);
 parser.addParameter('updateRegistry', tbGetPref(persistentPrefs, 'updateRegistry', true), @islogical);
 parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
+parser.addParameter('useOnce', tbGetPref(persistentPrefs, 'useOnce', false), @islogical)
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;
