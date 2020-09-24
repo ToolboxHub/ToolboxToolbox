@@ -46,6 +46,11 @@ function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 %   - 'useOnce' -- whether to skip the deployment if the toolbox was
 %                  already deployed during the current Matlab session. This
 %                  only has an effect if 'reset' == 'as-is'
+%   - 'cdToFolder' -- whether to change the directory after deployment
+%                     'as-specified': As specified in the json file
+%                     true: Same as 'as-specified'. If cdToFolder is absent
+%                           in json file, change to root folder of toolbox
+%                     false: Don't change the folder, even if specified in json file
 %
 % 2016-2017 benjamin.heasly@gmail.com
 
@@ -75,6 +80,7 @@ parser.addParameter('checkTbTb', tbGetPref(persistentPrefs, 'checkTbTb', true), 
 parser.addParameter('updateRegistry', tbGetPref(persistentPrefs, 'updateRegistry', true), @islogical);
 parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
 parser.addParameter('useOnce', tbGetPref(persistentPrefs, 'useOnce', false), @islogical);
+parser.addParameter('cdToFolder', 'as-specified', @(f)(strcmp(f, 'as-specified') || islogical(f)));
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;

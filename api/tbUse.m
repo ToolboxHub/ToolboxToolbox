@@ -32,8 +32,31 @@ end
 
 results = tbDeployToolboxes(persistentPrefs, prefs, 'registered', registered);
 
-if ~isempty(results) && ~isempty(results(1).cdToFolder)
-    fdr = fullfile(tbLocateToolbox(results(1).name), results(1).cdToFolder);
-    fprintf('Changing to %s\n', fdr);
+if ~isempty(results)
+    cdToFolder(results(1), prefs.cdToFolder)
+end
+
+function cdToFolder(result, paramCdToFolder)
+toolboxRoot = tbLocateToolbox(result.name);
+specified = result.cdToFolder;
+switch paramCdToFolder
+    case true
+        fdr = specified;
+        if isempty(fdr)
+            fdr = toolboxRoot;
+        end
+        
+    case false
+        fdr = [];
+        
+    case 'as-specified'
+        if isempty(specified)
+            fdr = [];
+        else
+            fdr = fullfile(toolboxRoot, specified);
+        end
+end
+
+if ~isempty(fdr)
     cd(fdr)
 end
