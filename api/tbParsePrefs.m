@@ -74,7 +74,7 @@ parser.addParameter('verbose', tbGetPref(persistentPrefs, 'verbose', true), @isl
 parser.addParameter('checkTbTb', tbGetPref(persistentPrefs, 'checkTbTb', true), @islogical);
 parser.addParameter('updateRegistry', tbGetPref(persistentPrefs, 'updateRegistry', true), @islogical);
 parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
-parser.addParameter('useOnce', tbGetPref(persistentPrefs, 'useOnce', false), @islogical)
+parser.addParameter('useOnce', tbGetPref(persistentPrefs, 'useOnce', false), @islogical);
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;

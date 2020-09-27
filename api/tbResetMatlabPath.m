@@ -63,7 +63,7 @@ addMatlab = strcmp(prefs.add, 'matlab');
 
 %% Start with Matlab's consistent "factory" path.
 if factoryReset
-    tbDeployedToolboxes({}, 'reset')
+    tbDeployedToolboxes({}, 'reset');
     
     % This was an attempt to prevent barfing because there
     % are java objects hanging around somewhere.  Might not
