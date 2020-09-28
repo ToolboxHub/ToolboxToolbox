@@ -7,18 +7,31 @@ classdef Model < handle
         prefs
     end
     
+    methods(Access = private)
+        function s = getToolboxesString(~, toolboxNames)
+            assert(iscell(toolboxNames))
+            if length(toolboxNames) == 1
+                s = ['''' toolboxNames{1} ''''];
+            else
+                x = join(toolboxNames, ''', ''');
+                s = ['{''' x{1} '''}'];
+            end
+        end
+    end
+    
     methods
         function self = Model
             [~, self.toolboxNames] = tbGetToolboxNames;
             self.prefs = tbParsePrefs(tbGetPersistentPrefs);
         end
         
-        function use(self, toolboxName)
-            tbUse(toolboxName, self.prefs);
+        function use(self, toolboxNames)
+            tbUse(toolboxNames, self.prefs);
         end
         
-        function copyToClipboard(~, toolboxName)
-            str = ['tbUse(''' toolboxName ''');'];
+        function copyToClipboard(self, toolboxNames)
+            toolboxStr = self.getToolboxesString(toolboxNames);
+            str = ['tbUse(' toolboxStr ');'];
             disp(['copy "' str '" to clipboard']);
             clipboard('copy', str);
         end

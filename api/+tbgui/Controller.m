@@ -20,9 +20,9 @@ classdef Controller < handle
             self.view.setResetDropDown(self.model.prefs.reset);
         end
         
-        function useAndClose(self, toolboxName)
-            disp("selected: " + toolboxName);
-            self.model.use(toolboxName);
+        function useAndClose(self, toolboxNames)
+            disp("selected: " + join(toolboxNames, ', '));
+            self.model.use(toolboxNames);
             delete(self.view)
         end
         
