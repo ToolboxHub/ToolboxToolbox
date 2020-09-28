@@ -15,9 +15,9 @@ classdef Controller < handle
         end
         
         function init(self)
+            self.view.init(self, self.model);
             self.view.setToolboxNames(self.model.toolboxNames);
-            self.view.setChangeDirectoryDropDown(self.model.prefs.cdToFolder);
-            self.view.setResetDropDown(self.model.prefs.reset);
+            self.view.setDefaultValues(self.model.prefs);
         end
         
         function useAndClose(self, toolboxNames)
