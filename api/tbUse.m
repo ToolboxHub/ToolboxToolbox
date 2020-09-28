@@ -41,10 +41,7 @@ toolboxRoot = tbLocateToolbox(result.name);
 specified = result.cdToFolder;
 switch paramCdToFolder
     case true
-        fdr = specified;
-        if isempty(fdr)
-            fdr = toolboxRoot;
-        end
+        fdr = fullfile(toolboxRoot, specified);
         
     case false
         fdr = [];
