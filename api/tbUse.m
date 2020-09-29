@@ -30,11 +30,11 @@ if ischar(registered)
     registered = {registered};
 end
 
-results = tbDeployToolboxes(persistentPrefs, prefs, 'registered', registered);
+[results, included] = tbDeployToolboxes(persistentPrefs, prefs, 'registered', registered);
 
-if ~isempty(results)
-    cdToFolder(results(1), prefs.cdToFolder)
-end
+% "included" is populated even if "results" is empty due to onlyOnce==true
+cdToFolder(included(1), prefs.cdToFolder)
+
 
 function cdToFolder(result, paramCdToFolder)
 toolboxRoot = tbLocateToolbox(result.name);
