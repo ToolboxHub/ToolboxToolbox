@@ -37,6 +37,11 @@ classdef Model < handle
         end
         
         function filteredToolboxNames = filterToolboxes(self, filterStr)
+            if isempty(filterStr)
+                % If filter string is empty, e.g after clearing the filter
+                % edit box, the user most likely wants to see everything
+                filterStr = '.*';
+            end
             idx = ~cellfun(@isempty, regexpi(self.toolboxNames, filterStr));
             filteredToolboxNames = self.toolboxNames(idx);
         end
