@@ -1,6 +1,9 @@
 classdef Model < handle
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %MODEL MVC Model class for tbGui()
+    %
+    %  SEE ALSO tbgui.View, tbgui.Controller
+    %
+    %  2020 Markus Leuthold githubkusi@titlis.org
     
     properties
         toolboxNames

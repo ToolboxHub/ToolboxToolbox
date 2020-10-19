@@ -1,6 +1,9 @@
 classdef Controller < handle
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    %MODEL MVC Controller class for tbGui()
+    %
+    %  SEE ALSO tbgui.View, tbgui.Model
+    %
+    %  2020 Markus Leuthold githubkusi@titlis.org
     
     properties
         model
