@@ -30,10 +30,30 @@ if ischar(registered)
     registered = {registered};
 end
 
-results = tbDeployToolboxes(persistentPrefs, prefs, 'registered', registered);
+[results, included] = tbDeployToolboxes(persistentPrefs, prefs, 'registered', registered);
 
-if ~isempty(results) && ~isempty(results(1).cdToFolder)
-    fdr = fullfile(tbLocateToolbox(results(1).name), results(1).cdToFolder);
-    fprintf('Changing to %s\n', fdr);
+% "included" is populated even if "results" is empty due to onlyOnce==true
+cdToFolder(included(1), prefs.cdToFolder)
+
+
+function cdToFolder(result, paramCdToFolder)
+toolboxRoot = tbLocateToolbox(result.name);
+specified = result.cdToFolder;
+switch paramCdToFolder
+    case true
+        fdr = fullfile(toolboxRoot, specified);
+        
+    case false
+        fdr = [];
+        
+    case 'as-specified'
+        if isempty(specified)
+            fdr = [];
+        else
+            fdr = fullfile(toolboxRoot, specified);
+        end
+end
+
+if ~isempty(fdr)
     cd(fdr)
 end

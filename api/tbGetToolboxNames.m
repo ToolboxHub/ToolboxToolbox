@@ -1,12 +1,16 @@
-function s = tbGetToolboxNames
+function [s, identifiers] = tbGetToolboxNames
 %TBGETTOOLBOXNAMES Get struct containing the toolbox names
 %
-%  names = tbGetToolboxNames() returns a struct where each field
-%  corresponds to a toolbox. The field contains the toolbox name as a char
-%  array.
+%  [namesStruct, identifiers] = tbGetToolboxNames()
 %
-%  The result is populated by parsing the configurations directory of the
-%  ToolboxRegistry. Subfolders are handled correctly.
+%  OUTPUT
+%    namesStruct: returns a struct where each field corresponds to a toolbox
+% .               The field contains the toolbox name as a char array.
+%                 The result is populated by parsing the configurations
+%                 directory of the ToolboxRegistry. Subfolders are handled
+%                 correctly.
+%
+%    identifiers: toolbox names as cell array of char
 %
 %  2019 Markus Leuthold (github@titlis.org)
 
@@ -14,15 +18,16 @@ prefs = tbParsePrefs(tbGetPersistentPrefs);
 registryRoot = tbLocateToolbox(prefs.registry);
 configRoot = fullfile(registryRoot, prefs.registry.subfolder);
 
-s = getNamesRecursively(struct, configRoot, configRoot);
+[s, identifiers] = getNamesRecursively(struct, configRoot, configRoot, {});
 
-function s = getNamesRecursively(s, curPath, configRoot)
+function [s, identifiers] = getNamesRecursively(s, curPath, configRoot, identifiers)
 dAll = dir(curPath);
 d = dAll(~startsWith({dAll.name}, '.'));
 
 for k = find([d.isdir])
-    curIdentifier = getNamesRecursively(s, fullfile(d(k).folder, d(k).name), configRoot);
-    s.(d(k).name) = curIdentifier;
+    [curIdentifier, identifiers] = getNamesRecursively(...
+        [], fullfile(d(k).folder, d(k).name), configRoot, identifiers);
+    s.(matlab.lang.makeValidName(d(k).name)) = curIdentifier;
 end
 
 for k = find(~[d.isdir])
@@ -37,5 +42,6 @@ for k = find(~[d.isdir])
     
     identifier = fullfile(base, name);
     s.(matlab.lang.makeValidName(name)) = identifier;
+    identifiers = [identifiers; identifier];
 end
 
