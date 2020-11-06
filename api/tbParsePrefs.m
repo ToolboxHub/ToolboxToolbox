@@ -80,7 +80,7 @@ parser.addParameter('checkTbTb', tbGetPref(persistentPrefs, 'checkTbTb', true), 
 parser.addParameter('updateRegistry', tbGetPref(persistentPrefs, 'updateRegistry', true), @islogical);
 parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
 parser.addParameter('useOnce', tbGetPref(persistentPrefs, 'useOnce', false), @islogical);
-parser.addParameter('cdToFolder', 'as-specified', @(f)(strcmp(f, 'as-specified') || islogical(f)));
+parser.addParameter('cdToFolder', 'as-specified', @(f)(strcmp(f, 'as-specified') || isempty(f) || islogical(f)));
 parser.parse(varargin{:});
 prefs = parser.Results;
 others = parser.Unmatched;
