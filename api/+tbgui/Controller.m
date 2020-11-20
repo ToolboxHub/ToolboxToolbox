@@ -24,7 +24,9 @@ classdef Controller < handle
         end
         
         function useAndClose(self, toolboxNames)
-            disp("selected: " + join(toolboxNames, ', '));
+            if tbGetPref(tbGetPersistentPrefs, 'verbose', true)
+                disp("selected: " + join(toolboxNames, ', '));
+            end
             self.model.use(toolboxNames);
             delete(self.view)
         end

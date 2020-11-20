@@ -147,8 +147,10 @@ end
 if prefs.useOnce && isequal(prefs.reset, 'as-is')
     isDeployed = ismember({resolved.name}, tbDeployedToolboxes);
     if any(isDeployed)
-        disp('The following toolboxes have already been deployed')
-        disp({resolved(isDeployed).name}');
+        if prefs.verbose
+            disp('The following toolboxes have already been deployed')
+            disp({resolved(isDeployed).name}');
+        end
         resolved = resolved(~isDeployed);
     end
 end
