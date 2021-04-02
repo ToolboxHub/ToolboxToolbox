@@ -3,6 +3,9 @@ classdef TbWebGetStrategy < TbToolboxStrategy
     %   see websave, unzip
     %
     % 2016 benjamin.heasly@gmail.com
+    %
+    % 04/01/21 dhb Add option 'CertificateFilename,'') via weboptions to websave
+    %              command, in attempt to fix an SSL problem.
     
     methods
         function obj = TbWebGetStrategy(persistentPrefs)
@@ -31,9 +34,10 @@ classdef TbWebGetStrategy < TbToolboxStrategy
                 if 7 ~= exist(toolboxPath, 'dir')
                     mkdir(toolboxPath);
                 end
-                    
+                
                 % Download
-                fileName = websave(fileName, record.url);
+                options = weboptions('CertificateFilename','');
+                fileName = websave(fileName, record.url, options);
                 
                 if strcmp(resourceExt, '.zip') || strcmp(record.flavor, 'zip')
                     command = 'unzip';
