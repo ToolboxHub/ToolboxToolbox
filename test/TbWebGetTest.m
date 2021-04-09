@@ -12,7 +12,8 @@ classdef TbWebGetTest < matlab.unittest.TestCase
     
     properties
         zipUrl = 'https://github.com/ToolboxHub/sample-repo/archive/v0.1.zip';
-        zipNoExtUrl = 'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/59411/versions/1/download/zip';
+        %zipNoExtUrl = 'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/59411/versions/1/download/zip';
+        zipNoExtUrl = 'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/28518/versions/9/download/zip';
         imageUrl = 'https://github.com/ToolboxHub/sample-repo/releases/download/v0.1/sample-download.jpg';
         configPath = fullfile(tempdir(), 'toolbox_config.json');
         toolboxRoot = fullfile(tempdir(), 'toolboxes');
@@ -76,8 +77,8 @@ classdef TbWebGetTest < matlab.unittest.TestCase
             obj.assertEqual(results.status, 0);
             
             % zip contents should now be on the path
-            struct2xmlFile = which('struct2xml.m');
-            obj.assertEqual(exist(struct2xmlFile, 'file'), 2);
+            xml2structFile = which('xml2struct.m');
+            obj.assertEqual(exist(xml2structFile, 'file'), 2);
         end
         
         function testImageFile(obj)
