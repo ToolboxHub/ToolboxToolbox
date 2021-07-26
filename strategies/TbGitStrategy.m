@@ -33,7 +33,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             
             % clone
             command = sprintf('git clone "%s" "%s"', record.url, toolboxPath);
-            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose);
+            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
             if 0 ~= status
                 return;
             end
@@ -41,7 +41,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             if ~isempty(record.flavor)
                 % git checkout sampleBranch
                 command = sprintf('git checkout %s', record.flavor);
-                [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose, 'dir', toolboxPath);
+                [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose, 'dir', toolboxPath, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
                 if 0 ~= status
                     return;
                 end
@@ -65,7 +65,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             else
                 command = sprintf('git pull origin %s', record.flavor);
             end
-            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose, 'dir', toolboxPath);
+            [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose, 'dir', toolboxPath, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
         end
         
         function [flavor,flavorlong,originflavorlong] = detectFlavor(obj, record)
@@ -78,7 +78,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             % detect flavor with git command.
             toolboxPath = tbLocateToolbox(record, obj.prefs);
             command = 'git rev-parse --short HEAD';
-            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
+            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
             if 0 == status
                 flavor = strtrim(result);
             else
@@ -86,7 +86,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             end
             
             command = 'git rev-parse HEAD';
-            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
+            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
             if 0 == status
                 flavorlong = strtrim(result);
             else
@@ -95,7 +95,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             
             url = obj.detectOriginUrl(record);
             command = ['git ls-remote ' url ' HEAD'];
-            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
+            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
             if 0 == status
                 originflavorlong = sscanf(result,'%s',1);
             else
@@ -107,7 +107,7 @@ classdef TbGitStrategy < TbToolboxStrategy
             % try to detect the url from where this was cloned
             toolboxPath = tbLocateToolbox(record, obj.prefs);
             command = 'git config --get remote.origin.url';
-            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath);
+            [status, result] = tbSystem(command, 'echo', false, 'dir', toolboxPath, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
             if 0 == status
                 url = strtrim(result);
             else

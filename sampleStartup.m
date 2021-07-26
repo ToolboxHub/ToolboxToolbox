@@ -107,3 +107,7 @@ end
 %
 % setpref('ToolboxToolbox', 'checkInternetCommand', checkInternetCommand);
 
+% uncomment and set noIgnoreEnv true to make TbTb not use 'env -i' to launch git commands
+% noIngoreEnv = false;
+% setpref('ToolboxToolbox', 'noIgnoreEnv', noIngoreEnv);
+

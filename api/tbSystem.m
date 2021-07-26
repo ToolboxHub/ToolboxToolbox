@@ -25,11 +25,13 @@ parser.addRequired('command', @ischar);
 parser.addParameter('keep', {}, @iscellstr);
 parser.addParameter('echo', true, @islogical);
 parser.addParameter('dir', '', @ischar);
+parser.addParameter('noIgnoreEnv', false, @islogical);
 parser.parse(command, varargin{:});
 command = parser.Results.command;
 keep = parser.Results.keep;
 echo = parser.Results.echo;
 dir = parser.Results.dir;
+noIgnoreEnv = parser.Results.noIgnoreEnv;
 
 fullCommand = command;
 
@@ -77,8 +79,13 @@ if ~ispc()
     keepString = sprintf('%s=%s ', keepVals{:});
     
     
-    % run the command with a clean environment
-    fullCommand = ['env -i ' keepString whichExecutable args];
+    % run the command with a clean environment, unless overridden
+    % by a preference
+    if (noIgnoreEnv)
+        fullCommand = [keepString whichExecutable args];
+    else
+        fullCommand = ['env -i ' keepString whichExecutable args];
+    end
 end
 
 % run the command in the given dir, if any
