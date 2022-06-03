@@ -1,0 +1,20 @@
+{
+"tbUse":
+{
+    "inputs":
+    [
+        {"name":"ToolboxName", "kind":"required", "type":["choices=tbtb.internal.functionSignatures.getToolboxNames"]},
+        {"name":"reset", "kind":"namevalue", "type":["choices={'full', 'no-matlab', 'no-self', 'bare', 'as-is'}"]},
+        {"name":"useOnce", "kind":"namevalue", "type":["logical", "scalar"]},
+        {"name":"cdToFolder", "kind":"namevalue", "type":["logical", "scalar"]}
+    ]     
+},
+
+"tbLocateToolbox":
+{
+    "inputs":
+    [
+        {"name":"ToolboxName", "kind":"required", "type":["choices=tbtb.internal.functionSignatures.getToolboxNames"]}
+    ]
+}
+}
