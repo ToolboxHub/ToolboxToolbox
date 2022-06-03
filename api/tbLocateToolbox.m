@@ -20,9 +20,13 @@ end
 [prefs, others] = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
-parser.addRequired('toolbox', @(val) ischar(val) || isstruct(val));
+parser.addRequired('toolbox', @(val) ischar(val) || isstruct(val) || isstring(val));
 parser.parse(toolbox);
 toolbox = parser.Results.toolbox;
+
+if isstring(toolbox)
+    toolbox = char(toolbox);
+end
 
 % convert convenient string to general toolbox record
 if ischar(toolbox)
