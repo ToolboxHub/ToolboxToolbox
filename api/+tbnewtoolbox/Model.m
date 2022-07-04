@@ -4,13 +4,14 @@ classdef Model < handle
     %  SEE ALSO tbnewtoolbox.View, tbnewtoolbox.Controller
     %
     %  2021 Markus Leuthold markus.leuthold@sonova.com
-    
+
     properties
         toolboxNames
         prefs
         subfolder
+        actions
     end
-    
+
     methods(Access = private)
         function s = getToolboxesString(~, toolboxNames)
             assert(iscell(toolboxNames))
@@ -21,27 +22,28 @@ classdef Model < handle
                 s = ['{''' x{1} '''}'];
             end
         end
-        
+
         function cp = canonicalPath(~, p)
             % make path strings unambigous, comparable and printable
             cp = strrep(p, '\', '/');
         end
     end
-    
+
     methods
         function self = Model
             [~, self.toolboxNames] = tbGetToolboxNames;
             self.prefs = tbParsePrefs(tbGetPersistentPrefs);
             toolboxRoot = self.getToolboxRoot;
             isUnderToolboxRoot = startsWith(self.canonicalPath(pwd), toolboxRoot, 'IgnoreCase', true);
+            [currentRoot, tbn] = fileparts(pwd);
             assert(isUnderToolboxRoot, 'tbNewToolbox:NotUnderToolboxRoot', ...
-                "Your new toolbox needs to be located under the current toolbox root " + toolboxRoot)
+                "Your new toolbox '" + tbn + "' needs to be located under the current toolbox root " + toolboxRoot + " but you are under " + self.canonicalPath(currentRoot))
         end
-        
+
         function s = getGithubUrls(~)
             s = getpref('ToolboxToolbox', 'NewToolbox').GithubUrls;
         end
-        
+
         function s = getDefaultGithubVisibility(~)
             pref = getpref('ToolboxToolbox', 'NewToolbox');
             if isfield(pref, 'DefaultGithubVisibility')
@@ -52,7 +54,7 @@ classdef Model < handle
                 s = 'public';
             end
         end
-        
+
         function tn = getNewToolboxName(self)
             gitRoot = self.getGitRoot;
             if isempty(gitRoot)
@@ -60,31 +62,36 @@ classdef Model < handle
                 % future git repo
                 gitRoot = pwd;
             end
-            
+
             tn = self.getCurrentToolboxName(gitRoot);
         end
-        
+
         function repoName = getDefaultRepoName(self)
             [~, repoName] = fileparts(self.getNewToolboxName);
         end
-        
+
         function checkGhInstallation(~)
             cmd = 'gh --version';
             [~, out] = system(cmd);
             assert(contains(out, 'gh version'), 'tbtb:GhNotFound', ...
                 'Cannot find gh. Please install from <a href="https://github.com/cli/cli#installation">Github</a>.')
         end
-        
+
         function createLocalGitRepo(~)
             cmd = 'git init';
             [fail, out] = system(cmd);
             assert(~fail, 'CreateLocalGitRepo:BadGitInit', out)
         end
-        
+
         function fullUrl = fullGithubUrl(~, url, repoName)
             fullUrl = [url '/' repoName];
         end
-        
+
+        function tf = remoteGitRepoExist(~, url)
+            [status, ~] = system("gh repo view " + url);
+            tf = status == 0;
+        end
+
         function createRemoteGitRepo(self, shortDescription, visibility, url)
             self.checkGhInstallation
             ghUrl = erase(url, 'https://');
@@ -92,18 +99,18 @@ classdef Model < handle
             [tf, out] = system(cmd);
             assert(tf == 0, """" + cmd + """ failed" + newline + out)
         end
-        
+
         function r = getToolboxRoot(self)
             r = self.canonicalPath(tbGetPersistentPrefs().toolboxRoot);
         end
-        
+
         function toolboxName = getCurrentToolboxName(self, currentRoot)
-            toolboxName = erase(strrep(currentRoot, '\', '/'), self.getToolboxRoot);
-            
+            toolboxName = erase(strrep(currentRoot, '\', '/'), caseInsensitivePattern(self.getToolboxRoot));
+
             % delete leading slash
             toolboxName = regexprep(toolboxName, '^/', '');
         end
-        
+
         function gitRoot = getGitRoot(~)
             [retVal, out] = system('git rev-parse --show-toplevel');
             if retVal == 0
@@ -112,7 +119,7 @@ classdef Model < handle
                 gitRoot = [];
             end
         end
-        
+
         function wellFormedRecord = getMainRecord(~, toolboxName, url, subfolder, pathPlacement)
             record.name = toolboxName;
             record.subfolder = subfolder;
@@ -122,7 +129,7 @@ classdef Model < handle
             %             record.cdToFolder = self.cdToFolderEditField.Value;
             wellFormedRecord = tbToolboxRecord(record);
         end
-        
+
         function wellFormedRecords = getDependencyRecords(~, dependencies)
             wellFormedRecords = [];
             for k = 1:length(dependencies)
@@ -131,13 +138,13 @@ classdef Model < handle
                 wellFormedRecords = [wellFormedRecords tbToolboxRecord(record, 'pathPlacement', '')]; %#ok<AGROW>
             end
         end
-        
+
         function records = getRecords(self, toolboxName, url, subfolder, dependencies, pathPlacement)
             mainRecord = self.getMainRecord(toolboxName, url, subfolder, pathPlacement);
             dependencyRecords = self.getDependencyRecords(dependencies);
             records = [mainRecord, dependencyRecords];
         end
-        
+
         function filePath = getConfigFilePath(~, toolboxName)
             prefs = tbParsePrefs(tbGetPersistentPrefs);
             registryRoot = tbLocateToolbox(prefs.registry);
@@ -149,7 +156,7 @@ classdef Model < handle
             end
             filePath = fullfile(configRoot, [toolboxName '.json']);
         end
-        
+
         function writeRecords(~, records, filePath)
             % create subfolders if needed
             subfolder = fileparts(filePath);
@@ -160,23 +167,56 @@ classdef Model < handle
             disp("write config file to " + filePath)
             savejson('', records, 'filename', filePath, 'SkipEmpty', true)
         end
-        
-        function createToolbox(self, shortDescription, subfolder, dependencies, pathPlacement, visibility, baseUrl, repoName)
-            gitRoot = self.getGitRoot;
-            if isempty(gitRoot)
-                disp("No git repo exists in current folder, create a new one")
-                self.createLocalGitRepo
-                gitRoot = pwd;
+
+        function plannedActions(self, baseUrl, repoName)
+            actn.gitRoot = self.getGitRoot;
+            actn.createLocalGitRepo = isempty(actn.gitRoot);
+            if actn.createLocalGitRepo
+                actn.strLocalGitRepo = "No git repo exists in current folder, create new git local repo in " + pwd;
+                actn.gitRoot = pwd;
+            else
+                actn.strLocalGitRepo = "git repo present in current working folder";
             end
-            
-            url = self.fullGithubUrl(baseUrl, repoName);
-            self.createRemoteGitRepo(shortDescription, visibility, url);
-            toolboxName = self.getCurrentToolboxName(gitRoot);
-            records = self.getRecords(toolboxName, url, subfolder, dependencies, pathPlacement);
-            filePath = self.getConfigFilePath(toolboxName);
-            self.writeRecords(records, filePath)
+
+            actn.url = self.fullGithubUrl(baseUrl, repoName);
+            actn.remoteGitRepoExist = self.remoteGitRepoExist(actn.url);
+            if actn.remoteGitRepoExist
+                actn.strUrl = actn.url + " already exists";
+            else
+                actn.strUrl = "Create new repo on " + actn.url;
+            end
+
+            actn.toolboxName = self.getCurrentToolboxName(actn.gitRoot);
+            configFilePath = self.getConfigFilePath(actn.toolboxName);
+            if isfile(configFilePath)
+                configFileAction = "Overwrite existing";
+            else
+                configFileAction = "Create new";
+            end
+
+            actn.strConfigFile = configFileAction + " config file in " + configFilePath;
+            self.actions = actn;
         end
-        
+
+        function createToolbox(self, shortDescription, subfolder, dependencies, pathPlacement, visibility, actions)
+            if actions.createLocalGitRepo
+                disp("git init")
+                self.createLocalGitRepo;
+            end
+
+            if ~actions.remoteGitRepoExist
+                disp("Create repo on " + actions.url)
+                self.createRemoteGitRepo(shortDescription, visibility, actions.url);
+            end
+
+            disp("Write json config")
+            records = self.getRecords(actions.toolboxName, actions.url, subfolder, dependencies, pathPlacement);
+            filePath = self.getConfigFilePath(actions.toolboxName);
+            self.writeRecords(records, filePath)
+
+            disp("Done")
+        end
+
         function filteredToolboxNames = filterToolboxes(self, filterStr)
             if isempty(filterStr)
                 % If filter string is empty, e.g after clearing the filter
@@ -186,24 +226,13 @@ classdef Model < handle
             idx = ~cellfun(@isempty, regexpi(self.toolboxNames, filterStr));
             filteredToolboxNames = self.toolboxNames(idx);
         end
-        
-        function s = getPlannedActions(self)
-            % local git repo
-            s = "Current working folder: " + pwd;
-            gitRoot = self.getGitRoot;
-            if isempty(gitRoot)
-                gitRoot = pwd;
-                s = [s "No git repo exists in current folder, create new git local repo in " + pwd];
-            else
-                s = [s "git repo present in current working folder"];
-            end
-            
-            % remote git repo
-            toolboxName = self.getCurrentToolboxName(gitRoot);
-            s = [s "Create repo " + toolboxName + " on Github"];
-            
-            % config file
-            s = [s "Create config file in " + self.getConfigFilePath(toolboxName)];
+
+        function s = getPlannedActionsString(self)
+            s = ["Current working folder: " + pwd
+                "Toolbox name: " + self.actions.toolboxName
+                self.actions.strLocalGitRepo
+                self.actions.strUrl
+                self.actions.strConfigFile];
         end
     end
 end

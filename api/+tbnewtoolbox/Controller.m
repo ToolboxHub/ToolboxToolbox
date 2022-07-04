@@ -21,6 +21,14 @@ classdef Controller < handle
             self.view.init(self, self.model);
         end
         
+        function plannedActions(self)
+            self.model.plannedActions(...
+                self.view.getGithubUrl,...
+                self.view.getGithubRepoName);
+            self.view.setActionText(self.model.getPlannedActionsString);
+            self.view.setCreationState;
+        end
+
         function createToolbox(self)
             self.model.createToolbox(...
                 self.view.getShortDescription, ...
@@ -28,10 +36,9 @@ classdef Controller < handle
                 self.view.getDependencies, ...
                 self.view.getPathPlacement, ...
                 self.view.getVisibility, ...
-                self.view.getGithubUrl, ...
-                self.view.getGithubRepoName);
+                self.model.actions);
         end
-        
+
         function filteredToolboxNames = filterToolboxes(self, filterStr)
             filteredToolboxNames = self.model.filterToolboxes(filterStr);
         end
