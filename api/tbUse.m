@@ -21,9 +21,13 @@ persistentPrefs = tbGetPersistentPrefs;
 prefs = tbParsePrefs(persistentPrefs, varargin{:});
 
 parser = inputParser();
-parser.addRequired('registered', @(r) ischar(r) || iscellstr(r));
+parser.addRequired('registered', @(r) ischar(r) || iscellstr(r) || isstring(r));
 parser.parse(registered);
 registered = parser.Results.registered;
+
+if isstring(registered)
+    registered = registered.cellstr;
+end
 
 % convert convenient string form to general list form
 if ischar(registered)
