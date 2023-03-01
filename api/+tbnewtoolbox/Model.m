@@ -95,7 +95,7 @@ classdef Model < handle
         function createRemoteGitRepo(self, shortDescription, visibility, url)
             self.checkGhInstallation
             ghUrl = erase(url, 'https://');
-            cmd = ['gh repo create ' ghUrl ' -d "' shortDescription '" --' visibility];
+            cmd = ['gh repo create ' ghUrl ' -d "' shortDescription '" --' visibility ' --source ' self.getGitRoot];
             [tf, out] = system(cmd);
             assert(tf == 0, """" + cmd + """ failed" + newline + out)
         end
@@ -204,7 +204,9 @@ classdef Model < handle
                 self.createLocalGitRepo;
             end
 
-            if ~actions.remoteGitRepoExist
+            if actions.remoteGitRepoExist
+                disp("Repo " + actions.url + " already exists. TODO: add remote")
+            else
                 disp("Create repo on " + actions.url)
                 self.createRemoteGitRepo(shortDescription, visibility, actions.url);
             end
