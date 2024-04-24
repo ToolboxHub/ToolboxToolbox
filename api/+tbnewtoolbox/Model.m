@@ -100,6 +100,14 @@ classdef Model < handle
             assert(tf == 0, """" + cmd + """ failed" + newline + out)
         end
 
+        function r = getGitRemoteUrl(~)
+            cmd = 'git remote -v';
+            [fail, out] = system(cmd);
+            assert(~fail, "cannot get git remote")
+            tokens = split(out);
+            r = tokens{2};
+        end
+
         function r = getToolboxRoot(self)
             r = self.canonicalPath(tbGetPersistentPrefs().toolboxRoot);
         end
@@ -168,22 +176,36 @@ classdef Model < handle
             savejson('', records, 'filename', filePath, 'SkipEmpty', true)
         end
 
-        function plannedActions(self, baseUrl, repoName)
+        function [str, readyToCreate] = plannedActions(self, baseUrl, repoName)
             actn.gitRoot = self.getGitRoot;
             actn.createLocalGitRepo = isempty(actn.gitRoot);
             if actn.createLocalGitRepo
-                actn.strLocalGitRepo = "No git repo exists in current folder, create new git local repo in " + pwd;
+                strLocalGitRepo = "No git repo exists in current folder, create new git local repo in " + pwd;
                 actn.gitRoot = pwd;
             else
-                actn.strLocalGitRepo = "git repo present in current working folder";
+                strLocalGitRepo = "git repo present in current working folder";
+
+                remoteUrl = self.getGitRemoteUrl;
+                if ~isempty(remoteUrl)
+                    plannedUrl = self.fullGithubUrl(baseUrl, repoName);
+                    if ~startsWith(remoteUrl, plannedUrl)
+                        str = [
+                            "You already have a configured git remote which doesn't match your selection:"
+                            "- Remote URL of current repo: " + remoteUrl
+                            "- Your chosen URL: " + plannedUrl
+                            ];
+                        readyToCreate = false;
+                        return
+                    end
+                end
             end
 
             actn.url = self.fullGithubUrl(baseUrl, repoName);
             actn.remoteGitRepoExist = self.remoteGitRepoExist(actn.url);
             if actn.remoteGitRepoExist
-                actn.strUrl = actn.url + " already exists";
+                strUrl = actn.url + " already exists";
             else
-                actn.strUrl = "Create new repo on " + actn.url;
+                strUrl = "Create new repo on " + actn.url;
             end
 
             actn.toolboxName = self.getCurrentToolboxName(actn.gitRoot);
@@ -194,8 +216,15 @@ classdef Model < handle
                 configFileAction = "Create new";
             end
 
-            actn.strConfigFile = configFileAction + " config file in " + configFilePath;
+            strConfigFile = configFileAction + " config file in " + configFilePath;
             self.actions = actn;
+
+            str = ["Current working folder: " + pwd
+                "Toolbox name: " + self.actions.toolboxName
+                strLocalGitRepo
+                strUrl
+                strConfigFile];
+            readyToCreate = true;
         end
 
         function createToolbox(self, shortDescription, subfolder, dependencies, pathPlacement, visibility, actions)
@@ -227,14 +256,6 @@ classdef Model < handle
             end
             idx = ~cellfun(@isempty, regexpi(self.toolboxNames, filterStr));
             filteredToolboxNames = self.toolboxNames(idx);
-        end
-
-        function s = getPlannedActionsString(self)
-            s = ["Current working folder: " + pwd
-                "Toolbox name: " + self.actions.toolboxName
-                self.actions.strLocalGitRepo
-                self.actions.strUrl
-                self.actions.strConfigFile];
         end
     end
 end

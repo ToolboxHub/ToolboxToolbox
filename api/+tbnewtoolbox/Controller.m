@@ -22,11 +22,13 @@ classdef Controller < handle
         end
         
         function plannedActions(self)
-            self.model.plannedActions(...
+            [str, readyToCreate] = self.model.plannedActions(...
                 self.view.getGithubUrl,...
                 self.view.getGithubRepoName);
-            self.view.setActionText(self.model.getPlannedActionsString);
-            self.view.setCreationState;
+            self.view.setActionText(str);
+            if readyToCreate
+                self.view.setCreationState;
+            end
         end
 
         function createToolbox(self)
