@@ -43,6 +43,8 @@ function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 %                 'asspecified' (default) follows what is specified in the
 %                 update field of the toolbox record. 'never' overrides
 %                 that field and does not update any of the toolboxes.
+%                 'daily', 'weekly', 'monthly' sets the elapsed time after
+%                 which the toolbox is updated again
 %   - 'useOnce' -- whether to skip the deployment if the toolbox was
 %                  already deployed during the current Matlab session. This
 %                  only has an effect if 'reset' == 'as-is'
@@ -79,7 +81,7 @@ parser.addParameter('online', logical([]), @islogical);
 parser.addParameter('verbose', tbGetPref(persistentPrefs, 'verbose', true), @islogical);
 parser.addParameter('checkTbTb', tbGetPref(persistentPrefs, 'checkTbTb', true), @islogical);
 parser.addParameter('updateRegistry', tbGetPref(persistentPrefs, 'updateRegistry', true), @islogical);
-parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never'}))));
+parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never' 'daily' 'weekly' 'monthly'}))));
 parser.addParameter('useOnce', tbGetPref(persistentPrefs, 'useOnce', false), @islogical);
 parser.addParameter('cdToFolder', 'as-specified', @(f)(strcmp(f, 'as-specified') || isempty(f) || islogical(f)));
 parser.parse(varargin{:});

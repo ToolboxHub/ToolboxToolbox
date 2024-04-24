@@ -92,13 +92,38 @@ for tt = 1:nToolboxes
         
     else
         % toolbox is there already -- update it?
-        if strcmp(record.update, 'never') || strcmp(prefs.update, 'never')
+        validName = matlab.lang.makeValidName(record.name);
+        lastUpdates = getpref('ToolboxToolbox', 'LastUpdates', []);
+
+        if ~strcmp(record.update, 'never') && ismember(prefs.update, {'daily' 'weekly' 'monthly'})
+            if isfield(lastUpdates, validName)
+                dLastUpdate = lastUpdates.(validName);
+                dElapsed = datetime('now') - dLastUpdate;
+            else
+                % Toolbox was never updated
+                dElapsed = duration(Inf, Inf, Inf);
+            end
+
+            dThreshold.daily = days(1);
+            dThreshold.weekly = days(7);
+            dThreshold.monthly = days(31);
+
+            isRecentEnough = dElapsed < dThreshold.(prefs.update);
+        else
+            isRecentEnough = true;
+        end
+
+        if strcmp(record.update, 'never') || strcmp(prefs.update, 'never') || isRecentEnough
             if (prefs.verbose) fprintf('Found "%s" and skipping update.\n', displayName); end
+
         else
             if (prefs.verbose) fprintf('Updating "%s".\n', displayName); end
             results(tt).operation = 'update';
             [results(tt).command, results(tt).status, results(tt).message] = ...
                 strategy.update(record, updateRoot, updatePath);
+
+            lastUpdates.(validName) = datetime('now');
+            setpref('ToolboxToolbox', 'LastUpdates', lastUpdates);
         end
     end
 end
