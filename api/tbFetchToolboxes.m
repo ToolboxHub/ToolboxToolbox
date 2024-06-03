@@ -95,7 +95,9 @@ for tt = 1:nToolboxes
         validName = matlab.lang.makeValidName(record.name);
         lastUpdates = getpref('ToolboxToolbox', 'LastUpdates', []);
 
-        if ~strcmp(record.update, 'never') && ismember(prefs.update, {'daily' 'weekly' 'monthly'})
+        if (isempty(record.update))
+            isRecentEnough = false;
+        elseif ~strcmp(record.update, 'never') && ismember(prefs.update, {'daily' 'weekly' 'monthly'})
             if isfield(lastUpdates, validName)
                 dLastUpdate = lastUpdates.(validName);
                 dElapsed = datetime('now') - dLastUpdate;
