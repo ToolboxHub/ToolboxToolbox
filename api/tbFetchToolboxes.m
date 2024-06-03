@@ -95,6 +95,8 @@ for tt = 1:nToolboxes
         validName = matlab.lang.makeValidName(record.name);
         lastUpdates = getpref('ToolboxToolbox', 'LastUpdates', []);
 
+        % Empty record is the default.  In this case we want to make sure
+        % the default is to update, so explicitly handle this case.
         if (isempty(record.update))
             isRecentEnough = false;
         elseif ~strcmp(record.update, 'never') && ismember(prefs.update, {'daily' 'weekly' 'monthly'})
@@ -112,6 +114,10 @@ for tt = 1:nToolboxes
 
             isRecentEnough = dElapsed < dThreshold.(prefs.update);
         else
+            % Should this be false?  Probably adding the check for empty
+            % above means we don't need to get this right, but the setting to 
+            % here as added with this code does not make immediate sense to
+            % me.
             isRecentEnough = true;
         end
 
