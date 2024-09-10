@@ -104,8 +104,14 @@ classdef Model < handle
             cmd = 'git remote -v';
             [fail, out] = system(cmd);
             assert(~fail, "cannot get git remote")
-            tokens = split(out);
-            r = tokens{2};
+            if isempty(out)
+                % no remote configured
+                r = [];
+            else
+                tokens = split(out);
+                assert(numel(tokens)>=2, "Don't know how to parse '" + out + "'")
+                r = tokens{2};
+            end
         end
 
         function r = getToolboxRoot(self)
