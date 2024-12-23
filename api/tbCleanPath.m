@@ -23,7 +23,7 @@ scanResults = textscan(originalPath, '%s', 'delimiter', pathsep());
 pathElements = scanResults{1};
 
 % locate svn, git, mercurial entries
-isCleanFun = @(s) isempty(regexp(s, '\.svn|\.git|\.hg', 'once'));
+isCleanFun = @(s) isempty(regexp(s, '\.svn|\.git|\.hg|xNotOnPath', 'once'));
 isClean = cellfun(isCleanFun, pathElements);
 
 % print a new, clean path
