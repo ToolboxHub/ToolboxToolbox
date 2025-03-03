@@ -71,6 +71,8 @@ for tt = 1:nToolboxes
             obtainRoot = fileparts(obtainRoot);
         end
         record.toolboxRoot = obtainRoot;
+    elseif strcmp(record.toolboxRoot,'userpath')
+        obtainRoot = userpath;
     else
         % put the toolbox in the specified special place.
         obtainRoot = tbHomePathToAbsolute(record.toolboxRoot);  

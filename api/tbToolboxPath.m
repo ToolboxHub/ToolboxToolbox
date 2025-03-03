@@ -35,6 +35,8 @@ displayName = toolboxFolder;
 if isempty(record.toolboxRoot)
     % put this toolbox with all the other toolboxes
     pathRoot = toolboxRoot;
+elseif (strcmp(record.toolboxRoot,'userpath'))
+    pathRoot = userpath;
 else
     % put this toolbox in its own special place
     pathRoot = tbHomePathToAbsolute(record.toolboxRoot);
