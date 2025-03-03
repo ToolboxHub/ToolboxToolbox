@@ -47,9 +47,16 @@ function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 %                 which the toolbox is updated again.
 %
 %                 If you set this to 'force' and it is the git strategy,
-%                 TbTb will run a 'git reset --hard HEAD' command to discard local
-%                 changes before the pull.  Useful sometimes, but dangerous
-%                 so exercise caution.
+%                 TbTb will run a 'git reset --hard HEAD' command to
+%                 discard local changes before the pull.  Useful sometimes,
+%                 but dangerous so exercise caution. Bear in mind that this
+%                 forces the change on each repo that gets updated by the
+%                 tbUse() or tbUseProject() command, including the
+%                 ToolboxRegistry. A particular use case can occur when
+%                 teaching, to push software out to people who may have
+%                 inadertently made local changes to their repos but didn't
+%                 mean to, and for whom doing the reset by hand from
+%                 command line or a client may be challenging.
 %   - 'useOnce' -- whether to skip the deployment if the toolbox was
 %                  already deployed during the current Matlab session. This
 %                  only has an effect if 'reset' == 'as-is'
