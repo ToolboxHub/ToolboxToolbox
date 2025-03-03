@@ -48,7 +48,11 @@ classdef TbGitStrategy < TbToolboxStrategy
             end
         end
         
-        function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath)
+        function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath, force)
+
+            if (nargin < 5)
+                force = false;
+            end
             
             if ~obj.prefs.online
                 % toolbox already exists, but offline prevents update
@@ -58,6 +62,11 @@ classdef TbGitStrategy < TbToolboxStrategy
             
             % fail fast if git is not working
             TbGitStrategy.assertGitWorks();
+
+            if (force)
+                command = 'git reset --hard HEAD';
+                tbSystem(command, 'echo', obj.prefs.verbose, 'dir', toolboxPath, 'noIgnoreEnv', obj.prefs.noIgnoreEnv);
+            end
             
             % pull
             if isempty(record.flavor)

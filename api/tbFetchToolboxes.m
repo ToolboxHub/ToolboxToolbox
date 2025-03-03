@@ -126,9 +126,15 @@ for tt = 1:nToolboxes
 
         else
             if (prefs.verbose) fprintf('Updating "%s".\n', displayName); end
-            results(tt).operation = 'update';
+            if (strcmp(prefs.update,'force'))
+                results(tt).operation = 'update_force';
+                force = true;
+            else
+                results(tt).operation = 'update';
+                force = false;
+            end
             [results(tt).command, results(tt).status, results(tt).message] = ...
-                strategy.update(record, updateRoot, updatePath);
+                strategy.update(record, updateRoot, updatePath, force);
 
             lastUpdates.(validName) = datetime('now');
             setpref('ToolboxToolbox', 'LastUpdates', lastUpdates);

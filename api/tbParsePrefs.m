@@ -44,7 +44,12 @@ function [prefs, others] = tbParsePrefs(persistentPrefs, varargin)
 %                 update field of the toolbox record. 'never' overrides
 %                 that field and does not update any of the toolboxes.
 %                 'daily', 'weekly', 'monthly' sets the elapsed time after
-%                 which the toolbox is updated again
+%                 which the toolbox is updated again.
+%
+%                 If you set this to 'force' and it is the git strategy,
+%                 TbTb will run a 'git reset --hard HEAD' command to discard local
+%                 changes before the pull.  Useful sometimes, but dangerous
+%                 so exercise caution.
 %   - 'useOnce' -- whether to skip the deployment if the toolbox was
 %                  already deployed during the current Matlab session. This
 %                  only has an effect if 'reset' == 'as-is'
@@ -81,7 +86,7 @@ parser.addParameter('online', logical([]), @islogical);
 parser.addParameter('verbose', tbGetPref(persistentPrefs, 'verbose', true), @islogical);
 parser.addParameter('checkTbTb', tbGetPref(persistentPrefs, 'checkTbTb', true), @islogical);
 parser.addParameter('updateRegistry', tbGetPref(persistentPrefs, 'updateRegistry', true), @islogical);
-parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never' 'daily' 'weekly' 'monthly'}))));
+parser.addParameter('update', tbGetPref(persistentPrefs, 'update', 'asspecified'), @(f) (isempty(f) | any(strcmp(f, {'asspecified' 'never' 'daily' 'weekly' 'monthly', 'force'}))));
 parser.addParameter('useOnce', tbGetPref(persistentPrefs, 'useOnce', false), @islogical);
 parser.addParameter('cdToFolder', 'as-specified', @(f)(strcmp(f, 'as-specified') || isempty(f) || islogical(f)));
 parser.parse(varargin{:});
