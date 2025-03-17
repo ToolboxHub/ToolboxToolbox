@@ -49,8 +49,14 @@ classdef TbSvnStrategy < TbToolboxStrategy
             [status, message, fullCommand] = tbSystem(command, 'echo', obj.prefs.verbose);
         end
         
-        function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath)
-            
+        function [fullCommand, status, message] = update(obj, record, toolboxRoot, toolboxPath, force)
+
+            % The force variable is ignored here currently, but you could
+            % make it do something if you want.
+            if (nargin < 5)
+                force = false;
+            end
+
             if ~obj.prefs.online
                 % toolbox already exists, but offline prevents update
                 [fullCommand, status, message] = obj.skipUpdate();

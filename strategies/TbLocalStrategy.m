@@ -20,7 +20,13 @@ classdef TbLocalStrategy < TbToolboxStrategy
             end
         end
         
-        function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath)
+        function [command, status, message] = update(obj, record, toolboxRoot, toolboxPath, force)
+            % The force variable is ignored here currently, but you could
+            % make it do something if you want.
+            if (nargin < 5)
+                force = false;
+            end
+
             [command, status, message] = obj.obtain(record, toolboxRoot, toolboxPath);
         end
         

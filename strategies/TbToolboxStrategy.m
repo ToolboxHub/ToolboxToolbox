@@ -19,7 +19,7 @@ classdef TbToolboxStrategy < handle
     
     methods (Abstract)
         [command, status, message] = obtain(obj, record, toolboxRoot, toolboxPath);
-        [command, status, message] = update(obj, record, toolboxRoot, toolboxPath);
+        [command, status, message] = update(obj, record, toolboxRoot, toolboxPath, force);
     end
     
     methods
