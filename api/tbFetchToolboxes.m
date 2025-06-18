@@ -97,11 +97,7 @@ for tt = 1:nToolboxes
         validName = matlab.lang.makeValidName(record.name);
         lastUpdates = getpref('ToolboxToolbox', 'LastUpdates', []);
 
-        % Empty record is the default.  In this case we want to make sure
-        % the default is to update, so explicitly handle this case.
-        if (isempty(record.update))
-            isRecentEnough = false;
-        elseif ~strcmp(record.update, 'never') && ismember(prefs.update, {'daily' 'weekly' 'monthly'})
+        if ~strcmp(record.update, 'never') && ismember(prefs.update, {'daily' 'weekly' 'monthly'})
             if isfield(lastUpdates, validName)
                 dLastUpdate = lastUpdates.(validName);
                 dElapsed = datetime('now') - dLastUpdate;
@@ -114,16 +110,18 @@ for tt = 1:nToolboxes
             dThreshold.weekly = days(7);
             dThreshold.monthly = days(31);
 
-            isRecentEnough = dElapsed < dThreshold.(prefs.update);
+            dRemaining = dThreshold.(prefs.update) - dElapsed;
+            isRecentEnough = dRemaining > 0;
         else
-            % Should this be false?  Probably adding the check for empty
-            % above means we don't need to get this right, but the setting to 
-            % here as added with this code does not make immediate sense to
-            % me.
-            isRecentEnough = true;
+            isRecentEnough = false;
         end
 
-        if strcmp(record.update, 'never') || strcmp(prefs.update, 'never') || isRecentEnough
+        if isRecentEnough
+            if (prefs.verbose)
+                disp("Found " + displayName + " which is recent enough for another " + string(round(dRemaining, "days")) + ", skipping update")
+            end
+
+        elseif strcmp(record.update, 'never') || strcmp(prefs.update, 'never')
             if (prefs.verbose) fprintf('Found "%s" and skipping update.\n', displayName); end
 
         else
