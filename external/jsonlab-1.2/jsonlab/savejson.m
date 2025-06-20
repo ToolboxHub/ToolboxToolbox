@@ -67,6 +67,8 @@ function json=savejson(rootname,obj,varargin)
 %                         back to the string form
 %        opt.SaveBinary [0|1]: 1 - save the JSON file in binary mode; 0 - text mode.
 %        opt.Compact [0|1]: 1- out compact JSON format (remove all newlines and tabs)
+%        opt.SkipEmpty [0|1]: don't write a param/value pair if value is
+%                             empty
 %
 %        opt can be replaced by a list of ('param',value) pairs. The param 
 %        string is equivallent to a field in opt and is case sensitive.
@@ -246,6 +248,7 @@ len=numel(item);
 forcearray= (len>1 || (jsonopt('SingletArray',0,varargin{:})==1 && level>0));
 ws=struct('tab',sprintf('\t'),'newline',sprintf('\n'));
 ws=jsonopt('whitespaces_',ws,varargin{:});
+skipEmpty=jsonopt('skipempty',false,varargin{:});
 padding0=repmat(ws.tab,1,level);
 padding2=repmat(ws.tab,1,level+1);
 padding1=repmat(ws.tab,1,level+(dim(1)>1)+forcearray);
@@ -281,12 +284,17 @@ for j=1:dim(2)
     end
     if(~isempty(names))
       for e=1:length(names)
+        if skipEmpty && isempty(item(i,j).(names{e}))
+            continue
+        end
 	    txt{end+1}=obj2json(names{e},item(i,j).(names{e}),...
              level+(dim(1)>1)+1+forcearray,varargin{:});
-        if(e<length(names))
-            txt{end+1}=',';
-        end
+        txt{end+1}=',';
         txt{end+1}=nl;
+      end
+      if length(txt)>=2
+        txt{end-1} = nl;
+        txt(end) = [];
       end
     end
     txt(end+1:end+2)={padding1,'}'};
@@ -537,13 +545,13 @@ if(isoct)
    end
 end
 if(isoct)
-  escapechars={'\\','\"','\/','\a','\f','\n','\r','\t','\v'};
+  escapechars={'\\','\"','\a','\f','\n','\r','\t','\v'};
   for i=1:length(escapechars);
     newstr=regexprep(newstr,escapechars{i},escapechars{i});
   end
   newstr=regexprep(newstr,'\\\\(u[0-9a-fA-F]{4}[^0-9a-fA-F]*)','\$1');
 else
-  escapechars={'\\','\"','\/','\a','\b','\f','\n','\r','\t','\v'};
+  escapechars={'\\','\"','\a','\b','\f','\n','\r','\t','\v'};
   for i=1:length(escapechars);
     newstr=regexprep(newstr,escapechars{i},regexprep(escapechars{i},'\\','\\\\'));
   end

@@ -47,7 +47,13 @@ if 2 ~= exist(configPath, 'file')
     return;
 end
 
-rawConfig = loadjson(configPath);
+try
+    rawConfig = loadjson(configPath);
+catch err
+    disp(['cannot parse ' configPath])
+    rethrow(err)
+end
+
 if ~isstruct(rawConfig) && ~iscell(rawConfig)
     return;
 end
