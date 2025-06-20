@@ -1,15 +1,20 @@
 function tbNewToolbox
-%TBNEWTOOLBOX new TbTb registry file and corresponding git repositories
+%TBNEWTOOLBOX New TbTb registry file and corresponding git repositories
 %  The GUI supports the following workflow
-%   - Create new TbTb registry json file based on an existing folder. 
+%   - Create new TbTb registry json file
+%   - Create local git repository (if needed)
+%   - Create remote git repository on a Github instance (if needed)
+%
+%  USAGE
+%    Call "tbNewToolbox" in the root folder of your project
 %
 %  INSTALLATION
-%    install https://github.com/cli/cli
-% 
+%    Install https://github.com/cli/cli (e.g "winget install --id GitHub.cli")
+%
 %  SETUP GH
 %    gh auth login -w -h git.yourcompany.com
 %
-%  SETUP MATLAB 
+%  SETUP MATLAB
 %    The following variables can be set under the group 'NewToolbox' in the
 %    preferences:
 %
@@ -18,7 +23,7 @@ function tbNewToolbox
 %    - 'DefaultGithubVisibility': 'public' or 'private'
 %
 %  EXAMPLE PREFERENCES
-%    NewToolbox.GithubUrls = ["https://git.yourcompany.com/YourProject" "https://git.yourcompany.com/11yourname"]
+%    NewToolbox.GithubUrls = ["https://git.yourcompany.com/YourOrg" "https://github.com/yourname"]
 %    NewToolbox.DefaultGithubVisibility = "public"
 %    setpref('ToolboxToolbox', 'NewToolbox', NewToolbox)
 
