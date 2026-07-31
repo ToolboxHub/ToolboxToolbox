@@ -39,6 +39,7 @@ classdef Controller < handle
                 self.view.getPathPlacement, ...
                 self.view.getVisibility, ...
                 self.model.actions);
+            self.view.setDoneState;
         end
 
         function filteredToolboxNames = filterToolboxes(self, filterStr)
