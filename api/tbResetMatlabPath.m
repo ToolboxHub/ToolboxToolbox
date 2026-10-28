@@ -100,10 +100,12 @@ if factoryReset
     restoredefaultpath();
     
     % Clear dynamic java class path
-    p = javaclasspath;
-    for ii = 1:length(p)
-        if (prefs.verbose) fprintf('Removing %s from dynamic java path\n',p{ii}); end
-        javarmpath(p{ii});
+    if jenv().Status == "loaded"
+        p = javaclasspath;
+        for ii = 1:length(p)
+            if (prefs.verbose) fprintf('Removing %s from dynamic java path\n',p{ii}); end
+            javarmpath(p{ii});
+        end
     end
     
     warning(oldWarningState.state, wid);
